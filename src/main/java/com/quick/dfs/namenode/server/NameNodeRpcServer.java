@@ -42,6 +42,19 @@ public class NameNodeRpcServer {
         return this.dataNodeManager.register(ip,hostName);
     }
 
+    /**
+     * 方法名: heartbeat
+     * 描述:   处理DataNode心跳请求
+     * @param ip
+     * @param hostName
+     * @return boolean
+     * 作者: fansy
+     * 日期: 2020/3/20 20:06
+     */
+    public boolean heartbeat(String ip,String hostName){
+        return this.dataNodeManager.heatbeat(ip,hostName);
+    }
+
     /***  
      * @方法名: start
      * @描述:   启动rpcServer
