@@ -43,7 +43,7 @@ public class DataNode {
     public void run(){
         try{
             while(shouldRun){
-                wait(1000);
+                Thread.sleep(1000);
             }
         }catch (Exception e){
             e.printStackTrace();

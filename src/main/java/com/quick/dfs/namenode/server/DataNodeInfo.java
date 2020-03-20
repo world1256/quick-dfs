@@ -12,6 +12,11 @@ public class DataNodeInfo {
 
     private String hostName;
 
+    /**
+     * 最后上报心跳时间
+     */
+    private long lastHeartBeatTime;
+
     public DataNodeInfo(String ip,String hostName){
         this.ip = ip;
         this.hostName = hostName;
@@ -31,5 +36,13 @@ public class DataNodeInfo {
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
+    }
+
+    public long getLastHeartBeatTime() {
+        return lastHeartBeatTime;
+    }
+
+    public void setLastHeartBeatTime(long lastHeartBeatTime) {
+        this.lastHeartBeatTime = lastHeartBeatTime;
     }
 }

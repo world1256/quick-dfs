@@ -71,7 +71,7 @@ public class NameNodeServiceActor {
             while (true){
                 //TODO  send heartbeat
                 try {
-                    wait(HEARTBEAT_INTERVAL);
+                    Thread.sleep(HEARTBEAT_INTERVAL);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
