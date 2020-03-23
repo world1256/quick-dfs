@@ -47,8 +47,10 @@ public class FSDirectory {
                     continue;
                 }
 
+                //创建不存在的目录  并将该目录置为parent  继续处理
                 INodeDirectory child = new INodeDirectory(splitPath);
                 parent.addChild(child);
+                parent = child;
             }
 
         }
@@ -57,7 +59,7 @@ public class FSDirectory {
 
     /**  
      * @方法名: findDiretory
-     * @描述:   在目录树中递归查找path
+     * @描述:   在指定目录中查找path
      * @param path
      * @param parent  
      * @return com.quick.dfs.namenode.server.FSDirectory.INodeDirectory  
@@ -66,21 +68,15 @@ public class FSDirectory {
     */  
     public INodeDirectory findDiretory(String path,INodeDirectory parent){
         List<INode> children = parent.getChildren();
-        INodeDirectory dir = null;
         for(INode child : children){
             if(child instanceof INodeDirectory){
-                dir = (INodeDirectory) child;
+                INodeDirectory dir = (INodeDirectory) child;
                 if(dir.getPath().equals(path)){
                     return dir;
                 }
-
-                 dir = findDiretory(path,dir);
-                 if(dir != null){
-                     return  dir;
-                 }
             }
         }
-        return dir;
+        return null;
     }
 
 
