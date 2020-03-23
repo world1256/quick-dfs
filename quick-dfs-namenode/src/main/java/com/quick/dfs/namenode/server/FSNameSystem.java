@@ -29,6 +29,8 @@ public class FSNameSystem {
      * @return
      */
     public boolean mkDir(String path){
+        this.directory.mkDir(path);
+        this.editLog.logEdit("创建目录:"+path);
         return true;
     }
 

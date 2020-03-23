@@ -19,7 +19,13 @@
             </plugin>
         </plugins>
     </build>
-    <packaging>jar</packaging>
+    <modules>
+        <module>quick-dfs-rpc</module>
+        <module>quick-dfs-namenode</module>
+        <module>quick-dfs-datanode</module>
+        <module>quick-dfs-common</module>
+    </modules>
+    <packaging>pom</packaging>
 
     <name>quick-dfs</name>
     <url>http://maven.apache.org</url>

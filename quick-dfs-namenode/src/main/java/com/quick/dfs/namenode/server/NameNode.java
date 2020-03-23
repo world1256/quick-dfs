@@ -44,30 +44,24 @@ public class NameNode {
         this.fsNameSystem = new FSNameSystem();
         this.dataNodeManager = new DataNodeManager();
         this.rpcServer = new NameNodeRpcServer(fsNameSystem,dataNodeManager);
-        this.rpcServer.start();
     }
 
     /**
-     * @方法名: run
-     * @描述:   NameNode 正式运行
+     * @方法名: start
+     * @描述:   启动NameNode
      * @param
      * @return void
      * @作者: fansy
-     * @日期: 2020/3/18 15:28
+     * @日期: 2020/3/23 10:58
     */
-    private void run(){
-        try{
-            while (shouldRun){
-                Thread.sleep(1000);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    private void start() throws Exception{
+        this.rpcServer.start();
+        this.rpcServer.blockUntilShutdown();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         NameNode nameNode = new NameNode();
         nameNode.init();
-        nameNode.run();
+        nameNode.start();
     }
 }

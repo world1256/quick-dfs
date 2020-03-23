@@ -49,7 +49,7 @@ public class FSEditLog {
      * @作者: fansy
      * @日期: 2020/3/19 10:00
     */
-    private void logEdit(String content){
+    public void logEdit(String content){
         synchronized (this){
           long txId = txIdSeq.incrementAndGet();
           localTxId.set(txId);
@@ -189,7 +189,9 @@ public class FSEditLog {
          * @日期: 2020/3/18 17:23 
         */  
         public void flush(){
-            
+            //TODO 数据写入磁盘
+
+            readyBuffer.clear();
         }
     }
 
