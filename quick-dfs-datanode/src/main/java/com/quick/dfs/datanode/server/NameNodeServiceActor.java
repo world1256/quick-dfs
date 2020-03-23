@@ -5,7 +5,7 @@ import com.quick.dfs.namenode.rpc.model.HeartbeatResponse;
 import com.quick.dfs.namenode.rpc.model.RegisterRequest;
 import com.quick.dfs.namenode.rpc.model.RegisterResponse;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
-import com.quick.dfs.thread.Demo;
+import com.quick.dfs.thread.Daemon;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NegotiationType;
 import io.grpc.netty.NettyChannelBuilder;
@@ -104,7 +104,7 @@ public class NameNodeServiceActor {
     /**
      * 心跳线程
      */
-    class HeartbeatThread extends Demo {
+    class HeartbeatThread extends Daemon {
 
         @Override
         public void run() {

@@ -1,6 +1,6 @@
 package com.quick.dfs.namenode.server;
 
-import com.quick.dfs.thread.Demo;
+import com.quick.dfs.thread.Daemon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +72,7 @@ public class DataNodeManager {
     /**
      * 定时检测 DataNode活性的后台线程
      */
-    class DataNodeAliveMonitor extends Demo{
+    class DataNodeAliveMonitor extends Daemon {
 
         @Override
         public void run() {

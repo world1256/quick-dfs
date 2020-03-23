@@ -6,7 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="quick-dfs" />
+        <module name="quickdfsdatanode" />
+        <module name="quickdfsrpc" />
+        <module name="quickdfscommon" />
+        <module name="quickdfsnamenode" />
       </profile>
     </annotationProcessing>
   </component>

@@ -6,8 +6,8 @@ package com.quick.dfs.thread;
  * @作者: fansy
  * @日期: 2020/3/20 16:14
  **/
-public class Demo extends Thread{
-    public Demo(){
+public class Daemon extends Thread{
+    public Daemon(){
         this.setDaemon(true);
     }
 }
