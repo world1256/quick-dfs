@@ -1,6 +1,5 @@
 package com.quick.dfs.namenode.server;
 
-import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -60,7 +59,11 @@ public class FSEditLog {
             EditLog  editLog = new EditLog(txId,content);
 
             //将edit log 写入内存缓冲
-            editLogBuffer.write(editLog);
+            try{
+                editLogBuffer.write(editLog);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
             //判断是否应该将内存缓冲中的editLog写入磁盘
             if(!editLogBuffer.shouldSync2Disk()){
@@ -136,7 +139,12 @@ public class FSEditLog {
             isSyncRunning = true;
         }
 
-        editLogBuffer.flush();
+        //内存缓冲中的数据刷入磁盘  这里耗时会稍长一点
+        try{
+            editLogBuffer.flush();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         //数据写入完成后将写入标识置为false   唤醒可能在阻塞等待的其他线程来写入数据
         synchronized (this){
