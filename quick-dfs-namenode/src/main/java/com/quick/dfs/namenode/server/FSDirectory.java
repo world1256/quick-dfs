@@ -52,10 +52,33 @@ public class FSDirectory {
                 parent.addChild(child);
                 parent = child;
             }
-
         }
 
+        showRoot(root,"");
     }
+
+    /**  
+     * @方法名: showRoot
+     * @描述:   输出文件目录树   测试使用
+     * @param root
+     * @param blank  
+     * @return void  
+     * @作者: fansy
+     * @日期: 2020/3/23 15:09 
+    */  
+    private void showRoot(INodeDirectory root,String blank){
+        if(root.getChildren().size() == 0){
+            return;
+        }
+
+        for(INode node : root.getChildren()){
+            if(node instanceof INodeDirectory){
+                System.out.println(blank + ((INodeDirectory) node).getPath());
+                showRoot((INodeDirectory)node,blank + " ");
+            }
+        }
+    }
+
 
     /**  
      * @方法名: findDiretory
