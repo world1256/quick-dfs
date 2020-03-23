@@ -4,17 +4,17 @@
 package com.quick.dfs.namenode.rpc.model;
 
 /**
- * Protobuf type {@code com.quick.dfs.namenode.rpc.HeartbeatResponse}
+ * Protobuf type {@code com.quick.dfs.namenode.rpc.MkDirResponse}
  */
-public  final class HeartbeatResponse extends
+public  final class MkDirResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:com.quick.dfs.namenode.rpc.HeartbeatResponse)
-    HeartbeatResponseOrBuilder {
-  // Use HeartbeatResponse.newBuilder() to construct.
-  private HeartbeatResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // @@protoc_insertion_point(message_implements:com.quick.dfs.namenode.rpc.MkDirResponse)
+    MkDirResponseOrBuilder {
+  // Use MkDirResponse.newBuilder() to construct.
+  private MkDirResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private HeartbeatResponse() {
+  private MkDirResponse() {
     status_ = 0;
   }
 
@@ -23,7 +23,7 @@ public  final class HeartbeatResponse extends
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
-  private HeartbeatResponse(
+  private MkDirResponse(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -61,14 +61,14 @@ public  final class HeartbeatResponse extends
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatResponse_descriptor;
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_descriptor;
   }
 
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatResponse_fieldAccessorTable
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            HeartbeatResponse.class, Builder.class);
+            MkDirResponse.class, Builder.class);
   }
 
   public static final int STATUS_FIELD_NUMBER = 1;
@@ -116,10 +116,10 @@ public  final class HeartbeatResponse extends
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof HeartbeatResponse)) {
+    if (!(obj instanceof MkDirResponse)) {
       return super.equals(obj);
     }
-    HeartbeatResponse other = (HeartbeatResponse) obj;
+    MkDirResponse other = (MkDirResponse) obj;
 
     boolean result = true;
     result = result && (getStatus()
@@ -141,58 +141,58 @@ public  final class HeartbeatResponse extends
     return hash;
   }
 
-  public static HeartbeatResponse parseFrom(
+  public static MkDirResponse parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static HeartbeatResponse parseFrom(
+  public static MkDirResponse parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static HeartbeatResponse parseFrom(byte[] data)
+  public static MkDirResponse parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static HeartbeatResponse parseFrom(
+  public static MkDirResponse parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static HeartbeatResponse parseFrom(java.io.InputStream input)
+  public static MkDirResponse parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static HeartbeatResponse parseFrom(
+  public static MkDirResponse parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static HeartbeatResponse parseDelimitedFrom(java.io.InputStream input)
+  public static MkDirResponse parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static HeartbeatResponse parseDelimitedFrom(
+  public static MkDirResponse parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static HeartbeatResponse parseFrom(
+  public static MkDirResponse parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static HeartbeatResponse parseFrom(
+  public static MkDirResponse parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -204,7 +204,7 @@ public  final class HeartbeatResponse extends
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(HeartbeatResponse prototype) {
+  public static Builder newBuilder(MkDirResponse prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   public Builder toBuilder() {
@@ -219,25 +219,25 @@ public  final class HeartbeatResponse extends
     return builder;
   }
   /**
-   * Protobuf type {@code com.quick.dfs.namenode.rpc.HeartbeatResponse}
+   * Protobuf type {@code com.quick.dfs.namenode.rpc.MkDirResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.HeartbeatResponse)
-      HeartbeatResponseOrBuilder {
+      // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.MkDirResponse)
+      com.quick.dfs.namenode.rpc.model.MkDirResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatResponse_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_descriptor;
     }
 
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatResponse_fieldAccessorTable
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              HeartbeatResponse.class, Builder.class);
+              MkDirResponse.class, Builder.class);
     }
 
-    // Construct using com.quick.dfs.namenode.rpc.model.HeartbeatResponse.newBuilder()
+    // Construct using com.quick.dfs.namenode.rpc.model.MkDirResponse.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -261,23 +261,23 @@ public  final class HeartbeatResponse extends
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatResponse_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_descriptor;
     }
 
-    public HeartbeatResponse getDefaultInstanceForType() {
-      return HeartbeatResponse.getDefaultInstance();
+    public MkDirResponse getDefaultInstanceForType() {
+      return MkDirResponse.getDefaultInstance();
     }
 
-    public HeartbeatResponse build() {
-      HeartbeatResponse result = buildPartial();
+    public MkDirResponse build() {
+      MkDirResponse result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    public HeartbeatResponse buildPartial() {
-      HeartbeatResponse result = new HeartbeatResponse(this);
+    public MkDirResponse buildPartial() {
+      MkDirResponse result = new MkDirResponse(this);
       result.status_ = status_;
       onBuilt();
       return result;
@@ -310,16 +310,16 @@ public  final class HeartbeatResponse extends
       return (Builder) super.addRepeatedField(field, value);
     }
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof HeartbeatResponse) {
-        return mergeFrom((HeartbeatResponse)other);
+      if (other instanceof MkDirResponse) {
+        return mergeFrom((MkDirResponse)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(HeartbeatResponse other) {
-      if (other == HeartbeatResponse.getDefaultInstance()) return this;
+    public Builder mergeFrom(MkDirResponse other) {
+      if (other == MkDirResponse.getDefaultInstance()) return this;
       if (other.getStatus() != 0) {
         setStatus(other.getStatus());
       }
@@ -335,11 +335,11 @@ public  final class HeartbeatResponse extends
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      HeartbeatResponse parsedMessage = null;
+      MkDirResponse parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (HeartbeatResponse) e.getUnfinishedMessage();
+        parsedMessage = (MkDirResponse) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -385,39 +385,39 @@ public  final class HeartbeatResponse extends
     }
 
 
-    // @@protoc_insertion_point(builder_scope:com.quick.dfs.namenode.rpc.HeartbeatResponse)
+    // @@protoc_insertion_point(builder_scope:com.quick.dfs.namenode.rpc.MkDirResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:com.quick.dfs.namenode.rpc.HeartbeatResponse)
-  private static final HeartbeatResponse DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:com.quick.dfs.namenode.rpc.MkDirResponse)
+  private static final MkDirResponse DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new HeartbeatResponse();
+    DEFAULT_INSTANCE = new MkDirResponse();
   }
 
-  public static HeartbeatResponse getDefaultInstance() {
+  public static MkDirResponse getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<HeartbeatResponse>
-      PARSER = new com.google.protobuf.AbstractParser<HeartbeatResponse>() {
-    public HeartbeatResponse parsePartialFrom(
+  private static final com.google.protobuf.Parser<MkDirResponse>
+      PARSER = new com.google.protobuf.AbstractParser<MkDirResponse>() {
+    public MkDirResponse parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new HeartbeatResponse(input, extensionRegistry);
+        return new MkDirResponse(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<HeartbeatResponse> parser() {
+  public static com.google.protobuf.Parser<MkDirResponse> parser() {
     return PARSER;
   }
 
   @Override
-  public com.google.protobuf.Parser<HeartbeatResponse> getParserForType() {
+  public com.google.protobuf.Parser<MkDirResponse> getParserForType() {
     return PARSER;
   }
 
-  public HeartbeatResponse getDefaultInstanceForType() {
+  public MkDirResponse getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

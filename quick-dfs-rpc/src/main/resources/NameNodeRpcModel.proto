@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package com.zhss.dfs.namenode.rpc;
+package com.quick.dfs.namenode.rpc;
 
 option java_multiple_files = true;
-option java_package = "com.zhss.dfs.namenode.rpc.model";  
+option java_package = "com.quick.dfs.namenode.rpc.model";
 option java_outer_classname = "NameNodeRpcModel";
 
 message RegisterRequest{  
@@ -19,4 +19,10 @@ message HeartbeatRequest{
 }  
 message HeartbeatResponse{  
     int32 status  = 1;   
+}
+message MkDirRequest{
+    string path = 1;
+}
+message MkDirResponse{
+    int32 status = 1;
 }

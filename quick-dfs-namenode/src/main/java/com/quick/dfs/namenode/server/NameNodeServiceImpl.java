@@ -1,9 +1,6 @@
 package com.quick.dfs.namenode.server;
 
-import com.quick.dfs.namenode.rpc.model.HeartbeatRequest;
-import com.quick.dfs.namenode.rpc.model.HeartbeatResponse;
-import com.quick.dfs.namenode.rpc.model.RegisterRequest;
-import com.quick.dfs.namenode.rpc.model.RegisterResponse;
+import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
 import io.grpc.stub.StreamObserver;
 
@@ -31,18 +28,6 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     public NameNodeServiceImpl(FSNameSystem nameSystem,DataNodeManager dataNodeManager){
         this.nameSystem = nameSystem;
         this.dataNodeManager = dataNodeManager;
-    }
-
-    /**
-     * @方法名: mkDir
-     * @描述:  创建目录
-     * @param path
-     * @return boolean
-     * @作者: fansy
-     * @日期: 2020/3/23 10:50
-    */
-    public boolean mkDir(String path){
-        return this.nameSystem.mkDir(path);
     }
 
     /**
@@ -75,6 +60,23 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     public void heartbeat(HeartbeatRequest request, StreamObserver<HeartbeatResponse> responseObserver) {
         this.dataNodeManager.heatbeat(request.getIp(),request.getHostname());
         HeartbeatResponse response = HeartbeatResponse.newBuilder().setStatus(STATUS_SUCCESS).build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    /**
+     * @方法名: mkDir
+     * @描述:   创建目录
+     * @param request
+     * @param responseObserver
+     * @return void
+     * @作者: fansy
+     * @日期: 2020/3/23 14:46
+     */
+    @Override
+    public void mkDir(MkDirRequest request, StreamObserver<MkDirResponse> responseObserver) {
+        this.nameSystem.mkDir(request.getPath());
+        MkDirResponse response = MkDirResponse.newBuilder().setStatus(STATUS_SUCCESS).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

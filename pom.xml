@@ -24,6 +24,7 @@
         <module>quick-dfs-namenode</module>
         <module>quick-dfs-datanode</module>
         <module>quick-dfs-common</module>
+        <module>quick-dfs-client</module>
     </modules>
     <packaging>pom</packaging>
 

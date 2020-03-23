@@ -69,12 +69,12 @@ public  final class HeartbeatRequest extends
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.quick.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatRequest_descriptor;
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatRequest_descriptor;
   }
 
-  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+  protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.quick.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatRequest_fieldAccessorTable
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             HeartbeatRequest.class, Builder.class);
   }
@@ -290,7 +290,7 @@ public  final class HeartbeatRequest extends
 
   @Override
   protected Builder newBuilderForType(
-      com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      BuilderParent parent) {
     Builder builder = new Builder(parent);
     return builder;
   }
@@ -300,15 +300,15 @@ public  final class HeartbeatRequest extends
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.HeartbeatRequest)
-      com.quick.dfs.namenode.rpc.model.HeartbeatRequestOrBuilder {
+      HeartbeatRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.quick.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatRequest_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatRequest_descriptor;
     }
 
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+    protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.quick.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatRequest_fieldAccessorTable
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               HeartbeatRequest.class, Builder.class);
     }
@@ -319,7 +319,7 @@ public  final class HeartbeatRequest extends
     }
 
     private Builder(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        BuilderParent parent) {
       super(parent);
       maybeForceBuilderInitialization();
     }
@@ -339,7 +339,7 @@ public  final class HeartbeatRequest extends
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return com.quick.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatRequest_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_HeartbeatRequest_descriptor;
     }
 
     public HeartbeatRequest getDefaultInstanceForType() {

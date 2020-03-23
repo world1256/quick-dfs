@@ -39,6 +39,15 @@ public class NameNodeServiceGrpc {
               "com.quick.dfs.namenode.rpc.NameNodeService", "heartbeat"),
           io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.HeartbeatRequest.getDefaultInstance()),
           io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.HeartbeatResponse.getDefaultInstance()));
+  @io.grpc.ExperimentalApi
+  public static final io.grpc.MethodDescriptor<com.quick.dfs.namenode.rpc.model.MkDirRequest,
+      com.quick.dfs.namenode.rpc.model.MkDirResponse> METHOD_MK_DIR =
+      io.grpc.MethodDescriptor.create(
+          io.grpc.MethodDescriptor.MethodType.UNARY,
+          generateFullMethodName(
+              "com.quick.dfs.namenode.rpc.NameNodeService", "mkDir"),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.MkDirRequest.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.MkDirResponse.getDefaultInstance()));
 
   public static NameNodeServiceStub newStub(io.grpc.Channel channel) {
     return new NameNodeServiceStub(channel);
@@ -61,6 +70,9 @@ public class NameNodeServiceGrpc {
 
     public void heartbeat(com.quick.dfs.namenode.rpc.model.HeartbeatRequest request,
                           io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.HeartbeatResponse> responseObserver);
+
+    public void mkDir(com.quick.dfs.namenode.rpc.model.MkDirRequest request,
+                      io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.MkDirResponse> responseObserver);
   }
 
   public static interface NameNodeServiceBlockingClient {
@@ -68,6 +80,8 @@ public class NameNodeServiceGrpc {
     public com.quick.dfs.namenode.rpc.model.RegisterResponse register(com.quick.dfs.namenode.rpc.model.RegisterRequest request);
 
     public com.quick.dfs.namenode.rpc.model.HeartbeatResponse heartbeat(com.quick.dfs.namenode.rpc.model.HeartbeatRequest request);
+
+    public com.quick.dfs.namenode.rpc.model.MkDirResponse mkDir(com.quick.dfs.namenode.rpc.model.MkDirRequest request);
   }
 
   public static interface NameNodeServiceFutureClient {
@@ -77,6 +91,9 @@ public class NameNodeServiceGrpc {
 
     public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.HeartbeatResponse> heartbeat(
             com.quick.dfs.namenode.rpc.model.HeartbeatRequest request);
+
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.MkDirResponse> mkDir(
+            com.quick.dfs.namenode.rpc.model.MkDirRequest request);
   }
 
   public static class NameNodeServiceStub extends io.grpc.stub.AbstractStub<NameNodeServiceStub>
@@ -109,6 +126,13 @@ public class NameNodeServiceGrpc {
       asyncUnaryCall(
           getChannel().newCall(METHOD_HEARTBEAT, getCallOptions()), request, responseObserver);
     }
+
+    @Override
+    public void mkDir(com.quick.dfs.namenode.rpc.model.MkDirRequest request,
+        io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.MkDirResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(METHOD_MK_DIR, getCallOptions()), request, responseObserver);
+    }
   }
 
   public static class NameNodeServiceBlockingStub extends io.grpc.stub.AbstractStub<NameNodeServiceBlockingStub>
@@ -138,6 +162,12 @@ public class NameNodeServiceGrpc {
     public com.quick.dfs.namenode.rpc.model.HeartbeatResponse heartbeat(com.quick.dfs.namenode.rpc.model.HeartbeatRequest request) {
       return blockingUnaryCall(
           getChannel(), METHOD_HEARTBEAT, getCallOptions(), request);
+    }
+
+    @Override
+    public com.quick.dfs.namenode.rpc.model.MkDirResponse mkDir(com.quick.dfs.namenode.rpc.model.MkDirRequest request) {
+      return blockingUnaryCall(
+          getChannel(), METHOD_MK_DIR, getCallOptions(), request);
     }
   }
 
@@ -171,10 +201,18 @@ public class NameNodeServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(METHOD_HEARTBEAT, getCallOptions()), request);
     }
+
+    @Override
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.MkDirResponse> mkDir(
+        com.quick.dfs.namenode.rpc.model.MkDirRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(METHOD_MK_DIR, getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_REGISTER = 0;
   private static final int METHODID_HEARTBEAT = 1;
+  private static final int METHODID_MK_DIR = 2;
 
   private static class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -199,6 +237,10 @@ public class NameNodeServiceGrpc {
         case METHODID_HEARTBEAT:
           serviceImpl.heartbeat((com.quick.dfs.namenode.rpc.model.HeartbeatRequest) request,
               (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.HeartbeatResponse>) responseObserver);
+          break;
+        case METHODID_MK_DIR:
+          serviceImpl.mkDir((com.quick.dfs.namenode.rpc.model.MkDirRequest) request,
+              (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.MkDirResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -232,6 +274,13 @@ public class NameNodeServiceGrpc {
               com.quick.dfs.namenode.rpc.model.HeartbeatRequest,
               com.quick.dfs.namenode.rpc.model.HeartbeatResponse>(
                 serviceImpl, METHODID_HEARTBEAT)))
+        .addMethod(
+          METHOD_MK_DIR,
+          asyncUnaryCall(
+            new MethodHandlers<
+              com.quick.dfs.namenode.rpc.model.MkDirRequest,
+              com.quick.dfs.namenode.rpc.model.MkDirResponse>(
+                serviceImpl, METHODID_MK_DIR)))
         .build();
   }
 }
