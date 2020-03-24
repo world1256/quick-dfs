@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @项目名称: quick-dfs
@@ -21,6 +23,9 @@ public class DoubleBuffer {
      */
     private static final Integer EDIT_LOG_BUFFER_CAPACITY = 25 * 1024;
 
+    /**
+     * editLog 文件存放路径
+     */
     private static final String EDIT_LOG_PATH = "/home/quick-dfs/editlog/";
 
     /**
@@ -37,6 +42,11 @@ public class DoubleBuffer {
      * 上次写入磁盘的最大txId
      */
     private long lastSyncMaxTxId = 0L;
+
+    /**
+     * 已经落地到磁盘的txId 范围
+     */
+    private List<String> flushedTxIds = new ArrayList<>();
 
     /**
      * @方法名: write
@@ -106,6 +116,32 @@ public class DoubleBuffer {
         readyBuffer.clear();
     }
 
+    /**  
+     * @方法名: getFlushedTxIds
+     * @描述:   获取已经刷入磁盘的edit log  txid范围数据
+     * @param   
+     * @return java.util.List<java.lang.String>  
+     * @作者: fansy
+     * @日期: 2020/3/24 11:02 
+    */  
+    public List<String> getFlushedTxIds() {
+        return flushedTxIds;
+    }
+
+    /**  
+     * @方法名: getBufferedEditLog
+     * @描述:   获取当前正在写入的缓冲区数据
+     * @param   
+     * @return java.lang.String[]  
+     * @作者: fansy
+     * @日期: 2020/3/24 11:11 
+    */  
+    public String[] getBufferedEditLog(){
+        String editLogRawData = new String(currentBuffer.getBufferData());
+        return editLogRawData.split("\n");
+    }
+
+
     class EditLogBuffer{
 
         /**
@@ -161,7 +197,8 @@ public class DoubleBuffer {
             ByteBuffer dataBuffer = ByteBuffer.wrap(data);
 
             //editlog输出文件   格式： 17789-24467.log
-            String editLogPath = EDIT_LOG_PATH + (++lastSyncMaxTxId) + "-" + maxTxId+".log";
+            String editLogPath = EDIT_LOG_PATH + lastSyncMaxTxId + "-" + maxTxId+".log";
+            flushedTxIds.add(lastSyncMaxTxId + "-" + maxTxId);
 
             RandomAccessFile file = null;
             FileOutputStream out = null;
@@ -186,7 +223,7 @@ public class DoubleBuffer {
                     file.close();
                 }
             }
-            lastSyncMaxTxId = maxTxId;
+            lastSyncMaxTxId = maxTxId + 1;
         }
 
         /**  
@@ -199,6 +236,18 @@ public class DoubleBuffer {
         */  
         public void clear(){
             this.buffer.reset();
+        }
+
+        /**  
+         * @方法名: getBufferData
+         * @描述:   获取缓冲区的数据
+         * @param   
+         * @return byte[]  
+         * @作者: fansy
+         * @日期: 2020/3/24 11:10 
+        */  
+        public byte[] getBufferData(){
+            return this.buffer.toByteArray();
         }
     }
 

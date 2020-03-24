@@ -48,6 +48,24 @@ public class NameNodeServiceGrpc {
               "com.quick.dfs.namenode.rpc.NameNodeService", "mkDir"),
           io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.MkDirRequest.getDefaultInstance()),
           io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.MkDirResponse.getDefaultInstance()));
+  @io.grpc.ExperimentalApi
+  public static final io.grpc.MethodDescriptor<com.quick.dfs.namenode.rpc.model.ShutdownRequest,
+      com.quick.dfs.namenode.rpc.model.ShutdownResponse> METHOD_SHUTDOWN =
+      io.grpc.MethodDescriptor.create(
+          io.grpc.MethodDescriptor.MethodType.UNARY,
+          generateFullMethodName(
+              "com.quick.dfs.namenode.rpc.NameNodeService", "shutdown"),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.ShutdownRequest.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.ShutdownResponse.getDefaultInstance()));
+  @io.grpc.ExperimentalApi
+  public static final io.grpc.MethodDescriptor<com.quick.dfs.namenode.rpc.model.FetchEditLogRequest,
+      com.quick.dfs.namenode.rpc.model.FetchEditLogResponse> METHOD_FETCH_EDIT_LOG =
+      io.grpc.MethodDescriptor.create(
+          io.grpc.MethodDescriptor.MethodType.UNARY,
+          generateFullMethodName(
+              "com.quick.dfs.namenode.rpc.NameNodeService", "fetchEditLog"),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.FetchEditLogRequest.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.FetchEditLogResponse.getDefaultInstance()));
 
   public static NameNodeServiceStub newStub(io.grpc.Channel channel) {
     return new NameNodeServiceStub(channel);
@@ -73,6 +91,12 @@ public class NameNodeServiceGrpc {
 
     public void mkDir(com.quick.dfs.namenode.rpc.model.MkDirRequest request,
                       io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.MkDirResponse> responseObserver);
+
+    public void shutdown(com.quick.dfs.namenode.rpc.model.ShutdownRequest request,
+                         io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.ShutdownResponse> responseObserver);
+
+    public void fetchEditLog(com.quick.dfs.namenode.rpc.model.FetchEditLogRequest request,
+                             io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.FetchEditLogResponse> responseObserver);
   }
 
   public static interface NameNodeServiceBlockingClient {
@@ -82,6 +106,10 @@ public class NameNodeServiceGrpc {
     public com.quick.dfs.namenode.rpc.model.HeartbeatResponse heartbeat(com.quick.dfs.namenode.rpc.model.HeartbeatRequest request);
 
     public com.quick.dfs.namenode.rpc.model.MkDirResponse mkDir(com.quick.dfs.namenode.rpc.model.MkDirRequest request);
+
+    public com.quick.dfs.namenode.rpc.model.ShutdownResponse shutdown(com.quick.dfs.namenode.rpc.model.ShutdownRequest request);
+
+    public com.quick.dfs.namenode.rpc.model.FetchEditLogResponse fetchEditLog(com.quick.dfs.namenode.rpc.model.FetchEditLogRequest request);
   }
 
   public static interface NameNodeServiceFutureClient {
@@ -94,6 +122,12 @@ public class NameNodeServiceGrpc {
 
     public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.MkDirResponse> mkDir(
             com.quick.dfs.namenode.rpc.model.MkDirRequest request);
+
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.ShutdownResponse> shutdown(
+            com.quick.dfs.namenode.rpc.model.ShutdownRequest request);
+
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.FetchEditLogResponse> fetchEditLog(
+            com.quick.dfs.namenode.rpc.model.FetchEditLogRequest request);
   }
 
   public static class NameNodeServiceStub extends io.grpc.stub.AbstractStub<NameNodeServiceStub>
@@ -133,6 +167,20 @@ public class NameNodeServiceGrpc {
       asyncUnaryCall(
           getChannel().newCall(METHOD_MK_DIR, getCallOptions()), request, responseObserver);
     }
+
+    @Override
+    public void shutdown(com.quick.dfs.namenode.rpc.model.ShutdownRequest request,
+        io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.ShutdownResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(METHOD_SHUTDOWN, getCallOptions()), request, responseObserver);
+    }
+
+    @Override
+    public void fetchEditLog(com.quick.dfs.namenode.rpc.model.FetchEditLogRequest request,
+        io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.FetchEditLogResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(METHOD_FETCH_EDIT_LOG, getCallOptions()), request, responseObserver);
+    }
   }
 
   public static class NameNodeServiceBlockingStub extends io.grpc.stub.AbstractStub<NameNodeServiceBlockingStub>
@@ -168,6 +216,18 @@ public class NameNodeServiceGrpc {
     public com.quick.dfs.namenode.rpc.model.MkDirResponse mkDir(com.quick.dfs.namenode.rpc.model.MkDirRequest request) {
       return blockingUnaryCall(
           getChannel(), METHOD_MK_DIR, getCallOptions(), request);
+    }
+
+    @Override
+    public com.quick.dfs.namenode.rpc.model.ShutdownResponse shutdown(com.quick.dfs.namenode.rpc.model.ShutdownRequest request) {
+      return blockingUnaryCall(
+          getChannel(), METHOD_SHUTDOWN, getCallOptions(), request);
+    }
+
+    @Override
+    public com.quick.dfs.namenode.rpc.model.FetchEditLogResponse fetchEditLog(com.quick.dfs.namenode.rpc.model.FetchEditLogRequest request) {
+      return blockingUnaryCall(
+          getChannel(), METHOD_FETCH_EDIT_LOG, getCallOptions(), request);
     }
   }
 
@@ -208,11 +268,27 @@ public class NameNodeServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(METHOD_MK_DIR, getCallOptions()), request);
     }
+
+    @Override
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.ShutdownResponse> shutdown(
+        com.quick.dfs.namenode.rpc.model.ShutdownRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(METHOD_SHUTDOWN, getCallOptions()), request);
+    }
+
+    @Override
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.FetchEditLogResponse> fetchEditLog(
+        com.quick.dfs.namenode.rpc.model.FetchEditLogRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(METHOD_FETCH_EDIT_LOG, getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_REGISTER = 0;
   private static final int METHODID_HEARTBEAT = 1;
   private static final int METHODID_MK_DIR = 2;
+  private static final int METHODID_SHUTDOWN = 3;
+  private static final int METHODID_FETCH_EDIT_LOG = 4;
 
   private static class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -241,6 +317,14 @@ public class NameNodeServiceGrpc {
         case METHODID_MK_DIR:
           serviceImpl.mkDir((com.quick.dfs.namenode.rpc.model.MkDirRequest) request,
               (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.MkDirResponse>) responseObserver);
+          break;
+        case METHODID_SHUTDOWN:
+          serviceImpl.shutdown((com.quick.dfs.namenode.rpc.model.ShutdownRequest) request,
+              (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.ShutdownResponse>) responseObserver);
+          break;
+        case METHODID_FETCH_EDIT_LOG:
+          serviceImpl.fetchEditLog((com.quick.dfs.namenode.rpc.model.FetchEditLogRequest) request,
+              (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.FetchEditLogResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -281,6 +365,20 @@ public class NameNodeServiceGrpc {
               com.quick.dfs.namenode.rpc.model.MkDirRequest,
               com.quick.dfs.namenode.rpc.model.MkDirResponse>(
                 serviceImpl, METHODID_MK_DIR)))
+        .addMethod(
+          METHOD_SHUTDOWN,
+          asyncUnaryCall(
+            new MethodHandlers<
+              com.quick.dfs.namenode.rpc.model.ShutdownRequest,
+              com.quick.dfs.namenode.rpc.model.ShutdownResponse>(
+                serviceImpl, METHODID_SHUTDOWN)))
+        .addMethod(
+          METHOD_FETCH_EDIT_LOG,
+          asyncUnaryCall(
+            new MethodHandlers<
+              com.quick.dfs.namenode.rpc.model.FetchEditLogRequest,
+              com.quick.dfs.namenode.rpc.model.FetchEditLogResponse>(
+                serviceImpl, METHODID_FETCH_EDIT_LOG)))
         .build();
   }
 }

@@ -4,17 +4,17 @@
 package com.quick.dfs.namenode.rpc.model;
 
 /**
- * Protobuf type {@code com.quick.dfs.namenode.rpc.MkDirResponse}
+ * Protobuf type {@code com.quick.dfs.namenode.rpc.ShutdownResponse}
  */
-public  final class MkDirResponse extends
+public  final class ShutdownResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:com.quick.dfs.namenode.rpc.MkDirResponse)
-    MkDirResponseOrBuilder {
-  // Use MkDirResponse.newBuilder() to construct.
-  private MkDirResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // @@protoc_insertion_point(message_implements:com.quick.dfs.namenode.rpc.ShutdownResponse)
+    ShutdownResponseOrBuilder {
+  // Use ShutdownResponse.newBuilder() to construct.
+  private ShutdownResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private MkDirResponse() {
+  private ShutdownResponse() {
     status_ = 0;
   }
 
@@ -23,7 +23,7 @@ public  final class MkDirResponse extends
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
-  private MkDirResponse(
+  private ShutdownResponse(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -61,14 +61,14 @@ public  final class MkDirResponse extends
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_descriptor;
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_ShutdownResponse_descriptor;
   }
 
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_fieldAccessorTable
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_ShutdownResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            MkDirResponse.class, Builder.class);
+            ShutdownResponse.class, Builder.class);
   }
 
   public static final int STATUS_FIELD_NUMBER = 1;
@@ -116,10 +116,10 @@ public  final class MkDirResponse extends
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof MkDirResponse)) {
+    if (!(obj instanceof ShutdownResponse)) {
       return super.equals(obj);
     }
-    MkDirResponse other = (MkDirResponse) obj;
+    ShutdownResponse other = (ShutdownResponse) obj;
 
     boolean result = true;
     result = result && (getStatus()
@@ -141,58 +141,58 @@ public  final class MkDirResponse extends
     return hash;
   }
 
-  public static MkDirResponse parseFrom(
+  public static ShutdownResponse parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MkDirResponse parseFrom(
+  public static ShutdownResponse parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MkDirResponse parseFrom(byte[] data)
+  public static ShutdownResponse parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static MkDirResponse parseFrom(
+  public static ShutdownResponse parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static MkDirResponse parseFrom(java.io.InputStream input)
+  public static ShutdownResponse parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static MkDirResponse parseFrom(
+  public static ShutdownResponse parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static MkDirResponse parseDelimitedFrom(java.io.InputStream input)
+  public static ShutdownResponse parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static MkDirResponse parseDelimitedFrom(
+  public static ShutdownResponse parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static MkDirResponse parseFrom(
+  public static ShutdownResponse parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static MkDirResponse parseFrom(
+  public static ShutdownResponse parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -204,7 +204,7 @@ public  final class MkDirResponse extends
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(MkDirResponse prototype) {
+  public static Builder newBuilder(ShutdownResponse prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   public Builder toBuilder() {
@@ -219,25 +219,25 @@ public  final class MkDirResponse extends
     return builder;
   }
   /**
-   * Protobuf type {@code com.quick.dfs.namenode.rpc.MkDirResponse}
+   * Protobuf type {@code com.quick.dfs.namenode.rpc.ShutdownResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.MkDirResponse)
-      MkDirResponseOrBuilder {
+      // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.ShutdownResponse)
+      ShutdownResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_ShutdownResponse_descriptor;
     }
 
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_fieldAccessorTable
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_ShutdownResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              MkDirResponse.class, Builder.class);
+              ShutdownResponse.class, Builder.class);
     }
 
-    // Construct using com.quick.dfs.namenode.rpc.model.MkDirResponse.newBuilder()
+    // Construct using com.quick.dfs.namenode.rpc.model.ShutdownResponse.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -261,23 +261,23 @@ public  final class MkDirResponse extends
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_ShutdownResponse_descriptor;
     }
 
-    public MkDirResponse getDefaultInstanceForType() {
-      return MkDirResponse.getDefaultInstance();
+    public ShutdownResponse getDefaultInstanceForType() {
+      return ShutdownResponse.getDefaultInstance();
     }
 
-    public MkDirResponse build() {
-      MkDirResponse result = buildPartial();
+    public ShutdownResponse build() {
+      ShutdownResponse result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    public MkDirResponse buildPartial() {
-      MkDirResponse result = new MkDirResponse(this);
+    public ShutdownResponse buildPartial() {
+      ShutdownResponse result = new ShutdownResponse(this);
       result.status_ = status_;
       onBuilt();
       return result;
@@ -310,16 +310,16 @@ public  final class MkDirResponse extends
       return (Builder) super.addRepeatedField(field, value);
     }
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof MkDirResponse) {
-        return mergeFrom((MkDirResponse)other);
+      if (other instanceof ShutdownResponse) {
+        return mergeFrom((ShutdownResponse)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(MkDirResponse other) {
-      if (other == MkDirResponse.getDefaultInstance()) return this;
+    public Builder mergeFrom(ShutdownResponse other) {
+      if (other == ShutdownResponse.getDefaultInstance()) return this;
       if (other.getStatus() != 0) {
         setStatus(other.getStatus());
       }
@@ -335,11 +335,11 @@ public  final class MkDirResponse extends
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      MkDirResponse parsedMessage = null;
+      ShutdownResponse parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (MkDirResponse) e.getUnfinishedMessage();
+        parsedMessage = (ShutdownResponse) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -385,39 +385,39 @@ public  final class MkDirResponse extends
     }
 
 
-    // @@protoc_insertion_point(builder_scope:com.quick.dfs.namenode.rpc.MkDirResponse)
+    // @@protoc_insertion_point(builder_scope:com.quick.dfs.namenode.rpc.ShutdownResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:com.quick.dfs.namenode.rpc.MkDirResponse)
-  private static final MkDirResponse DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:com.quick.dfs.namenode.rpc.ShutdownResponse)
+  private static final ShutdownResponse DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new MkDirResponse();
+    DEFAULT_INSTANCE = new ShutdownResponse();
   }
 
-  public static MkDirResponse getDefaultInstance() {
+  public static ShutdownResponse getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<MkDirResponse>
-      PARSER = new com.google.protobuf.AbstractParser<MkDirResponse>() {
-    public MkDirResponse parsePartialFrom(
+  private static final com.google.protobuf.Parser<ShutdownResponse>
+      PARSER = new com.google.protobuf.AbstractParser<ShutdownResponse>() {
+    public ShutdownResponse parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new MkDirResponse(input, extensionRegistry);
+        return new ShutdownResponse(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<MkDirResponse> parser() {
+  public static com.google.protobuf.Parser<ShutdownResponse> parser() {
     return PARSER;
   }
 
   @Override
-  public com.google.protobuf.Parser<MkDirResponse> getParserForType() {
+  public com.google.protobuf.Parser<ShutdownResponse> getParserForType() {
     return PARSER;
   }
 
-  public MkDirResponse getDefaultInstanceForType() {
+  public ShutdownResponse getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

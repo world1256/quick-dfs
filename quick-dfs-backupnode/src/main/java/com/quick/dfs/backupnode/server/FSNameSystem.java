@@ -1,4 +1,4 @@
-package com.quick.dfs.namenode.server;
+package com.quick.dfs.backupnode.server;
 
 /**
  * @项目名称: quick-dfs
@@ -16,11 +16,11 @@ public class FSNameSystem {
     /**
      * 负责edit log 写入磁盘的组件
      */
-    private FSEditLog editLog;
+//    private FSEditLog editLog;
 
     public FSNameSystem(){
         this.directory = new FSDirectory();
-        this.editLog = new FSEditLog();
+//        this.editLog = new FSEditLog();
     }
 
     /**
@@ -33,23 +33,19 @@ public class FSNameSystem {
     */  
     public boolean mkDir(String path){
         this.directory.mkDir(path);
-        this.editLog.logEdit("{'OP':'MKDIR','PATH':'" + path + "'}");
+//        this.editLog.logEdit("创建目录:"+path);
         return true;
     }
 
-    /**  
-     * @方法名: flush   
+    /**
+     * @方法名: flush
      * @描述:  将内存中缓存的edit log强制刷入磁盘
-     * @param   
-     * @return void  
+     * @param
+     * @return void
      * @作者: fansy
-     * @日期: 2020/3/24 9:03 
-    */  
+     * @日期: 2020/3/24 9:03
+    */
     public void flush(){
-        this.editLog.flush();
-    }
-
-    public FSEditLog getEditLog() {
-        return editLog;
+//        this.editLog.flush();
     }
 }

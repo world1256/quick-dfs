@@ -18,4 +18,14 @@ public interface FileSystem {
     */  
     void mkDir(String path)throws Exception;
     
+    /**  
+     * @方法名: shutdown
+     * @描述:   关闭namenode  停止服务
+     * @param   
+     * @return void  
+     * @作者: fansy
+     * @日期: 2020/3/24 8:49 
+    */  
+    void shutdown()throws Exception;
+    
 }

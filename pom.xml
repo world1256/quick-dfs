@@ -25,6 +25,7 @@
         <module>quick-dfs-datanode</module>
         <module>quick-dfs-common</module>
         <module>quick-dfs-client</module>
+        <module>quick-dfs-backupnode</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -44,6 +44,26 @@ public final class NameNodeRpcModel {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_quick_dfs_namenode_rpc_ShutdownRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_quick_dfs_namenode_rpc_ShutdownRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_quick_dfs_namenode_rpc_ShutdownResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_quick_dfs_namenode_rpc_ShutdownResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_quick_dfs_namenode_rpc_FetchEditLogResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_quick_dfs_namenode_rpc_FetchEditLogResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -60,8 +80,12 @@ public final class NameNodeRpcModel {
       "\002ip\030\001 \001(\t\022\020\n\010hostname\030\002 \001(\t\"#\n\021Heartbeat" +
       "Response\022\016\n\006status\030\001 \001(\005\"\034\n\014MkDirRequest" +
       "\022\014\n\004path\030\001 \001(\t\"\037\n\rMkDirResponse\022\016\n\006statu" +
-      "s\030\001 \001(\005B6\n com.quick.dfs.namenode.rpc.mo" +
-      "delB\020NameNodeRpcModelP\001b\006proto3"
+      "s\030\001 \001(\005\"\037\n\017ShutdownRequest\022\014\n\004code\030\001 \001(\005" +
+      "\"\"\n\020ShutdownResponse\022\016\n\006status\030\001 \001(\005\"#\n\023" +
+      "FetchEditLogRequest\022\014\n\004code\030\001 \001(\005\"8\n\024Fet",
+      "chEditLogResponse\022\016\n\006status\030\001 \001(\005\022\020\n\010edi" +
+      "tLogs\030\002 \001(\tB6\n com.quick.dfs.namenode.rp" +
+      "c.modelB\020NameNodeRpcModelP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -111,6 +135,30 @@ public final class NameNodeRpcModel {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_quick_dfs_namenode_rpc_MkDirResponse_descriptor,
         new String[] { "Status", });
+    internal_static_com_quick_dfs_namenode_rpc_ShutdownRequest_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_com_quick_dfs_namenode_rpc_ShutdownRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_quick_dfs_namenode_rpc_ShutdownRequest_descriptor,
+        new String[] { "Code", });
+    internal_static_com_quick_dfs_namenode_rpc_ShutdownResponse_descriptor =
+      getDescriptor().getMessageTypes().get(7);
+    internal_static_com_quick_dfs_namenode_rpc_ShutdownResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_quick_dfs_namenode_rpc_ShutdownResponse_descriptor,
+        new String[] { "Status", });
+    internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_descriptor,
+        new String[] { "Code", });
+    internal_static_com_quick_dfs_namenode_rpc_FetchEditLogResponse_descriptor =
+      getDescriptor().getMessageTypes().get(9);
+    internal_static_com_quick_dfs_namenode_rpc_FetchEditLogResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_quick_dfs_namenode_rpc_FetchEditLogResponse_descriptor,
+        new String[] { "Status", "EditLogs", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

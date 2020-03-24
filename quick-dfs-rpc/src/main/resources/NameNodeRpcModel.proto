@@ -26,3 +26,16 @@ message MkDirRequest{
 message MkDirResponse{
     int32 status = 1;
 }
+message ShutdownRequest{
+    int32 code = 1;
+}
+message ShutdownResponse{
+    int32 status = 1;
+}
+message FetchEditLogRequest{
+    int32 code = 1;
+}
+message FetchEditLogResponse{
+    int32 status = 1;
+    string editLogs = 2;
+}

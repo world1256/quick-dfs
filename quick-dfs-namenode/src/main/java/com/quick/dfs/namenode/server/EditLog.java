@@ -1,5 +1,7 @@
 package com.quick.dfs.namenode.server;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * @项目名称: quick-dfs
  * @描述: 操作记录  一条edit log
@@ -12,7 +14,9 @@ public class EditLog {
     private String content;
     public EditLog(long txId,String content){
         this.txId = txId;
-        this.content = content;
+        JSONObject jsonObject = JSONObject.parseObject(content);
+        jsonObject.put("txid", txId);
+        this.content = jsonObject.toJSONString();
     }
 
     public long getTxId() {

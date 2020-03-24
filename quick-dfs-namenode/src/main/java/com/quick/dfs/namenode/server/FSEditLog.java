@@ -1,5 +1,7 @@
 package com.quick.dfs.namenode.server;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -142,7 +144,7 @@ public class FSEditLog {
         //内存缓冲中的数据刷入磁盘  这里耗时会稍长一点
         try{
             editLogBuffer.flush();
-        }catch (Exception e){
+        }catch (IOException e){
             e.printStackTrace();
         }
 
@@ -150,6 +152,51 @@ public class FSEditLog {
         synchronized (this){
             isSyncRunning = false;
             notifyAll();
+        }
+    }
+
+    /**  
+     * @方法名: flush
+     * @描述: 强制把内存中的数据刷入磁盘
+     * @param   
+     * @return void  
+     * @作者: fansy
+     * @日期: 2020/3/24 9:02 
+    */  
+    public void flush(){
+        try {
+            editLogBuffer.setReady2Sync();
+            editLogBuffer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**  
+     * @方法名: getFlushedTxid
+     * @描述:   获取已经刷入磁盘的editlog  txid 范围数据
+     * @param   
+     * @return java.util.List<java.lang.String>  
+     * @作者: fansy
+     * @日期: 2020/3/24 11:18 
+    */  
+    public List<String> getFlushedTxid(){
+        synchronized (this){
+            return editLogBuffer.getFlushedTxIds();
+        }
+    }
+
+    /**
+     * @方法名: getBufferedEditLog
+     * @描述:   获取当前内存缓冲中的editLog 数据
+     * @param
+     * @return java.lang.String[]
+     * @作者: fansy
+     * @日期: 2020/3/24 11:19
+    */
+    public String[] getBufferedEditLog(){
+        synchronized (this){
+            return editLogBuffer.getBufferedEditLog();
         }
     }
 
