@@ -1,5 +1,7 @@
 package com.quick.dfs.namenode.server;
 
+import com.quick.dfs.util.FileUtil;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -213,15 +215,7 @@ public class DoubleBuffer {
                 //一旦宕机 这些os cache中的数据有可能丢失
                 editLogFileChannel.force(false);
             }finally {
-                if(editLogFileChannel != null){
-                    editLogFileChannel.close();
-                }
-                if(out != null){
-                    out.close();
-                }
-                if(file!=null){
-                    file.close();
-                }
+                FileUtil.closeFile(file,out,editLogFileChannel);
             }
             lastSyncMaxTxId = maxTxId + 1;
         }

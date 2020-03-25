@@ -26,6 +26,8 @@ public class BackupNode {
     public void start(){
         EditLogFetcher editLogFetcher = new EditLogFetcher(this,nameSystem);
         editLogFetcher.start();
+        FSImageCheckPointer fsImageCheckPointer = new FSImageCheckPointer(this,nameSystem);
+        fsImageCheckPointer.start();
     }
 
     public boolean isRunning() {

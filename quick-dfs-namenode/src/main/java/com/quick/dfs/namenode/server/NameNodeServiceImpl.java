@@ -54,12 +54,20 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
      */
     private long backupSyncTxid = 0l;
 
+    /**
+     * 当前缓冲的一小部分editLog
+     */
     private JSONArray currentBufferedEditLog = new JSONArray();
 
     /**
      * 当前内存里缓冲了哪个磁盘文件的数据
      */
     private String bufferedFlushedTxid;
+
+    /**
+     * 当前内存缓冲里保存的最大的txid
+     */
+    private long currentBufferedMaxTxid;
 
     public NameNodeServiceImpl(FSNameSystem nameSystem,DataNodeManager dataNodeManager){
         this.nameSystem = nameSystem;
@@ -157,6 +165,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         //刚开始拉取日志  磁盘中还没有已经刷入了的editLog
         //此时数据只存在于内存缓冲中
         if(flushedTxids.size() == 0){
+            System.out.println("暂时没有任何磁盘文件，直接从namenode 内存缓冲中拉取editLog");
             fetchFromBufferedEditsLog(fetchedEditLog);
         }
         //已经有editLog刷入了磁盘文件
@@ -166,6 +175,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
             //那么该磁盘文件数据会被缓存在内存中  尝试读取
             if(bufferedFlushedTxid != null){
                 if(existInFlushedFile(bufferedFlushedTxid)){
+                    System.out.println("上一次已经缓存过磁盘文件的数据，直接从磁盘文件缓存中拉取editslog......");
                     fetchFromCurrentBuffer(fetchedEditLog);
                 }
                 //判断是否需要读取下一个磁盘文件
@@ -178,26 +188,30 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
                     }
                     //下一个磁盘文件不为空  从这个文件里拉取editLog
                     if(nextFlushedTxid != null){
+                        System.out.println("上一次缓存过的磁盘文件找不到需要拉取的数据，从下一个磁盘文件拉取...");
                         fetchFromFlushedFile(nextFlushedTxid,fetchedEditLog);
                     }
                     //如果没有找到下一个磁盘文件  那么此时就需要到内存缓冲中拉取
                     else{
+                        System.out.println("上一次缓存过的磁盘文件找不到需要拉取的数据，并且没有下一个磁盘文件，直接从namenode 内存缓冲中拉取...");
                         fetchFromBufferedEditsLog(fetchedEditLog);
                     }
                 }
             }
-            //当前backup node  没有拉取过磁盘文件
+            //当前backup node  没有拉取过磁盘文件  第一次尝试读取磁盘文件
             else{
                 //遍历所有的磁盘文件
                 for(String flushedTxid : flushedTxids){
                     //如果需要拉取的下一条数据在该磁盘文件中  那么就从该磁盘中读取数据
                     if(existInFlushedFile(flushedTxid)){
+                        System.out.println("尝试从磁盘文件中拉取数据，flushedTxid:"+flushedTxid);
                         fetchFromFlushedFile(flushedTxid,fetchedEditLog);
                         break;
                     }
                 }
                 //如果当前拉取的日志已经比所有的磁盘文件都新了  就从内存缓冲中去读取
                 if(bufferedFlushedTxid == null){
+                    System.out.println("所有磁盘文件里都没有需要拉取的数据，尝试直接从namenode 内存缓冲中拉取数据...");
                     fetchFromBufferedEditsLog(fetchedEditLog);
                 }
             }
@@ -220,6 +234,12 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
      * @日期: 2020/3/24 16:53 
     */  
     private void fetchFromBufferedEditsLog(JSONArray fetchedEditLog){
+        if(backupSyncTxid < currentBufferedMaxTxid){
+            System.out.println("尝试从namenode 内存缓冲拉取数据的时候，发现上次内存缓存里面还有数据可以拉取，" +
+                    "尝试从内存缓存里拉取数据...");
+            fetchFromCurrentBuffer(fetchedEditLog);
+            return;
+        }
         currentBufferedEditLog.clear();
 
         int fetchCount = 0;
@@ -229,6 +249,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
             JSONObject editLogJson = JSON.parseObject(eidtlogRawData);
             currentBufferedEditLog.add(editLogJson);
             long txId = editLogJson.getLong("txId");
+            currentBufferedMaxTxid = txId;
             if(txId == backupSyncTxid + 1 && fetchCount <= BACKUP_NODE_FETCH_SIZE){
                 fetchedEditLog.add(editLogJson);
                 backupSyncTxid = txId;
@@ -303,6 +324,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
                 JSONObject editLogJson = JSON.parseObject(editLogs.get(i));
                 currentBufferedEditLog.add(editLogJson);
                 long txId = editLogJson.getLong("txId");
+                currentBufferedMaxTxid = txId;
                 if(txId == backupSyncTxid + 1 && fetchCount <= BACKUP_NODE_FETCH_SIZE){
                     fetchedEditLog.add(editLogJson);
                     backupSyncTxid = txId;
@@ -313,5 +335,6 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
             e.printStackTrace();
         }
     }
+
 
 }

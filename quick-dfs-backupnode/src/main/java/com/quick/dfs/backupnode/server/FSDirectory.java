@@ -1,9 +1,13 @@
 package com.quick.dfs.backupnode.server;
 
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.quick.dfs.util.StringUtil;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @项目名称: quick-dfs
@@ -23,13 +27,70 @@ public class FSDirectory {
      */
     private INodeDirectory root;
 
+    /**
+     * 当前文件目录树中最大的txid
+     */
+    private long maxTxid;
+
+    /**
+     * 文件目录树的读写锁
+     */
+    private ReentrantReadWriteLock lock  = new ReentrantReadWriteLock();
+
+    private void writeLock(){
+        lock.writeLock().lock();
+    }
+
+    private void writeUnLock(){
+        lock.writeLock().unlock();
+    }
+
+    private void readLock(){
+        lock.readLock().lock();
+    }
+
+    private void readUnLock(){
+        lock.readLock().unlock();
+    }
+
     public FSDirectory(){
         this.root = new INodeDirectory(FS_ROOT);
     }
 
-    public void mkDir(String path){
+    /**
+     * @方法名: getFsImage
+     * @描述:  获取当前最新的内存目录树
+     * @param   
+     * @return com.quick.dfs.backupnode.server.FSImage  
+     * @作者: fansy
+     * @日期: 2020/3/25 16:32 
+    */  
+    public FSImage getFsImage(){
+        FSImage fsImage = null;
+        try{
+            readLock();
+            String fsImageJsonString = JSONObject.toJSONString(root);
+            fsImage = new FSImage(maxTxid,fsImageJsonString);
+        }finally {
+            readUnLock();
+        }
+        return fsImage;
+    }
 
-        synchronized (root){
+    /**  
+     * @方法名: mkDir
+     * @描述:  创建目录
+     * @param txid
+     * @param path  
+     * @return void  
+     * @作者: fansy
+     * @日期: 2020/3/25 16:12 
+    */  
+    public void mkDir(long txid,String path){
+
+        try{
+            writeLock();
+            maxTxid = txid;
             String[] paths = path.split("/");
             INodeDirectory parent = root;
 
@@ -52,6 +113,8 @@ public class FSDirectory {
                 parent.addChild(child);
                 parent = child;
             }
+        }finally {
+            writeUnLock();
         }
 
         showRoot(root,"");

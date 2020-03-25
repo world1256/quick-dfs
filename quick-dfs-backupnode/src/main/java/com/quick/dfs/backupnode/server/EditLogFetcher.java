@@ -12,6 +12,8 @@ import com.quick.dfs.thread.Daemon;
  **/
 public class EditLogFetcher extends Daemon {
 
+    public static final Integer BACKUP_NODE_FETCH_SIZE = 10;
+
     private BackupNode backupNode;
 
     private NameNodeRpcClient namenode;
@@ -26,11 +28,18 @@ public class EditLogFetcher extends Daemon {
 
     @Override
     public void run() {
+        System.out.println("editLog 拉取线程启动...");
         while (this.backupNode.isRunning()){
             try {
                 JSONArray editLogs = namenode.fetchEditLog();
                 if(editLogs.size() == 0){
                     System.out.println("本次没有拉取到editLog,等待1秒后继续拉取...");
+                    Thread.sleep(1000);
+                    continue;
+                }
+
+                if(editLogs.size() < BACKUP_NODE_FETCH_SIZE){
+                    System.out.println("拉取的editLog数量不足"+BACKUP_NODE_FETCH_SIZE+"条,等待1秒后继续拉取...");
                     Thread.sleep(1000);
                 }
 
@@ -40,8 +49,9 @@ public class EditLogFetcher extends Daemon {
 
                     if(op.equals("MKDIR")) {
                         String path = editLog.getString("PATH");
+                        long txid = editLog.getLongValue("txId");
                         try {
-                            this.nameSystem.mkDir(path);
+                            this.nameSystem.mkDir(txid,path);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

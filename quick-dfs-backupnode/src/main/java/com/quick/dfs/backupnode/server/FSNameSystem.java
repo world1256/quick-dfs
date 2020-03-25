@@ -23,18 +23,32 @@ public class FSNameSystem {
 //        this.editLog = new FSEditLog();
     }
 
+
+
     /**
      * @方法名: mkDir
      * @描述: 创建目录
+     * @param txid
      * @param path  
      * @return boolean  
      * @作者: fansy
      * @日期: 2020/3/24 9:03 
     */  
-    public boolean mkDir(String path){
-        this.directory.mkDir(path);
-//        this.editLog.logEdit("创建目录:"+path);
+    public boolean mkDir(long txid,String path){
+        this.directory.mkDir(txid,path);
         return true;
+    }
+
+    /**  
+     * @方法名: getFsImage
+     * @描述:   获取当前最新的内存目录树
+     * @param   
+     * @return com.quick.dfs.backupnode.server.FSImage  
+     * @作者: fansy
+     * @日期: 2020/3/25 16:33 
+    */  
+    public FSImage getFsImage(){
+        return this.directory.getFsImage();
     }
 
     /**
