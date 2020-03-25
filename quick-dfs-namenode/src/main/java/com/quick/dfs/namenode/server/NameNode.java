@@ -28,6 +28,11 @@ public class NameNode {
      */
     private NameNodeRpcServer rpcServer;
 
+    /**
+     * 接收backup node 上报元数据快照的线程组件
+     */
+    private FSImageUploadServer fsImageUploadServer;
+
     public NameNode(){
         this.shouldRun = true;
     }
@@ -44,6 +49,7 @@ public class NameNode {
         this.fsNameSystem = new FSNameSystem();
         this.dataNodeManager = new DataNodeManager();
         this.rpcServer = new NameNodeRpcServer(fsNameSystem,dataNodeManager);
+        this.fsImageUploadServer = new FSImageUploadServer();
     }
 
     /**
@@ -57,6 +63,7 @@ public class NameNode {
     private void start() throws Exception{
         this.rpcServer.start();
         this.rpcServer.blockUntilShutdown();
+        this.fsImageUploadServer.start();
     }
 
     public static void main(String[] args) throws Exception{
