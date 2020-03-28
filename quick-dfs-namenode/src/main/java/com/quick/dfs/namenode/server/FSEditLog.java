@@ -1,5 +1,9 @@
 package com.quick.dfs.namenode.server;
 
+import com.quick.dfs.thread.Daemon;
+import com.quick.dfs.util.ConfigConstant;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -11,6 +15,11 @@ import java.util.concurrent.atomic.AtomicLong;
  * @日期: 2020/3/18 15:31
  **/
 public class FSEditLog {
+
+    /**
+     * 元数据管理组件
+     */
+    private FSNameSystem nameSystem;
 
     /**
      *  当前递增到的txid序列号
@@ -41,6 +50,11 @@ public class FSEditLog {
      * 每个线程本地保存的txid副本
      */
     private ThreadLocal<Long> localTxId = new ThreadLocal<Long>();
+
+    public FSEditLog(FSNameSystem nameSystem){
+        this.nameSystem = nameSystem;
+        new EditLogCleaner().start();
+    }
 
     /**
      * @方法名: logEdit
@@ -199,5 +213,37 @@ public class FSEditLog {
             return editLogBuffer.getBufferedEditLog();
         }
     }
+
+    /**
+     * editLog 定时清理线程
+     */
+    class EditLogCleaner extends Daemon {
+        @Override
+        public void run() {
+            while(true){
+                try{
+                    Thread.sleep(ConfigConstant.NAME_NODE_EDIT_LOG_CLEAN_INTERVAL);
+                    List<String> flushedTxids = getFlushedTxid();
+                    if(flushedTxids != null && flushedTxids.size() > 0){
+                        long checkpointTxid = nameSystem.getCheckpointTxid();
+                        for(String flushedTxid : flushedTxids){
+                            long endTxid = Long.valueOf(flushedTxid.split("-")[1]);
+                            if(checkpointTxid >= endTxid){
+                                String path = ConfigConstant.FS_IMAGE_PATH + flushedTxid + ConfigConstant.NAME_NODE_EDIT_LOG_SUFFIX;
+                                File file = new File(path);
+                                if(file.exists()){
+                                    file.delete();
+                                    System.out.println("删除已经checkpoint过的editlog文件：" + path);
+                                }
+                            }
+                        }
+                    }
+                 }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
 }

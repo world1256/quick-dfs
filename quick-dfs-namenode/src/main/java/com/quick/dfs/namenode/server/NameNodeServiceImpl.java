@@ -144,6 +144,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     public void shutdown(ShutdownRequest request, StreamObserver<ShutdownResponse> responseObserver) {
         this.isRunning = false;
         this.nameSystem.flush();
+        this.nameSystem.saveCheckpointTxid();
     }
 
     /**  

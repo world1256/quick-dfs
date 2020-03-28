@@ -1,5 +1,15 @@
 package com.quick.dfs.namenode.server;
 
+import com.quick.dfs.util.ConfigConstant;
+import com.quick.dfs.util.FileUtil;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+
 /**
  * @项目名称: quick-dfs
  * @描述: 元数据管理组件
@@ -25,7 +35,7 @@ public class FSNameSystem {
 
     public FSNameSystem(){
         this.directory = new FSDirectory();
-        this.editLog = new FSEditLog();
+        this.editLog = new FSEditLog(this);
     }
 
     /**
@@ -65,5 +75,44 @@ public class FSNameSystem {
     public void setCheckpointTxid(long checkpointTxid) {
         System.out.println("接收到的checkpoint txid:" + checkpointTxid);
         this.checkpointTxid = checkpointTxid;
+    }
+
+    /**  
+     * 方法名: saveCheckpointTxid
+     * 描述:   将checkpoint txid 保存到磁盘中
+     * @param   
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/3/28 18:11 
+     */  
+    public void saveCheckpointTxid(){
+        String path = ConfigConstant.NAME_NODE_EDIT_LOG_PATH+ConfigConstant.NAME_NODE_CHECKPOINT_META;
+
+        RandomAccessFile raf = null;
+        FileOutputStream out = null;
+        FileChannel channel = null;
+        try{
+            File file = new File(path);
+            if(file.exists()) {
+                file.delete();
+            }
+
+            raf = new RandomAccessFile(path,"rw");
+            out = new FileOutputStream(raf.getFD());
+            channel = out.getChannel();
+
+            ByteBuffer buffer = ByteBuffer.wrap(String.valueOf(checkpointTxid).getBytes());
+            channel.write(buffer);
+            channel.force(false);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                FileUtil.closeFile(raf,out,channel);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }

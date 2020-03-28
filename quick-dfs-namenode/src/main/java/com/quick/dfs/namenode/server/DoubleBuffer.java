@@ -1,5 +1,6 @@
 package com.quick.dfs.namenode.server;
 
+import com.quick.dfs.util.ConfigConstant;
 import com.quick.dfs.util.FileUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -24,11 +25,6 @@ public class DoubleBuffer {
      * 单块editlog 内存缓冲的大小   默认25kb
      */
     private static final Integer EDIT_LOG_BUFFER_CAPACITY = 25 * 1024;
-
-    /**
-     * editLog 文件存放路径
-     */
-    private static final String EDIT_LOG_PATH = "/home/quick-dfs/editlog/";
 
     /**
      * 当前正在执行添加动作的buffer
@@ -199,7 +195,8 @@ public class DoubleBuffer {
             ByteBuffer dataBuffer = ByteBuffer.wrap(data);
 
             //editlog输出文件   格式： 17789-24467.log
-            String editLogPath = EDIT_LOG_PATH + lastSyncMaxTxId + "-" + maxTxId+".log";
+            String editLogPath = ConfigConstant.NAME_NODE_EDIT_LOG_PATH
+                    + lastSyncMaxTxId + "-" + maxTxId + ConfigConstant.NAME_NODE_EDIT_LOG_SUFFIX;
             flushedTxIds.add(lastSyncMaxTxId + "-" + maxTxId);
 
             RandomAccessFile file = null;

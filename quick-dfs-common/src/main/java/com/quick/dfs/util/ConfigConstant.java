@@ -42,4 +42,24 @@ public interface ConfigConstant {
      * namenode 默认通信端口
      */
     Integer NAME_NODE_DEFAULT_PORT = 50070;
+
+    /**
+     * namenode清理editlog 时间间隔
+     */
+    Long NAME_NODE_EDIT_LOG_CLEAN_INTERVAL = 30 *1000l;
+
+    /**
+     * namenode editLog 文件存放路径
+     */
+    String NAME_NODE_EDIT_LOG_PATH = "/home/quick-dfs/editlog/";
+
+    /**
+     * namenode editLog 文件后缀名
+     */
+    String NAME_NODE_EDIT_LOG_SUFFIX = ".log";
+
+    /**
+     * namenode checkpont 元数据文件
+     */
+    String NAME_NODE_CHECKPOINT_META = "checkpoint.meta";
 }
