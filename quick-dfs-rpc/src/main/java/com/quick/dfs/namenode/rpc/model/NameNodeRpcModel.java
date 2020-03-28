@@ -91,14 +91,14 @@ public final class NameNodeRpcModel {
       "Response\022\016\n\006status\030\001 \001(\005\"\034\n\014MkDirRequest" +
       "\022\014\n\004path\030\001 \001(\t\"\037\n\rMkDirResponse\022\016\n\006statu" +
       "s\030\001 \001(\005\"\037\n\017ShutdownRequest\022\014\n\004code\030\001 \001(\005" +
-      "\"\"\n\020ShutdownResponse\022\016\n\006status\030\001 \001(\005\"#\n\023" +
-      "FetchEditLogRequest\022\014\n\004code\030\001 \001(\005\"8\n\024Fet",
-      "chEditLogResponse\022\016\n\006status\030\001 \001(\005\022\020\n\010edi" +
-      "tLogs\030\002 \001(\t\"+\n\033UpdateCheckpointTxidReque" +
-      "st\022\014\n\004txid\030\001 \001(\003\".\n\034UpdateCheckpointTxid" +
-      "Response\022\016\n\006status\030\001 \001(\005B6\n com.quick.df" +
-      "s.namenode.rpc.modelB\020NameNodeRpcModelP\001" +
-      "b\006proto3"
+      "\"\"\n\020ShutdownResponse\022\016\n\006status\030\001 \001(\005\"7\n\023" +
+      "FetchEditLogRequest\022\014\n\004code\030\001 \001(\005\022\022\n\nsyn",
+      "cedTxid\030\002 \001(\003\"8\n\024FetchEditLogResponse\022\016\n" +
+      "\006status\030\001 \001(\005\022\020\n\010editLogs\030\002 \001(\t\"+\n\033Updat" +
+      "eCheckpointTxidRequest\022\014\n\004txid\030\001 \001(\003\".\n\034" +
+      "UpdateCheckpointTxidResponse\022\016\n\006status\030\001" +
+      " \001(\005B6\n com.quick.dfs.namenode.rpc.model" +
+      "B\020NameNodeRpcModelP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -165,7 +165,7 @@ public final class NameNodeRpcModel {
     internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_descriptor,
-        new String[] { "Code", });
+        new String[] { "Code", "SyncedTxid", });
     internal_static_com_quick_dfs_namenode_rpc_FetchEditLogResponse_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_com_quick_dfs_namenode_rpc_FetchEditLogResponse_fieldAccessorTable = new

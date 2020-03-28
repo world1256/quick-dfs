@@ -32,14 +32,14 @@ public class NameNodeRpcClient {
     /**  
      * @方法名: fetchEditLog
      * @描述:  拉取eidtLog数据
-     * @param   
-     * @return com.alibaba.fastjson.JSONArray  
+     * @param   syncedTxid  已经拉取过的txid
+     * @return com.alibaba.fastjson.JSONArray
      * @作者: fansy
      * @日期: 2020/3/24 9:52 
     */  
-    public JSONArray fetchEditLog(){
+    public JSONArray fetchEditLog(long syncedTxid){
         FetchEditLogRequest fetchEditLogRequest = FetchEditLogRequest.newBuilder()
-                .setCode(1).build();
+                .setCode(1).setSyncedTxid(syncedTxid).build();
 
         FetchEditLogResponse fetchEditLogResponse = this.namenode.fetchEditLog(fetchEditLogRequest);
         String editLogJson = fetchEditLogResponse.getEditLogs();

@@ -16,6 +16,7 @@ public  final class FetchEditLogRequest extends
   }
   private FetchEditLogRequest() {
     code_ = 0;
+    syncedTxid_ = 0L;
   }
 
   @Override
@@ -46,6 +47,11 @@ public  final class FetchEditLogRequest extends
           case 8: {
 
             code_ = input.readInt32();
+            break;
+          }
+          case 16: {
+
+            syncedTxid_ = input.readInt64();
             break;
           }
         }
@@ -80,6 +86,15 @@ public  final class FetchEditLogRequest extends
     return code_;
   }
 
+  public static final int SYNCEDTXID_FIELD_NUMBER = 2;
+  private long syncedTxid_;
+  /**
+   * <code>optional int64 syncedTxid = 2;</code>
+   */
+  public long getSyncedTxid() {
+    return syncedTxid_;
+  }
+
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
@@ -95,6 +110,9 @@ public  final class FetchEditLogRequest extends
     if (code_ != 0) {
       output.writeInt32(1, code_);
     }
+    if (syncedTxid_ != 0L) {
+      output.writeInt64(2, syncedTxid_);
+    }
   }
 
   public int getSerializedSize() {
@@ -105,6 +123,10 @@ public  final class FetchEditLogRequest extends
     if (code_ != 0) {
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(1, code_);
+    }
+    if (syncedTxid_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(2, syncedTxid_);
     }
     memoizedSize = size;
     return size;
@@ -124,6 +146,8 @@ public  final class FetchEditLogRequest extends
     boolean result = true;
     result = result && (getCode()
         == other.getCode());
+    result = result && (getSyncedTxid()
+        == other.getSyncedTxid());
     return result;
   }
 
@@ -136,6 +160,9 @@ public  final class FetchEditLogRequest extends
     hash = (19 * hash) + getDescriptorForType().hashCode();
     hash = (37 * hash) + CODE_FIELD_NUMBER;
     hash = (53 * hash) + getCode();
+    hash = (37 * hash) + SYNCEDTXID_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getSyncedTxid());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -256,6 +283,8 @@ public  final class FetchEditLogRequest extends
       super.clear();
       code_ = 0;
 
+      syncedTxid_ = 0L;
+
       return this;
     }
 
@@ -279,6 +308,7 @@ public  final class FetchEditLogRequest extends
     public FetchEditLogRequest buildPartial() {
       FetchEditLogRequest result = new FetchEditLogRequest(this);
       result.code_ = code_;
+      result.syncedTxid_ = syncedTxid_;
       onBuilt();
       return result;
     }
@@ -322,6 +352,9 @@ public  final class FetchEditLogRequest extends
       if (other == FetchEditLogRequest.getDefaultInstance()) return this;
       if (other.getCode() != 0) {
         setCode(other.getCode());
+      }
+      if (other.getSyncedTxid() != 0L) {
+        setSyncedTxid(other.getSyncedTxid());
       }
       onChanged();
       return this;
@@ -371,6 +404,32 @@ public  final class FetchEditLogRequest extends
     public Builder clearCode() {
       
       code_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private long syncedTxid_ ;
+    /**
+     * <code>optional int64 syncedTxid = 2;</code>
+     */
+    public long getSyncedTxid() {
+      return syncedTxid_;
+    }
+    /**
+     * <code>optional int64 syncedTxid = 2;</code>
+     */
+    public Builder setSyncedTxid(long value) {
+      
+      syncedTxid_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional int64 syncedTxid = 2;</code>
+     */
+    public Builder clearSyncedTxid() {
+      
+      syncedTxid_ = 0L;
       onChanged();
       return this;
     }

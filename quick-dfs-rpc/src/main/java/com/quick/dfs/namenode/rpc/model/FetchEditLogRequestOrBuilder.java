@@ -11,4 +11,9 @@ public interface FetchEditLogRequestOrBuilder extends
    * <code>optional int32 code = 1;</code>
    */
   int getCode();
+
+  /**
+   * <code>optional int64 syncedTxid = 2;</code>
+   */
+  long getSyncedTxid();
 }
