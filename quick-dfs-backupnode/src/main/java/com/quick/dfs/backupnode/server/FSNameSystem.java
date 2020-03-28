@@ -13,14 +13,9 @@ public class FSNameSystem {
      */
     private FSDirectory directory;
 
-    /**
-     * 负责edit log 写入磁盘的组件
-     */
-//    private FSEditLog editLog;
 
     public FSNameSystem(){
         this.directory = new FSDirectory();
-//        this.editLog = new FSEditLog();
     }
 
 
@@ -52,14 +47,14 @@ public class FSNameSystem {
     }
 
     /**
-     * @方法名: flush
-     * @描述:  将内存中缓存的edit log强制刷入磁盘
+     * 方法名: getSyncedTxid
+     * 描述:   获取当前同步到得最大的txid
      * @param
-     * @return void
-     * @作者: fansy
-     * @日期: 2020/3/24 9:03
-    */
-    public void flush(){
-//        this.editLog.flush();
+     * @return long
+     * 作者: fansy
+     * 日期: 2020/3/28 20:37
+     */
+    public long getSyncedTxid(){
+        return this.directory.getFsImage().getTxid();
     }
 }

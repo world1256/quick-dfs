@@ -10,21 +10,21 @@ import com.alibaba.fastjson.JSONObject;
  **/
 public class EditLog {
 
-    private long txId;
+    private long txid;
     private String content;
-    public EditLog(long txId,String content){
-        this.txId = txId;
+    public EditLog(long txid,String content){
+        this.txid = txid;
         JSONObject jsonObject = JSONObject.parseObject(content);
-        jsonObject.put("txid", txId);
+        jsonObject.put("txid", txid);
         this.content = jsonObject.toJSONString();
     }
 
-    public long getTxId() {
-        return txId;
+    public long getTxid() {
+        return txid;
     }
 
-    public void setTxId(long txId) {
-        this.txId = txId;
+    public void setTxid(long txId) {
+        this.txid = txId;
     }
 
     public String getContent() {

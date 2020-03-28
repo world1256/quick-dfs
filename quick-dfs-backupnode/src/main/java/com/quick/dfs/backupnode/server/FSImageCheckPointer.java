@@ -43,6 +43,12 @@ public class FSImageCheckPointer extends Daemon {
         while(this.backupNode.isRunning()){
             try{
                 Thread.sleep(ConfigConstant.CHECKPOINT_INTERVAL);
+
+                if(!namenode.isNamenodeRunning()) {
+                    System.out.println("namenode当前无法访问，不执行checkpoint......");
+                    continue;
+                }
+
                 System.out.println("开始执行checkpoint操作...");
                 doCheckpoint();
                 System.out.println("checkpoint操作成功...");

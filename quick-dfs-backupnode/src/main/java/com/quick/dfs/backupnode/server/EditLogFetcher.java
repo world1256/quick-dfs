@@ -3,6 +3,7 @@ package com.quick.dfs.backupnode.server;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.quick.dfs.thread.Daemon;
+import com.quick.dfs.util.EditLogOp;
 
 /**
  * @项目名称: quick-dfs
@@ -48,9 +49,9 @@ public class EditLogFetcher extends Daemon {
                 for(int i = 0;i < editLogs.size();i++){
                     JSONObject editLog = editLogs.getJSONObject(i);
                     String op = editLog.getString("OP");
-                    long txid = editLog.getLongValue("txId");
+                    long txid = editLog.getLongValue("txid");
 
-                    if(op.equals("MKDIR")) {
+                    if(op.equals(EditLogOp.MK_DIR)) {
                         String path = editLog.getString("PATH");
                         try {
                             this.nameSystem.mkDir(txid,path);
@@ -60,8 +61,10 @@ public class EditLogFetcher extends Daemon {
                     }
                     syncedTxid = txid;
                 }
-            }catch (InterruptedException e) {
-                    e.printStackTrace();
+                namenode.setIsNamenodeRunning(true);
+            }catch (Exception e) {
+                namenode.setIsNamenodeRunning(false);
+                e.printStackTrace();
             }
         }
 
