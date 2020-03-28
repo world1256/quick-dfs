@@ -14,4 +14,5 @@ service NameNodeService {
 	rpc mkDir(MkDirRequest) returns (MkDirResponse);
 	rpc shutdown(ShutdownRequest) returns (ShutdownResponse);
 	rpc fetchEditLog(FetchEditLogRequest) returns (FetchEditLogResponse);
+	rpc updateCheckpointTxid(UpdateCheckpointTxidRequest) returns (UpdateCheckpointTxidResponse);
 }  

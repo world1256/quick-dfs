@@ -4,18 +4,18 @@
 package com.quick.dfs.namenode.rpc.model;
 
 /**
- * Protobuf type {@code com.quick.dfs.namenode.rpc.FetchEditLogRequest}
+ * Protobuf type {@code com.quick.dfs.namenode.rpc.UpdateCheckpointTxidRequest}
  */
-public  final class FetchEditLogRequest extends
+public  final class UpdateCheckpointTxidRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:com.quick.dfs.namenode.rpc.FetchEditLogRequest)
-    FetchEditLogRequestOrBuilder {
-  // Use FetchEditLogRequest.newBuilder() to construct.
-  private FetchEditLogRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // @@protoc_insertion_point(message_implements:com.quick.dfs.namenode.rpc.UpdateCheckpointTxidRequest)
+    UpdateCheckpointTxidRequestOrBuilder {
+  // Use UpdateCheckpointTxidRequest.newBuilder() to construct.
+  private UpdateCheckpointTxidRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private FetchEditLogRequest() {
-    code_ = 0;
+  private UpdateCheckpointTxidRequest() {
+    txid_ = 0L;
   }
 
   @Override
@@ -23,7 +23,7 @@ public  final class FetchEditLogRequest extends
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
-  private FetchEditLogRequest(
+  private UpdateCheckpointTxidRequest(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -45,7 +45,7 @@ public  final class FetchEditLogRequest extends
           }
           case 8: {
 
-            code_ = input.readInt32();
+            txid_ = input.readInt64();
             break;
           }
         }
@@ -61,23 +61,23 @@ public  final class FetchEditLogRequest extends
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_descriptor;
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidRequest_descriptor;
   }
 
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_fieldAccessorTable
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            FetchEditLogRequest.class, Builder.class);
+            UpdateCheckpointTxidRequest.class, Builder.class);
   }
 
-  public static final int CODE_FIELD_NUMBER = 1;
-  private int code_;
+  public static final int TXID_FIELD_NUMBER = 1;
+  private long txid_;
   /**
-   * <code>optional int32 code = 1;</code>
+   * <code>optional int64 txid = 1;</code>
    */
-  public int getCode() {
-    return code_;
+  public long getTxid() {
+    return txid_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -92,8 +92,8 @@ public  final class FetchEditLogRequest extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (code_ != 0) {
-      output.writeInt32(1, code_);
+    if (txid_ != 0L) {
+      output.writeInt64(1, txid_);
     }
   }
 
@@ -102,9 +102,9 @@ public  final class FetchEditLogRequest extends
     if (size != -1) return size;
 
     size = 0;
-    if (code_ != 0) {
+    if (txid_ != 0L) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(1, code_);
+        .computeInt64Size(1, txid_);
     }
     memoizedSize = size;
     return size;
@@ -116,14 +116,14 @@ public  final class FetchEditLogRequest extends
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof FetchEditLogRequest)) {
+    if (!(obj instanceof UpdateCheckpointTxidRequest)) {
       return super.equals(obj);
     }
-    FetchEditLogRequest other = (FetchEditLogRequest) obj;
+    UpdateCheckpointTxidRequest other = (UpdateCheckpointTxidRequest) obj;
 
     boolean result = true;
-    result = result && (getCode()
-        == other.getCode());
+    result = result && (getTxid()
+        == other.getTxid());
     return result;
   }
 
@@ -134,65 +134,66 @@ public  final class FetchEditLogRequest extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
-    hash = (37 * hash) + CODE_FIELD_NUMBER;
-    hash = (53 * hash) + getCode();
+    hash = (37 * hash) + TXID_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getTxid());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static FetchEditLogRequest parseFrom(
+  public static UpdateCheckpointTxidRequest parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static FetchEditLogRequest parseFrom(
+  public static UpdateCheckpointTxidRequest parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static FetchEditLogRequest parseFrom(byte[] data)
+  public static UpdateCheckpointTxidRequest parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static FetchEditLogRequest parseFrom(
+  public static UpdateCheckpointTxidRequest parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static FetchEditLogRequest parseFrom(java.io.InputStream input)
+  public static UpdateCheckpointTxidRequest parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static FetchEditLogRequest parseFrom(
+  public static UpdateCheckpointTxidRequest parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static FetchEditLogRequest parseDelimitedFrom(java.io.InputStream input)
+  public static UpdateCheckpointTxidRequest parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static FetchEditLogRequest parseDelimitedFrom(
+  public static UpdateCheckpointTxidRequest parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static FetchEditLogRequest parseFrom(
+  public static UpdateCheckpointTxidRequest parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static FetchEditLogRequest parseFrom(
+  public static UpdateCheckpointTxidRequest parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -204,7 +205,7 @@ public  final class FetchEditLogRequest extends
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(FetchEditLogRequest prototype) {
+  public static Builder newBuilder(UpdateCheckpointTxidRequest prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   public Builder toBuilder() {
@@ -219,25 +220,25 @@ public  final class FetchEditLogRequest extends
     return builder;
   }
   /**
-   * Protobuf type {@code com.quick.dfs.namenode.rpc.FetchEditLogRequest}
+   * Protobuf type {@code com.quick.dfs.namenode.rpc.UpdateCheckpointTxidRequest}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.FetchEditLogRequest)
-      FetchEditLogRequestOrBuilder {
+      // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.UpdateCheckpointTxidRequest)
+      com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidRequest_descriptor;
     }
 
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_fieldAccessorTable
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              FetchEditLogRequest.class, Builder.class);
+              UpdateCheckpointTxidRequest.class, Builder.class);
     }
 
-    // Construct using com.quick.dfs.namenode.rpc.model.FetchEditLogRequest.newBuilder()
+    // Construct using com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -254,31 +255,31 @@ public  final class FetchEditLogRequest extends
     }
     public Builder clear() {
       super.clear();
-      code_ = 0;
+      txid_ = 0L;
 
       return this;
     }
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_FetchEditLogRequest_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidRequest_descriptor;
     }
 
-    public FetchEditLogRequest getDefaultInstanceForType() {
-      return FetchEditLogRequest.getDefaultInstance();
+    public UpdateCheckpointTxidRequest getDefaultInstanceForType() {
+      return UpdateCheckpointTxidRequest.getDefaultInstance();
     }
 
-    public FetchEditLogRequest build() {
-      FetchEditLogRequest result = buildPartial();
+    public UpdateCheckpointTxidRequest build() {
+      UpdateCheckpointTxidRequest result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    public FetchEditLogRequest buildPartial() {
-      FetchEditLogRequest result = new FetchEditLogRequest(this);
-      result.code_ = code_;
+    public UpdateCheckpointTxidRequest buildPartial() {
+      UpdateCheckpointTxidRequest result = new UpdateCheckpointTxidRequest(this);
+      result.txid_ = txid_;
       onBuilt();
       return result;
     }
@@ -310,18 +311,18 @@ public  final class FetchEditLogRequest extends
       return (Builder) super.addRepeatedField(field, value);
     }
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof FetchEditLogRequest) {
-        return mergeFrom((FetchEditLogRequest)other);
+      if (other instanceof UpdateCheckpointTxidRequest) {
+        return mergeFrom((UpdateCheckpointTxidRequest)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(FetchEditLogRequest other) {
-      if (other == FetchEditLogRequest.getDefaultInstance()) return this;
-      if (other.getCode() != 0) {
-        setCode(other.getCode());
+    public Builder mergeFrom(UpdateCheckpointTxidRequest other) {
+      if (other == UpdateCheckpointTxidRequest.getDefaultInstance()) return this;
+      if (other.getTxid() != 0L) {
+        setTxid(other.getTxid());
       }
       onChanged();
       return this;
@@ -335,11 +336,11 @@ public  final class FetchEditLogRequest extends
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      FetchEditLogRequest parsedMessage = null;
+      UpdateCheckpointTxidRequest parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (FetchEditLogRequest) e.getUnfinishedMessage();
+        parsedMessage = (UpdateCheckpointTxidRequest) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -349,28 +350,28 @@ public  final class FetchEditLogRequest extends
       return this;
     }
 
-    private int code_ ;
+    private long txid_ ;
     /**
-     * <code>optional int32 code = 1;</code>
+     * <code>optional int64 txid = 1;</code>
      */
-    public int getCode() {
-      return code_;
+    public long getTxid() {
+      return txid_;
     }
     /**
-     * <code>optional int32 code = 1;</code>
+     * <code>optional int64 txid = 1;</code>
      */
-    public Builder setCode(int value) {
+    public Builder setTxid(long value) {
       
-      code_ = value;
+      txid_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>optional int32 code = 1;</code>
+     * <code>optional int64 txid = 1;</code>
      */
-    public Builder clearCode() {
+    public Builder clearTxid() {
       
-      code_ = 0;
+      txid_ = 0L;
       onChanged();
       return this;
     }
@@ -385,39 +386,39 @@ public  final class FetchEditLogRequest extends
     }
 
 
-    // @@protoc_insertion_point(builder_scope:com.quick.dfs.namenode.rpc.FetchEditLogRequest)
+    // @@protoc_insertion_point(builder_scope:com.quick.dfs.namenode.rpc.UpdateCheckpointTxidRequest)
   }
 
-  // @@protoc_insertion_point(class_scope:com.quick.dfs.namenode.rpc.FetchEditLogRequest)
-  private static final FetchEditLogRequest DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:com.quick.dfs.namenode.rpc.UpdateCheckpointTxidRequest)
+  private static final UpdateCheckpointTxidRequest DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new FetchEditLogRequest();
+    DEFAULT_INSTANCE = new UpdateCheckpointTxidRequest();
   }
 
-  public static FetchEditLogRequest getDefaultInstance() {
+  public static UpdateCheckpointTxidRequest getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<FetchEditLogRequest>
-      PARSER = new com.google.protobuf.AbstractParser<FetchEditLogRequest>() {
-    public FetchEditLogRequest parsePartialFrom(
+  private static final com.google.protobuf.Parser<UpdateCheckpointTxidRequest>
+      PARSER = new com.google.protobuf.AbstractParser<UpdateCheckpointTxidRequest>() {
+    public UpdateCheckpointTxidRequest parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new FetchEditLogRequest(input, extensionRegistry);
+        return new UpdateCheckpointTxidRequest(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<FetchEditLogRequest> parser() {
+  public static com.google.protobuf.Parser<UpdateCheckpointTxidRequest> parser() {
     return PARSER;
   }
 
   @Override
-  public com.google.protobuf.Parser<FetchEditLogRequest> getParserForType() {
+  public com.google.protobuf.Parser<UpdateCheckpointTxidRequest> getParserForType() {
     return PARSER;
   }
 
-  public FetchEditLogRequest getDefaultInstanceForType() {
+  public UpdateCheckpointTxidRequest getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

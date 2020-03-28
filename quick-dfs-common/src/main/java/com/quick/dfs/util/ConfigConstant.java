@@ -37,4 +37,9 @@ public interface ConfigConstant {
      * namenode 主机名
      */
     String NAME_NODE_HOST_NAME = "localhost";
+
+    /**
+     * namenode 默认通信端口
+     */
+    Integer NAME_NODE_DEFAULT_PORT = 50070;
 }

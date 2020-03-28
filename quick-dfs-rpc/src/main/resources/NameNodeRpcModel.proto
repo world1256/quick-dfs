@@ -39,3 +39,9 @@ message FetchEditLogResponse{
     int32 status = 1;
     string editLogs = 2;
 }
+message UpdateCheckpointTxidRequest{
+    int64 txid = 1;
+}
+message UpdateCheckpointTxidResponse{
+    int32 status = 1;
+}

@@ -64,6 +64,16 @@ public final class NameNodeRpcModel {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_quick_dfs_namenode_rpc_FetchEditLogResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -84,8 +94,11 @@ public final class NameNodeRpcModel {
       "\"\"\n\020ShutdownResponse\022\016\n\006status\030\001 \001(\005\"#\n\023" +
       "FetchEditLogRequest\022\014\n\004code\030\001 \001(\005\"8\n\024Fet",
       "chEditLogResponse\022\016\n\006status\030\001 \001(\005\022\020\n\010edi" +
-      "tLogs\030\002 \001(\tB6\n com.quick.dfs.namenode.rp" +
-      "c.modelB\020NameNodeRpcModelP\001b\006proto3"
+      "tLogs\030\002 \001(\t\"+\n\033UpdateCheckpointTxidReque" +
+      "st\022\014\n\004txid\030\001 \001(\003\".\n\034UpdateCheckpointTxid" +
+      "Response\022\016\n\006status\030\001 \001(\005B6\n com.quick.df" +
+      "s.namenode.rpc.modelB\020NameNodeRpcModelP\001" +
+      "b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -159,6 +172,18 @@ public final class NameNodeRpcModel {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_quick_dfs_namenode_rpc_FetchEditLogResponse_descriptor,
         new String[] { "Status", "EditLogs", });
+    internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidRequest_descriptor =
+      getDescriptor().getMessageTypes().get(10);
+    internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidRequest_descriptor,
+        new String[] { "Txid", });
+    internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidResponse_descriptor =
+      getDescriptor().getMessageTypes().get(11);
+    internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_quick_dfs_namenode_rpc_UpdateCheckpointTxidResponse_descriptor,
+        new String[] { "Status", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

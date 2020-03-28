@@ -336,5 +336,24 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         }
     }
 
+    /**  
+     * 方法名: updateCheckpointTxid
+     * 描述:  接收backup node checkpoint后最新的txid
+     * @param request
+     * @param responseObserver  
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/3/28 16:40 
+     */  
+    @Override
+    public void updateCheckpointTxid(UpdateCheckpointTxidRequest request, StreamObserver<UpdateCheckpointTxidResponse> responseObserver) {
+        long txid = request.getTxid();
+        this.nameSystem.setCheckpointTxid(txid);
+
+        UpdateCheckpointTxidResponse response = UpdateCheckpointTxidResponse.newBuilder()
+                .setStatus(STATUS_SUCCESS).build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 
 }

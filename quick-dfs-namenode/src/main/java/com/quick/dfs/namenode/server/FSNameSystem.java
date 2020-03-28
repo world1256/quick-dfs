@@ -18,6 +18,11 @@ public class FSNameSystem {
      */
     private FSEditLog editLog;
 
+    /**
+     * 最近一次checkpoint更新到的txid
+     */
+    private long checkpointTxid;
+
     public FSNameSystem(){
         this.directory = new FSDirectory();
         this.editLog = new FSEditLog();
@@ -51,5 +56,14 @@ public class FSNameSystem {
 
     public FSEditLog getEditLog() {
         return editLog;
+    }
+
+    public long getCheckpointTxid() {
+        return checkpointTxid;
+    }
+
+    public void setCheckpointTxid(long checkpointTxid) {
+        System.out.println("接收到的checkpoint txid:" + checkpointTxid);
+        this.checkpointTxid = checkpointTxid;
     }
 }

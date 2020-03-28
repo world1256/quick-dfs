@@ -20,9 +20,9 @@ public class EditLogFetcher extends Daemon {
 
     private FSNameSystem nameSystem;
 
-    public EditLogFetcher(BackupNode backupNode,FSNameSystem nameSystem){
+    public EditLogFetcher(BackupNode backupNode,FSNameSystem nameSystem,NameNodeRpcClient namenode){
         this.backupNode = backupNode;
-        namenode = new NameNodeRpcClient();
+        this.namenode = namenode;
         this.nameSystem = nameSystem;
     }
 

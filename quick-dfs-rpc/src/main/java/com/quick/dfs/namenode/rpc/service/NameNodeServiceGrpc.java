@@ -66,6 +66,15 @@ public class NameNodeServiceGrpc {
               "com.quick.dfs.namenode.rpc.NameNodeService", "fetchEditLog"),
           io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.FetchEditLogRequest.getDefaultInstance()),
           io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.FetchEditLogResponse.getDefaultInstance()));
+  @io.grpc.ExperimentalApi
+  public static final io.grpc.MethodDescriptor<com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest,
+      com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse> METHOD_UPDATE_CHECKPOINT_TXID =
+      io.grpc.MethodDescriptor.create(
+          io.grpc.MethodDescriptor.MethodType.UNARY,
+          generateFullMethodName(
+              "com.quick.dfs.namenode.rpc.NameNodeService", "updateCheckpointTxid"),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse.getDefaultInstance()));
 
   public static NameNodeServiceStub newStub(io.grpc.Channel channel) {
     return new NameNodeServiceStub(channel);
@@ -97,6 +106,9 @@ public class NameNodeServiceGrpc {
 
     public void fetchEditLog(com.quick.dfs.namenode.rpc.model.FetchEditLogRequest request,
                              io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.FetchEditLogResponse> responseObserver);
+
+    public void updateCheckpointTxid(com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest request,
+                                     io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse> responseObserver);
   }
 
   public static interface NameNodeServiceBlockingClient {
@@ -110,6 +122,8 @@ public class NameNodeServiceGrpc {
     public com.quick.dfs.namenode.rpc.model.ShutdownResponse shutdown(com.quick.dfs.namenode.rpc.model.ShutdownRequest request);
 
     public com.quick.dfs.namenode.rpc.model.FetchEditLogResponse fetchEditLog(com.quick.dfs.namenode.rpc.model.FetchEditLogRequest request);
+
+    public com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse updateCheckpointTxid(com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest request);
   }
 
   public static interface NameNodeServiceFutureClient {
@@ -128,6 +142,9 @@ public class NameNodeServiceGrpc {
 
     public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.FetchEditLogResponse> fetchEditLog(
             com.quick.dfs.namenode.rpc.model.FetchEditLogRequest request);
+
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse> updateCheckpointTxid(
+            com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest request);
   }
 
   public static class NameNodeServiceStub extends io.grpc.stub.AbstractStub<NameNodeServiceStub>
@@ -181,6 +198,13 @@ public class NameNodeServiceGrpc {
       asyncUnaryCall(
           getChannel().newCall(METHOD_FETCH_EDIT_LOG, getCallOptions()), request, responseObserver);
     }
+
+    @Override
+    public void updateCheckpointTxid(com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest request,
+        io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(METHOD_UPDATE_CHECKPOINT_TXID, getCallOptions()), request, responseObserver);
+    }
   }
 
   public static class NameNodeServiceBlockingStub extends io.grpc.stub.AbstractStub<NameNodeServiceBlockingStub>
@@ -228,6 +252,12 @@ public class NameNodeServiceGrpc {
     public com.quick.dfs.namenode.rpc.model.FetchEditLogResponse fetchEditLog(com.quick.dfs.namenode.rpc.model.FetchEditLogRequest request) {
       return blockingUnaryCall(
           getChannel(), METHOD_FETCH_EDIT_LOG, getCallOptions(), request);
+    }
+
+    @Override
+    public com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse updateCheckpointTxid(com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest request) {
+      return blockingUnaryCall(
+          getChannel(), METHOD_UPDATE_CHECKPOINT_TXID, getCallOptions(), request);
     }
   }
 
@@ -282,6 +312,13 @@ public class NameNodeServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(METHOD_FETCH_EDIT_LOG, getCallOptions()), request);
     }
+
+    @Override
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse> updateCheckpointTxid(
+        com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(METHOD_UPDATE_CHECKPOINT_TXID, getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_REGISTER = 0;
@@ -289,6 +326,7 @@ public class NameNodeServiceGrpc {
   private static final int METHODID_MK_DIR = 2;
   private static final int METHODID_SHUTDOWN = 3;
   private static final int METHODID_FETCH_EDIT_LOG = 4;
+  private static final int METHODID_UPDATE_CHECKPOINT_TXID = 5;
 
   private static class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -325,6 +363,10 @@ public class NameNodeServiceGrpc {
         case METHODID_FETCH_EDIT_LOG:
           serviceImpl.fetchEditLog((com.quick.dfs.namenode.rpc.model.FetchEditLogRequest) request,
               (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.FetchEditLogResponse>) responseObserver);
+          break;
+        case METHODID_UPDATE_CHECKPOINT_TXID:
+          serviceImpl.updateCheckpointTxid((com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest) request,
+              (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -379,6 +421,13 @@ public class NameNodeServiceGrpc {
               com.quick.dfs.namenode.rpc.model.FetchEditLogRequest,
               com.quick.dfs.namenode.rpc.model.FetchEditLogResponse>(
                 serviceImpl, METHODID_FETCH_EDIT_LOG)))
+        .addMethod(
+          METHOD_UPDATE_CHECKPOINT_TXID,
+          asyncUnaryCall(
+            new MethodHandlers<
+              com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest,
+              com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse>(
+                serviceImpl, METHODID_UPDATE_CHECKPOINT_TXID)))
         .build();
   }
 }

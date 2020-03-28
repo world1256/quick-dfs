@@ -29,9 +29,12 @@ public class FSImageCheckPointer extends Daemon {
 
     private FSNameSystem nameSystem;
 
-    public FSImageCheckPointer(BackupNode backupNode,FSNameSystem nameSystem){
+    private NameNodeRpcClient namenode;
+
+    public FSImageCheckPointer(BackupNode backupNode,FSNameSystem nameSystem,NameNodeRpcClient namenode){
         this.backupNode = backupNode;
         this.nameSystem = nameSystem;
+        this.namenode = namenode;
     }
 
     @Override
@@ -66,6 +69,8 @@ public class FSImageCheckPointer extends Daemon {
         lastFSImageFilePath = filePath;
         //上报元数据到 namenode
         uploadFsImage(fsImage);
+        //上报最新checkpoint txid
+        updateCheckpointTxid(fsImage);
     }
 
     /**  
@@ -126,5 +131,17 @@ public class FSImageCheckPointer extends Daemon {
      */
     private void uploadFsImage(FSImage fsImage){
         new FSImageUploader(fsImage).start();
+    }
+
+    /**  
+     * 方法名: updateCheckpointTxid
+     * 描述:   上报 checkpont txid
+     * @param fsImage  
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/3/28 16:50 
+     */  
+    private void updateCheckpointTxid(FSImage fsImage){
+        this.namenode.updateCheckpointTxid(fsImage.getTxid());
     }
 }

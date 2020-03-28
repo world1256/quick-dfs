@@ -12,6 +12,8 @@ public class BackupNode {
 
     private FSNameSystem nameSystem;
 
+    private NameNodeRpcClient namenode;
+
     public static void main(String[] args) {
         BackupNode backupNode = new BackupNode();
         backupNode.init();
@@ -21,12 +23,13 @@ public class BackupNode {
     private void init(){
         this.isRunning = true;
         this.nameSystem = new FSNameSystem();
+        this.namenode = new NameNodeRpcClient();
     }
 
     public void start(){
-        EditLogFetcher editLogFetcher = new EditLogFetcher(this,nameSystem);
+        EditLogFetcher editLogFetcher = new EditLogFetcher(this,nameSystem,namenode);
         editLogFetcher.start();
-        FSImageCheckPointer fsImageCheckPointer = new FSImageCheckPointer(this,nameSystem);
+        FSImageCheckPointer fsImageCheckPointer = new FSImageCheckPointer(this,nameSystem,namenode);
         fsImageCheckPointer.start();
     }
 
