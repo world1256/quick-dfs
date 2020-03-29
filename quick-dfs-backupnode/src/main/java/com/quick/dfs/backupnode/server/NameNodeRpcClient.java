@@ -6,7 +6,7 @@ import com.quick.dfs.namenode.rpc.model.FetchEditLogResponse;
 import com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidRequest;
 import com.quick.dfs.namenode.rpc.model.UpdateCheckpointTxidResponse;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
-import com.quick.dfs.util.ConfigConstant;
+import com.quick.dfs.constant.ConfigConstant;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NegotiationType;
 import io.grpc.netty.NettyChannelBuilder;

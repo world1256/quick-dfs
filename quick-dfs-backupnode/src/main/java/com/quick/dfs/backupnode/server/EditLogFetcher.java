@@ -3,7 +3,7 @@ package com.quick.dfs.backupnode.server;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.quick.dfs.thread.Daemon;
-import com.quick.dfs.util.EditLogOp;
+import com.quick.dfs.constant.EditLogOp;
 
 /**
  * @项目名称: quick-dfs
@@ -50,7 +50,6 @@ public class EditLogFetcher extends Daemon {
                     JSONObject editLog = editLogs.getJSONObject(i);
                     String op = editLog.getString("OP");
                     long txid = editLog.getLongValue("txid");
-
                     if(op.equals(EditLogOp.MK_DIR)) {
                         String path = editLog.getString("PATH");
                         try {
@@ -67,6 +66,29 @@ public class EditLogFetcher extends Daemon {
                 e.printStackTrace();
             }
         }
+    }
 
+    /**
+     * 方法名: editLog2Namespace
+     * 描述:   将editlog 还原到namespace中
+     * @param editLog
+     * @return void
+     * 作者: fansy
+     * 日期: 2020/3/28 20:28
+     */
+    private void editLog2Namespace(JSONObject editLog){
+        String op = editLog.getString("OP");
+        String path = editLog.getString("PATH");
+        long txid = editLog.getLongValue("txid");
+        switch (op){
+            case EditLogOp.MK_DIR:
+                this.nameSystem.mkDir(txid,path);
+                break;
+            case EditLogOp.CREATE:
+                this.nameSystem.create(txid,path);
+                break;
+            default:
+                break;
+        }
     }
 }

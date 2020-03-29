@@ -2,7 +2,7 @@ package com.quick.dfs.backupnode.server;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
-import com.quick.dfs.util.ConfigConstant;
+import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.util.FileUtil;
 import com.quick.dfs.util.StringUtil;
 
@@ -44,14 +44,26 @@ public class FSNameSystem {
      * @描述: 创建目录
      * @param txid
      * @param path  
-     * @return boolean  
+     * @return void
      * @作者: fansy
      * @日期: 2020/3/24 9:03 
     */  
-    public boolean mkDir(long txid,String path){
+    public void mkDir(long txid,String path){
         this.directory.mkDir(txid,path);
-        return true;
     }
+    
+    /**  
+     * 方法名: create
+     * 描述:   新建文件
+     * @param txid
+     * @param filePath  
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/3/29 21:11 
+     */  
+    public void create(long txid,String filePath){
+        
+    }    
 
     /**  
      * @方法名: getFsImage

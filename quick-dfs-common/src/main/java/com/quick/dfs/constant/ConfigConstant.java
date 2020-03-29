@@ -1,4 +1,4 @@
-package com.quick.dfs.util;
+package com.quick.dfs.constant;
 
 /**
  * @项目名称: quick-dfs

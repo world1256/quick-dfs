@@ -6,7 +6,7 @@ import com.quick.dfs.namenode.rpc.model.RegisterRequest;
 import com.quick.dfs.namenode.rpc.model.RegisterResponse;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
 import com.quick.dfs.thread.Daemon;
-import com.quick.dfs.util.ConfigConstant;
+import com.quick.dfs.constant.ConfigConstant;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NegotiationType;
 import io.grpc.netty.NettyChannelBuilder;

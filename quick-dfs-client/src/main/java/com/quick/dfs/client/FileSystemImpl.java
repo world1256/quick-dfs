@@ -1,11 +1,9 @@
 package com.quick.dfs.client;
 
-import com.quick.dfs.namenode.rpc.model.MkDirRequest;
-import com.quick.dfs.namenode.rpc.model.MkDirResponse;
-import com.quick.dfs.namenode.rpc.model.ShutdownRequest;
-import com.quick.dfs.namenode.rpc.model.ShutdownResponse;
+import com.quick.dfs.constant.StatusCode;
+import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
-import com.quick.dfs.util.ConfigConstant;
+import com.quick.dfs.constant.ConfigConstant;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NegotiationType;
 import io.grpc.netty.NettyChannelBuilder;
@@ -61,4 +59,45 @@ public class FileSystemImpl implements FileSystem{
 
        this.namenode.shutdown(shutdownRequest);
     }
+
+    /**  
+     * 方法名: upload
+     * 描述:   上传文件
+     * @param file
+     * @param fileName  
+     * @return boolean
+     * 作者: fansy 
+     * 日期: 2020/3/29 19:31 
+     */  
+    @Override
+    public boolean upload(byte[] file, String fileName) throws Exception {
+        //先在文件目录树中创建该文件
+        //如果文件已存在  则返回false  不能上传
+        if(!createFile(fileName)){
+            return false;
+        }
+
+        return true;
+    }
+
+    /**  
+     * 方法名: createFile
+     * 描述:   在目录树中创建文件
+     * @param fileName  
+     * @return boolean  
+     * 作者: fansy 
+     * 日期: 2020/3/29 21:24 
+     */  
+    private boolean createFile(String fileName){
+        CreateFileRequest request = CreateFileRequest.newBuilder()
+                .setFileName(fileName).build();
+
+        CreateFileResponse response = this.namenode.createFile(request);
+
+        if(response.getStatus() == StatusCode.STATUS_SUCCESS){
+            return true;
+        }
+        return false;
+    }
+
 }

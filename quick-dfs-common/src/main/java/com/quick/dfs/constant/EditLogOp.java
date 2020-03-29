@@ -1,4 +1,4 @@
-package com.quick.dfs.util;
+package com.quick.dfs.constant;
 
 /**
  * @项目名称: com.quick.dfs.util
@@ -12,4 +12,9 @@ public interface EditLogOp {
      * 创建目录
      */
     String MK_DIR = "MKDIR";
+
+    /**
+     * 新建文件
+     */
+    String CREATE ="CREATE";
 }

@@ -1,6 +1,6 @@
 package com.quick.dfs.backupnode.server;
 
-import com.quick.dfs.util.ConfigConstant;
+import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.util.FileUtil;
 import com.quick.dfs.util.StringUtil;
 

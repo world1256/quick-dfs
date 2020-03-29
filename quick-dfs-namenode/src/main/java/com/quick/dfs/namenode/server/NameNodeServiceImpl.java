@@ -3,9 +3,10 @@ package com.quick.dfs.namenode.server;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.quick.dfs.constant.StatusCode;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
-import com.quick.dfs.util.ConfigConstant;
+import com.quick.dfs.constant.ConfigConstant;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
@@ -21,9 +22,6 @@ import java.util.List;
  **/
 public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService {
 
-    public static final Integer STATUS_SUCCESS = 1;
-    public static final Integer STATUS_FAILURE = 2;
-    public static final Integer STATUS_SHUTDOWN = 3;
 
     /**
      * backup node 每次拉取editlog的数量
@@ -78,7 +76,8 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     @Override
     public void register(RegisterRequest request, StreamObserver<RegisterResponse> responseObserver) {
         this.dataNodeManager.register(request.getIp(),request.getHostname());
-        RegisterResponse response = RegisterResponse.newBuilder().setStatus(STATUS_SUCCESS).build();
+        RegisterResponse response = RegisterResponse.newBuilder()
+                .setStatus(StatusCode.STATUS_SUCCESS).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
@@ -97,9 +96,11 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         HeartbeatResponse response = null;
         if(isRunning){
             this.dataNodeManager.heatbeat(request.getIp(),request.getHostname());
-            response = HeartbeatResponse.newBuilder().setStatus(STATUS_SUCCESS).build();
+            response = HeartbeatResponse.newBuilder()
+                    .setStatus(StatusCode.STATUS_SUCCESS).build();
         }else{
-            response = HeartbeatResponse.newBuilder().setStatus(STATUS_SHUTDOWN).build();
+            response = HeartbeatResponse.newBuilder()
+                    .setStatus(StatusCode.STATUS_SHUTDOWN).build();
         }
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -117,7 +118,8 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     @Override
     public void mkDir(MkDirRequest request, StreamObserver<MkDirResponse> responseObserver) {
         this.nameSystem.mkDir(request.getPath());
-        MkDirResponse response = MkDirResponse.newBuilder().setStatus(STATUS_SUCCESS).build();
+        MkDirResponse response = MkDirResponse.newBuilder()
+                .setStatus(StatusCode.STATUS_SUCCESS).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
@@ -211,7 +213,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         }
         response = FetchEditLogResponse.newBuilder()
                 .setEditLogs(fetchedEditLog.toJSONString())
-                .setStatus(STATUS_SUCCESS)
+                .setStatus(StatusCode.STATUS_SUCCESS)
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -350,9 +352,40 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         this.nameSystem.setCheckpointTxid(txid);
 
         UpdateCheckpointTxidResponse response = UpdateCheckpointTxidResponse.newBuilder()
-                .setStatus(STATUS_SUCCESS).build();
+                .setStatus(StatusCode.STATUS_SUCCESS).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
 
+    /**  
+     * 方法名: createFile
+     * 描述:   创建文件
+     * @param request
+     * @param responseObserver  
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/3/29 21:32 
+     */  
+    @Override
+    public void createFile(CreateFileRequest request, StreamObserver<CreateFileResponse> responseObserver) {
+        CreateFileResponse response = null;
+        String fileName = request.getFileName();
+
+        if(isRunning){
+            boolean success = this.nameSystem.createFile(fileName);
+            if(success){
+                response = CreateFileResponse.newBuilder()
+                        .setStatus(StatusCode.STATUS_SUCCESS).build();
+            }else{
+                response = CreateFileResponse.newBuilder()
+                        .setStatus(StatusCode.STATUS_DUPLICATE).build();
+            }
+        }else{
+            response = CreateFileResponse.newBuilder()
+                    .setStatus(StatusCode.STATUS_SHUTDOWN).build();
+        }
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 }

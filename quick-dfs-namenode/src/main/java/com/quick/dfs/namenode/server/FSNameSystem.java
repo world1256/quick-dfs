@@ -2,8 +2,8 @@ package com.quick.dfs.namenode.server;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
-import com.quick.dfs.util.ConfigConstant;
-import com.quick.dfs.util.EditLogOp;
+import com.quick.dfs.constant.ConfigConstant;
+import com.quick.dfs.constant.EditLogOp;
 import com.quick.dfs.util.FileUtil;
 
 import java.io.*;
@@ -52,7 +52,23 @@ public class FSNameSystem {
     */  
     public boolean mkDir(String path){
         this.directory.mkDir(path);
-        this.editLog.logEdit("{'OP':'"+ EditLogOp.MK_DIR +"','PATH':'" + path + "'}");
+        this.editLog.logEdit(EditLogFactory.mkdir(path));
+        return true;
+    }
+
+    /**
+     * 方法名: createFile
+     * 描述:   创建文件
+     * @param filePath
+     * @return boolean
+     * 作者: fansy
+     * 日期: 2020/3/29 19:57
+     */
+    public boolean createFile(String filePath){
+        if(!this.directory.createFile(filePath)){
+            return false;
+        }
+        this.editLog.logEdit(EditLogFactory.create(filePath));
         return true;
     }
 
@@ -270,6 +286,9 @@ public class FSNameSystem {
         switch (op){
             case EditLogOp.MK_DIR:
                 this.directory.mkDir(editLog.getString("PATH"));
+                break;
+            case EditLogOp.CREATE:
+                this.directory.createFile(editLog.getString("PATH"));
                 break;
             default:
                 break;

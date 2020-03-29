@@ -1,7 +1,7 @@
 package com.quick.dfs.namenode.server;
 
 import com.quick.dfs.thread.Daemon;
-import com.quick.dfs.util.ConfigConstant;
+import com.quick.dfs.constant.ConfigConstant;
 
 import java.io.File;
 import java.io.IOException;

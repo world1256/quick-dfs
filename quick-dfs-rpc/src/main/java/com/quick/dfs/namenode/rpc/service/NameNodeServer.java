@@ -24,7 +24,7 @@ public final class NameNodeServer {
   static {
     String[] descriptorData = {
       "\n\027NameNodeRpcServer.proto\022\032com.quick.dfs" +
-      ".namenode.rpc\032\026NameNodeRpcModel.proto2\246\005" +
+      ".namenode.rpc\032\026NameNodeRpcModel.proto2\223\006" +
       "\n\017NameNodeService\022e\n\010register\022+.com.quic" +
       "k.dfs.namenode.rpc.RegisterRequest\032,.com" +
       ".quick.dfs.namenode.rpc.RegisterResponse" +
@@ -41,9 +41,12 @@ public final class NameNodeServer {
       "tchEditLogResponse\022\211\001\n\024updateCheckpointT" +
       "xid\0227.com.quick.dfs.namenode.rpc.UpdateC" +
       "heckpointTxidRequest\0328.com.quick.dfs.nam" +
-      "enode.rpc.UpdateCheckpointTxidResponseB6" +
-      "\n\"com.quick.dfs.namenode.rpc.serviceB\016Na",
-      "meNodeServerP\001b\006proto3"
+      "enode.rpc.UpdateCheckpointTxidResponse\022k" +
+      "\n\ncreateFile\022-.com.quick.dfs.namenode.rp",
+      "c.CreateFileRequest\032..com.quick.dfs.name" +
+      "node.rpc.CreateFileResponseB6\n\"com.quick" +
+      ".dfs.namenode.rpc.serviceB\016NameNodeServe" +
+      "rP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

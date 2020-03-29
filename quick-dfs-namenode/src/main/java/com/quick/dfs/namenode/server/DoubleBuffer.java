@@ -1,6 +1,6 @@
 package com.quick.dfs.namenode.server;
 
-import com.quick.dfs.util.ConfigConstant;
+import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.util.FileUtil;
 
 import java.io.ByteArrayOutputStream;

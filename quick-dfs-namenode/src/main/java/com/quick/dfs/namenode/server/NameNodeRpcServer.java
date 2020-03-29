@@ -1,7 +1,7 @@
 package com.quick.dfs.namenode.server;
 
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
-import com.quick.dfs.util.ConfigConstant;
+import com.quick.dfs.constant.ConfigConstant;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
