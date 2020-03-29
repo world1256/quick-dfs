@@ -135,6 +135,9 @@ public class DoubleBuffer {
      * @日期: 2020/3/24 11:11 
     */  
     public String[] getBufferedEditLog(){
+        if(currentBuffer.size() == 0){
+            return null;
+        }
         String editLogRawData = new String(currentBuffer.getBufferData());
         return editLogRawData.split("\n");
     }

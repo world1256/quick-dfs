@@ -6,6 +6,7 @@ import com.quick.dfs.namenode.rpc.model.RegisterRequest;
 import com.quick.dfs.namenode.rpc.model.RegisterResponse;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
 import com.quick.dfs.thread.Daemon;
+import com.quick.dfs.util.ConfigConstant;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NegotiationType;
 import io.grpc.netty.NettyChannelBuilder;
@@ -21,28 +22,13 @@ import java.util.concurrent.CountDownLatch;
 public class NameNodeServiceActor {
 
     /**
-     * 发送心跳间隔
-     */
-    private static long HEARTBEAT_INTERVAL = 30 *1000L;
-
-    /**
-     * namenode 主机名
-     */
-    private static String NAMENODE_HOSTNAME = "localhost";
-
-    /**
-     * namenode 通信端口号
-     */
-    private static int NAMENODE_PORT = 50070;
-
-    /**
      * namenode通信组件
      */
     private NameNodeServiceGrpc.NameNodeServiceBlockingStub namenode;
 
     public NameNodeServiceActor(){
         ManagedChannel channel = NettyChannelBuilder
-                .forAddress(NAMENODE_HOSTNAME,NAMENODE_PORT)
+                .forAddress(ConfigConstant.NAME_NODE_HOST_NAME,ConfigConstant.NAME_NODE_DEFAULT_PORT)
                 .negotiationType(NegotiationType.PLAINTEXT)
                 .build();
         this.namenode = NameNodeServiceGrpc.newBlockingStub(channel);
@@ -117,7 +103,7 @@ public class NameNodeServiceActor {
                     HeartbeatRequest heartbeatRequest = HeartbeatRequest.newBuilder()
                             .setIp(ip).setHostname(hostname).build();
                     HeartbeatResponse heartbeatResponse = namenode.heartbeat(heartbeatRequest);
-                    Thread.sleep(HEARTBEAT_INTERVAL);
+                    Thread.sleep(ConfigConstant.DATA_NODE_HEARTBEAT_INTERVAL);
                 }catch (Exception e){
                     e.printStackTrace();
                 }

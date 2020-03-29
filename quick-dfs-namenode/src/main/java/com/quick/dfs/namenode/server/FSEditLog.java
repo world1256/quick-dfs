@@ -229,7 +229,7 @@ public class FSEditLog {
                         for(String flushedTxid : flushedTxids){
                             long endTxid = Long.valueOf(flushedTxid.split("-")[1]);
                             if(checkpointTxid >= endTxid){
-                                String path = ConfigConstant.FS_IMAGE_PATH + flushedTxid + ConfigConstant.NAME_NODE_EDIT_LOG_SUFFIX;
+                                String path = ConfigConstant.NAME_NODE_EDIT_LOG_PATH + flushedTxid + ConfigConstant.NAME_NODE_EDIT_LOG_SUFFIX;
                                 File file = new File(path);
                                 if(file.exists()){
                                     file.delete();

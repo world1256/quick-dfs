@@ -1,6 +1,7 @@
 package com.quick.dfs.namenode.server;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.quick.dfs.util.ConfigConstant;
 import com.quick.dfs.util.EditLogOp;
 import com.quick.dfs.util.FileUtil;
@@ -37,8 +38,8 @@ public class FSNameSystem {
 
     public FSNameSystem(){
         this.directory = new FSDirectory();
-        recoveryNamespace();
         this.editLog = new FSEditLog(this);
+        recoveryNamespace();
     }
 
     /**
@@ -89,7 +90,7 @@ public class FSNameSystem {
      * 日期: 2020/3/28 18:11 
      */  
     public void saveCheckpointTxid(){
-        String path = ConfigConstant.FS_IMAGE_PATH+ConfigConstant.CHECKPOINT_META;
+        String path = ConfigConstant.NAME_NODE_EDIT_LOG_PATH+ConfigConstant.CHECKPOINT_META;
 
         RandomAccessFile raf = null;
         FileOutputStream out = null;
@@ -149,16 +150,25 @@ public class FSNameSystem {
         FileInputStream in = null;
         FileChannel channel = null;
         try{
-            String fsImagePath = ConfigConstant.FS_IMAGE_PATH + "fsimage" + ConfigConstant.FS_IMAGE_SUFFIX;
+            String fsImagePath = ConfigConstant.NAME_NODE_FS_IMAGE_PATH + "fsimage" + ConfigConstant.FS_IMAGE_SUFFIX;
+
+            File file = new File(fsImagePath);
+            if(!file.exists()){
+                System.out.println("找不到fsImage文件，不需要进行恢复...");
+                return;
+            }
+
             in = new FileInputStream(fsImagePath);
             channel = in.getChannel();
 
-            ByteBuffer buffer = ByteBuffer.allocate(1024);
-            channel.read(buffer);
+            //这里后续需要修改   将数值设为上报过来的fsImage大小
+            ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
+            int length = channel.read(buffer);
             buffer.flip();
-            String fsImageJson = new String(buffer.array());
+            String fsImageJson = new String(buffer.array(),0,length);
+            System.out.println("恢复fsimage文件中的数据：" + file.getName());
 
-            FSDirectory.INode root = JSONObject.parseObject(fsImageJson, FSDirectory.INode.class);
+            FSDirectory.INode root = JSONObject.parseObject(fsImageJson, new TypeReference<FSDirectory.INode>(){});
             this.directory.setRoot(root);
         }finally {
             FileUtil.closeInputFile(in,channel);
@@ -177,7 +187,7 @@ public class FSNameSystem {
         FileInputStream in = null;
         FileChannel channel = null;
         try{
-            String checkPonitPath = ConfigConstant.FS_IMAGE_PATH+ConfigConstant.CHECKPOINT_META;
+            String checkPonitPath = ConfigConstant.NAME_NODE_EDIT_LOG_PATH+ConfigConstant.CHECKPOINT_META;
             File file = new File(checkPonitPath);
             if(!file.exists()){
                 System.out.println("checkpoint meta文件不存在，不需要恢复.");
@@ -209,6 +219,10 @@ public class FSNameSystem {
 
         File dir = new File(ConfigConstant.NAME_NODE_EDIT_LOG_PATH);
         List<File> files = new ArrayList<>();
+        if(!dir.exists()){
+            System.out.println("当前没有任何editLog文件   不需要恢复...");
+            return;
+        }
         for(File file : dir.listFiles()){
             if(file.getName().endsWith(ConfigConstant.NAME_NODE_EDIT_LOG_SUFFIX)){
                 files.add(file);
@@ -222,10 +236,12 @@ public class FSNameSystem {
             return (int)(xStart - yStart);
         });
 
+        List<String> flushedTxids = this.editLog.getFlushedTxid();
         for(File file : files){
-            long endTxid = Long.valueOf(file.getName().split("-")[1].split(".")[0]);
+            long endTxid = Long.valueOf(file.getName().split("-")[1].split("[.]")[0]);
             //如果当前日志不在checkpoint 快照中  需要读取恢复
             if(endTxid > checkpointTxid){
+                System.out.println("读取editLog恢复元数据："+file.getName());
                 List<String> editLogs = Files.readAllLines(file.toPath());
                 for(String editLogJson : editLogs){
                     JSONObject editLog = JSONObject.parseObject(editLogJson);
@@ -236,6 +252,7 @@ public class FSNameSystem {
                         editLog2Namespace(editLog);
                     }
                 }
+                flushedTxids.add(file.getName().split("[.]")[0]);
             }
         }
     }

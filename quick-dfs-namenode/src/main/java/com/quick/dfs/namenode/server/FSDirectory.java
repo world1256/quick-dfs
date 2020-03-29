@@ -54,7 +54,7 @@ public class FSDirectory {
             }
         }
 
-        showRoot(root,"");
+//        showRoot(root,"");
     }
 
     /**  

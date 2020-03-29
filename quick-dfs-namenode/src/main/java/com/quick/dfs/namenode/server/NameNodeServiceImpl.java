@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
+import com.quick.dfs.util.ConfigConstant;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
@@ -23,11 +24,6 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     public static final Integer STATUS_SUCCESS = 1;
     public static final Integer STATUS_FAILURE = 2;
     public static final Integer STATUS_SHUTDOWN = 3;
-
-    /**
-     * editLog 文件存放路径
-     */
-    private static final String EDIT_LOG_PATH = "/home/quick-dfs/editlog/";
 
     /**
      * backup node 每次拉取editlog的数量
@@ -185,7 +181,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
                     }
                     //下一个磁盘文件不为空  从这个文件里拉取editLog
                     if(nextFlushedTxid != null){
-                        System.out.println("上一次缓存过的磁盘文件找不到需要拉取的数据，从下一个磁盘文件拉取...");
+                        System.out.println("上一次缓存过的磁盘文件找不到需要拉取的数据，从下一个磁盘文件拉取,flushedTxid:"+nextFlushedTxid);
                         fetchFromFlushedFile(syncedTxid,nextFlushedTxid,fetchedEditLog);
                     }
                     //如果没有找到下一个磁盘文件  那么此时就需要到内存缓冲中拉取
@@ -243,15 +239,17 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         int fetchCount = 0;
         String[] bufferedEditLog = this.nameSystem.getEditLog().getBufferedEditLog();
 
-        for(String eidtlogRawData : bufferedEditLog){
-            JSONObject editLogJson = JSON.parseObject(eidtlogRawData);
-            currentBufferedEditLog.add(editLogJson);
-            long txId = editLogJson.getLong("txId");
-            currentBufferedMaxTxid = txId;
-            if(txId == syncedTxid + 1 && fetchCount <= BACKUP_NODE_FETCH_SIZE){
-                fetchedEditLog.add(editLogJson);
-                syncedTxid = txId;
-                fetchCount++;
+        if(bufferedEditLog != null){
+            for(String eidtlogRawData : bufferedEditLog){
+                JSONObject editLogJson = JSON.parseObject(eidtlogRawData);
+                currentBufferedEditLog.add(editLogJson);
+                long txId = editLogJson.getLong("txid");
+                currentBufferedMaxTxid = txId;
+                if(txId == syncedTxid + 1 && fetchCount <= BACKUP_NODE_FETCH_SIZE){
+                    fetchedEditLog.add(editLogJson);
+                    syncedTxid = txId;
+                    fetchCount++;
+                }
             }
         }
 
@@ -293,7 +291,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         int fetchCount = 0;
         for(int i = 0;i < currentBufferedEditLog.size();i++){
             JSONObject editLogJson = currentBufferedEditLog.getJSONObject(i);
-            long txId = editLogJson.getLong("txId");
+            long txId = editLogJson.getLong("txid");
             if(txId == syncedTxid + 1){
                 fetchedEditLog.add(editLogJson);
                 syncedTxid = txId;
@@ -316,7 +314,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
      * @日期: 2020/3/24 17:13 
     */  
     private void fetchFromFlushedFile(long syncedTxid,String flushedTxid,JSONArray fetchedEditLog){
-        String currentEditLogFile = EDIT_LOG_PATH + flushedTxid + ".log";
+        String currentEditLogFile = ConfigConstant.NAME_NODE_EDIT_LOG_PATH + flushedTxid + ".log";
         try {
             currentBufferedEditLog.clear();
             List<String> editLogs = Files.readAllLines(Paths.get(currentEditLogFile));
@@ -324,7 +322,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
             for(int i = 0; i < editLogs.size(); i++){
                 JSONObject editLogJson = JSON.parseObject(editLogs.get(i));
                 currentBufferedEditLog.add(editLogJson);
-                long txId = editLogJson.getLong("txId");
+                long txId = editLogJson.getLong("txid");
                 currentBufferedMaxTxid = txId;
                 if(txId == syncedTxid + 1 && fetchCount <= BACKUP_NODE_FETCH_SIZE){
                     fetchedEditLog.add(editLogJson);

@@ -5,6 +5,7 @@ import com.quick.dfs.namenode.rpc.model.MkDirResponse;
 import com.quick.dfs.namenode.rpc.model.ShutdownRequest;
 import com.quick.dfs.namenode.rpc.model.ShutdownResponse;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
+import com.quick.dfs.util.ConfigConstant;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NegotiationType;
 import io.grpc.netty.NettyChannelBuilder;
@@ -17,15 +18,11 @@ import io.grpc.netty.NettyChannelBuilder;
  **/
 public class FileSystemImpl implements FileSystem{
 
-    private static final String NAMENODE_HOSTNAME = "localhost";
-
-    private static final int NAMENODE_PORT = 50070;
-
     private NameNodeServiceGrpc.NameNodeServiceBlockingStub namenode;
 
     public FileSystemImpl(){
         ManagedChannel channel = NettyChannelBuilder
-                .forAddress(this.NAMENODE_HOSTNAME,this.NAMENODE_PORT)
+                .forAddress(ConfigConstant.NAME_NODE_HOST_NAME,ConfigConstant.NAME_NODE_DEFAULT_PORT)
                 .negotiationType(NegotiationType.PLAINTEXT)
                 .build();
         this.namenode = NameNodeServiceGrpc.newBlockingStub(channel);

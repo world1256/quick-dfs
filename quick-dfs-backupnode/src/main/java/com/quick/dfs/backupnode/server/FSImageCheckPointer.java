@@ -80,11 +80,10 @@ public class FSImageCheckPointer extends Thread{
     */  
     private void doCheckpoint() throws Exception{
         FSImage fsImage = this.nameSystem.getFsImage();
-        String filePath = fsImage2Disk(fsImage);
         //删除老的元数据快照
         removeLastFsImage();
-        //将本次写入的元数据快照置为老的元数据快照   下次删除这个文件
-        lastFSImageFilePath = filePath;
+        //写入最新的元数据快照
+        fsImage2Disk(fsImage);
         //上报元数据到 namenode
         uploadFsImage(fsImage);
         //上报最新checkpoint txid
@@ -95,15 +94,15 @@ public class FSImageCheckPointer extends Thread{
 
     /**  
      * 方法名: fsImage2Disk
-     * 描述:   fsIamge写入磁盘文件 返回文件路径
+     * 描述:   fsIamge写入磁盘文件
      * @param fsImage  
-     * @return java.lang.String  
+     * @return void
      * 作者: fansy 
      * 日期: 2020/3/25 22:57 
      */  
-    private String fsImage2Disk(FSImage fsImage) throws IOException{
+    private void fsImage2Disk(FSImage fsImage) throws IOException{
         ByteBuffer buffer = ByteBuffer.wrap(fsImage.getFsImageJosn().getBytes());
-        String fsImageFilePath = ConfigConstant.FS_IMAGE_PATH
+        String fsImageFilePath = ConfigConstant.BACKUP_NODE_FS_IMAGE_PATH
                 + ConfigConstant.FS_IMAGE_PREFIX
                 + fsImage.getTxid()
                 +ConfigConstant.FS_IMAGE_SUFFIX;
@@ -121,7 +120,8 @@ public class FSImageCheckPointer extends Thread{
         }finally {
             FileUtil.closeOutputFile(file,out,channel);
         }
-        return fsImageFilePath;
+        //将本次写入的元数据快照置为老的元数据快照   下次删除这个文件
+        lastFSImageFilePath = fsImageFilePath;
     }
 
     /**  
@@ -174,7 +174,7 @@ public class FSImageCheckPointer extends Thread{
      * 日期: 2020/3/29 14:45
      */
     private void checkpointInfo2Disk(FSImage fsImage) throws Exception{
-        String path = ConfigConstant.FS_IMAGE_PATH+ConfigConstant.CHECKPOINT_META;
+        String path = ConfigConstant.BACKUP_NODE_FS_IMAGE_PATH+ConfigConstant.CHECKPOINT_META;
         File file = new File(path);
         if(file.exists()){
             file.delete();

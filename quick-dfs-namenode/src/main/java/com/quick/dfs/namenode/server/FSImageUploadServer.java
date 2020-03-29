@@ -101,23 +101,24 @@ public class FSImageUploadServer extends Thread{
 
         SocketChannel channel = null;
         try {
-            String fsImagePath = ConfigConstant.FS_IMAGE_PATH + "fsimage" + ConfigConstant.FS_IMAGE_SUFFIX;
-            File fsImageFile = new File(fsImagePath);
-            if(fsImageFile.exists()){
-                fsImageFile.delete();
-            }
-
+            String fsImagePath = ConfigConstant.NAME_NODE_FS_IMAGE_PATH + "fsimage" + ConfigConstant.FS_IMAGE_SUFFIX;
             RandomAccessFile file = null;
             FileOutputStream out = null;
             FileChannel fileChannel = null;
             try{
 
                 channel = (SocketChannel) key.channel();
-                ByteBuffer buffer = ByteBuffer.allocate(1024*1024);
+                ByteBuffer buffer = ByteBuffer.allocate(1024);
 
                 int total = 0;
                 int length = -1;
                 if((length = channel.read(buffer)) > 0){
+                    //删除之前的老文件  不能写在这个判断外面  否则有可能数据写完之后立马被删除
+                    File fsImageFile = new File(fsImagePath);
+                    if(fsImageFile.exists()){
+                        fsImageFile.delete();
+                    }
+
                     file = new RandomAccessFile(fsImagePath,"rw");
                     out = new FileOutputStream(file.getFD());
                     fileChannel = out.getChannel();
@@ -132,7 +133,8 @@ public class FSImageUploadServer extends Thread{
                     channel.close();
                 }
 
-                while (channel.read(buffer)>0){
+                while ((length = channel.read(buffer)) >0){
+                    total += length;
                     buffer.flip();
                     fileChannel.write(buffer);
                     buffer.clear();

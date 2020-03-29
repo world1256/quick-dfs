@@ -61,9 +61,12 @@ public class NameNode {
      * @日期: 2020/3/23 10:58
     */
     private void start() throws Exception{
-        this.rpcServer.start();
-        this.rpcServer.blockUntilShutdown();
+        //必须放在上面
         this.fsImageUploadServer.start();
+
+        this.rpcServer.start();
+        //这里会一直堵塞住  如果上面的fsImageUploadServer 放在这行下面  会一直执行不了
+        this.rpcServer.blockUntilShutdown();
     }
 
     public static void main(String[] args) throws Exception{

@@ -103,7 +103,7 @@ public class FSNameSystem {
      * 日期: 2020/3/29 14:10
      */
     private void loadCheckpointInfo() throws Exception {
-        String path = ConfigConstant.FS_IMAGE_PATH+ConfigConstant.CHECKPOINT_META;
+        String path = ConfigConstant.BACKUP_NODE_FS_IMAGE_PATH+ConfigConstant.CHECKPOINT_META;
 
         FileInputStream in = null;
         FileChannel channel = null;
@@ -121,7 +121,7 @@ public class FSNameSystem {
 
             int length = channel.read(buffer);
             buffer.flip();
-
+            System.out.println("读取checkpoint 相关信息："+path);
             String checkpointInfo = new String(buffer.array(),0,length);
             String[] arr = checkpointInfo.split("_");
             this.checkpointTime = Long.valueOf(arr[0]);
@@ -163,6 +163,7 @@ public class FSNameSystem {
             int length = channel.read(buffer);
             buffer.flip();
 
+            System.out.println("读取fsImage恢复文件目录树："+this.checkpointFile);
             String fsImageJson = new String(buffer.array(),0,length);
             FSDirectory.INode root = JSONObject.parseObject(fsImageJson, new TypeReference<FSDirectory.INode>(){});
             this.directory.setRoot(root);

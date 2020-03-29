@@ -117,7 +117,7 @@ public class FSDirectory {
             writeUnLock();
         }
 
-        showRoot(root,"");
+//        showRoot(root,"");
     }
 
     /**  
