@@ -89,7 +89,7 @@ public class FSNameSystem {
      * 日期: 2020/3/28 18:11 
      */  
     public void saveCheckpointTxid(){
-        String path = ConfigConstant.NAME_NODE_EDIT_LOG_PATH+ConfigConstant.NAME_NODE_CHECKPOINT_META;
+        String path = ConfigConstant.FS_IMAGE_PATH+ConfigConstant.CHECKPOINT_META;
 
         RandomAccessFile raf = null;
         FileOutputStream out = null;
@@ -111,7 +111,7 @@ public class FSNameSystem {
             e.printStackTrace();
         }finally {
             try {
-                FileUtil.closeFile(raf,out,channel);
+                FileUtil.closeOutputFile(raf,out,channel);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -161,12 +161,7 @@ public class FSNameSystem {
             FSDirectory.INode root = JSONObject.parseObject(fsImageJson, FSDirectory.INode.class);
             this.directory.setRoot(root);
         }finally {
-            if(channel != null){
-                channel.close();
-            }
-            if(in != null){
-                in.close();
-            }
+            FileUtil.closeInputFile(in,channel);
         }
     }
 
@@ -182,7 +177,7 @@ public class FSNameSystem {
         FileInputStream in = null;
         FileChannel channel = null;
         try{
-            String checkPonitPath = ConfigConstant.NAME_NODE_EDIT_LOG_PATH+ConfigConstant.NAME_NODE_CHECKPOINT_META;
+            String checkPonitPath = ConfigConstant.FS_IMAGE_PATH+ConfigConstant.CHECKPOINT_META;
             File file = new File(checkPonitPath);
             if(!file.exists()){
                 System.out.println("checkpoint meta文件不存在，不需要恢复.");
@@ -198,12 +193,7 @@ public class FSNameSystem {
             long checkpointTxId = Long.valueOf(new String(buffer.array(),0,length));
             this.checkpointTxid = checkpointTxId;
         }finally {
-            if(channel != null){
-                channel.close();
-            }
-            if(in != null){
-                in.close();
-            }
+            FileUtil.closeInputFile(in,channel);
         }
     }
 

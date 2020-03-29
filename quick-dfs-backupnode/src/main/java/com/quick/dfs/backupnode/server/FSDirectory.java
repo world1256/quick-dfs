@@ -160,6 +160,21 @@ public class FSDirectory {
         return null;
     }
 
+    public INode getRoot() {
+        return root;
+    }
+
+    public void setRoot(INode root) {
+        this.root = root;
+    }
+
+    public long getMaxTxid() {
+        return maxTxid;
+    }
+
+    public void setMaxTxid(long maxTxid) {
+        this.maxTxid = maxTxid;
+    }
 
     /**
      * 代表文件目录树中的一个目录

@@ -59,7 +59,7 @@ public interface ConfigConstant {
     String NAME_NODE_EDIT_LOG_SUFFIX = ".log";
 
     /**
-     * namenode checkpont 元数据文件
+     * checkpont 元数据文件
      */
-    String NAME_NODE_CHECKPOINT_META = "checkpoint.meta";
+    String CHECKPOINT_META = "checkpoint.meta";
 }

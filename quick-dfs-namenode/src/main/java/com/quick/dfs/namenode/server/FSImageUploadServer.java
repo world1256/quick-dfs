@@ -145,7 +145,7 @@ public class FSImageUploadServer extends Thread{
 //                    channel.register(selector,SelectionKey.OP_WRITE);
                 }
             }finally {
-                FileUtil.closeFile(file,out,fileChannel);
+                FileUtil.closeOutputFile(file,out,fileChannel);
             }
 
         } catch (Exception e) {

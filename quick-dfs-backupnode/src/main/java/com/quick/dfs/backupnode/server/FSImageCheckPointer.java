@@ -1,6 +1,5 @@
 package com.quick.dfs.backupnode.server;
 
-import com.quick.dfs.thread.Daemon;
 import com.quick.dfs.util.ConfigConstant;
 import com.quick.dfs.util.FileUtil;
 import com.quick.dfs.util.StringUtil;
@@ -18,7 +17,7 @@ import java.nio.channels.FileChannel;
  * @作者: fansy
  * @日期: 2020/3/25 15:47
  **/
-public class FSImageCheckPointer extends Daemon {
+public class FSImageCheckPointer extends Thread{
 
     /**
      * 最后保存的fsImage
@@ -31,6 +30,8 @@ public class FSImageCheckPointer extends Daemon {
 
     private NameNodeRpcClient namenode;
 
+    private long checkpointTime = System.currentTimeMillis();
+
     public FSImageCheckPointer(BackupNode backupNode,FSNameSystem nameSystem,NameNodeRpcClient namenode){
         this.backupNode = backupNode;
         this.nameSystem = nameSystem;
@@ -42,16 +43,27 @@ public class FSImageCheckPointer extends Daemon {
         System.out.println("fsimage  定时checkpoint 组件启动...");
         while(this.backupNode.isRunning()){
             try{
-                Thread.sleep(ConfigConstant.CHECKPOINT_INTERVAL);
-
-                if(!namenode.isNamenodeRunning()) {
-                    System.out.println("namenode当前无法访问，不执行checkpoint......");
+                if(!this.nameSystem.isFinishedRecovery()){
+                    System.out.println("元数据恢复还未完成，暂时不进行checkpoint");
+                    Thread.sleep(1000);
                     continue;
                 }
 
-                System.out.println("开始执行checkpoint操作...");
-                doCheckpoint();
-                System.out.println("checkpoint操作成功...");
+                if(StringUtil.isEmpty(lastFSImageFilePath)){
+                    lastFSImageFilePath = this.nameSystem.getCheckpointFile();
+                }
+
+                if(System.currentTimeMillis() - checkpointTime > ConfigConstant.CHECKPOINT_INTERVAL){
+                    if(!namenode.isNamenodeRunning()) {
+                        System.out.println("namenode当前无法访问，不执行checkpoint......");
+                        continue;
+                    }
+
+                    System.out.println("开始执行checkpoint操作...");
+                    doCheckpoint();
+                    System.out.println("checkpoint操作成功...");
+                }
+                Thread.sleep(1000);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -66,7 +78,7 @@ public class FSImageCheckPointer extends Daemon {
      * @作者: fansy
      * @日期: 2020/3/25 16:56 
     */  
-    private void doCheckpoint() throws IOException{
+    private void doCheckpoint() throws Exception{
         FSImage fsImage = this.nameSystem.getFsImage();
         String filePath = fsImage2Disk(fsImage);
         //删除老的元数据快照
@@ -77,6 +89,8 @@ public class FSImageCheckPointer extends Daemon {
         uploadFsImage(fsImage);
         //上报最新checkpoint txid
         updateCheckpointTxid(fsImage);
+
+        checkpointInfo2Disk(fsImage);
     }
 
     /**  
@@ -105,7 +119,7 @@ public class FSImageCheckPointer extends Daemon {
             //强制把数据输入磁盘
             channel.force(false);
         }finally {
-            FileUtil.closeFile(file,out,channel);
+            FileUtil.closeOutputFile(file,out,channel);
         }
         return fsImageFilePath;
     }
@@ -149,5 +163,40 @@ public class FSImageCheckPointer extends Daemon {
      */  
     private void updateCheckpointTxid(FSImage fsImage){
         this.namenode.updateCheckpointTxid(fsImage.getTxid());
+    }
+
+    /**
+     * 方法名: checkpointInfo2Disk
+     * 描述:   checkpoint相关信息写入磁盘
+     * @param fsImage
+     * @return void
+     * 作者: fansy
+     * 日期: 2020/3/29 14:45
+     */
+    private void checkpointInfo2Disk(FSImage fsImage) throws Exception{
+        String path = ConfigConstant.FS_IMAGE_PATH+ConfigConstant.CHECKPOINT_META;
+        File file = new File(path);
+        if(file.exists()){
+            file.delete();
+        }
+
+        RandomAccessFile raf = null;
+        FileOutputStream out = null;
+        FileChannel channel = null;
+        try{
+            raf = new RandomAccessFile(path,"rw");
+            out = new FileOutputStream(raf.getFD());
+            channel = out.getChannel();
+
+            this.checkpointTime = System.currentTimeMillis();
+            String checkpointInfo = this.checkpointTime + "_"
+                    + fsImage.getTxid()+ "_"
+                    + lastFSImageFilePath;
+            ByteBuffer buffer = ByteBuffer.wrap(checkpointInfo.getBytes());
+            channel.write(buffer);
+            channel.force(false);
+        }finally {
+            FileUtil.closeOutputFile(raf,out,channel);
+        }
     }
 }

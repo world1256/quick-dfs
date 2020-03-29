@@ -1,5 +1,6 @@
 package com.quick.dfs.util;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -14,8 +15,8 @@ import java.nio.channels.FileChannel;
 public class FileUtil {
 
     /**  
-     * @方法名: closeFile
-     * @描述:   关闭文件IO
+     * @方法名: closeOutputFile
+     * @描述:   关闭文件输出IO
      * @param file
      * @param out
      * @param channel  
@@ -23,7 +24,7 @@ public class FileUtil {
      * @作者: fansy
      * @日期: 2020/3/25 16:46 
     */  
-    public static void closeFile(RandomAccessFile file, FileOutputStream out, FileChannel channel) throws IOException {
+    public static void closeOutputFile(RandomAccessFile file, FileOutputStream out, FileChannel channel) throws IOException {
         if(channel != null){
             channel.close();
         }
@@ -32,6 +33,24 @@ public class FileUtil {
         }
         if(file!=null){
             file.close();
+        }
+    }
+
+    /**  
+     * 方法名: closeInputFile
+     * 描述:   关闭文件输入IO
+     * @param in
+     * @param channel  
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/3/29 14:09 
+     */  
+    public static void closeInputFile(FileInputStream in,FileChannel channel) throws IOException{
+        if(channel != null){
+            channel.close();
+        }
+        if(in != null){
+            in.close();
         }
     }
 }

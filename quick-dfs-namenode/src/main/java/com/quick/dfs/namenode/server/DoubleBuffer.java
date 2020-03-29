@@ -165,7 +165,7 @@ public class DoubleBuffer {
          * @日期: 2020/3/23 16:32 
         */  
         public void write(EditLog editLog) throws IOException {
-            this.maxTxId = editLog.getTxId();
+            this.maxTxId = editLog.getTxid();
             this.buffer.write(editLog.getContent().getBytes());
             this.buffer.write("\n".getBytes());
         }
@@ -212,7 +212,7 @@ public class DoubleBuffer {
                 //一旦宕机 这些os cache中的数据有可能丢失
                 editLogFileChannel.force(false);
             }finally {
-                FileUtil.closeFile(file,out,editLogFileChannel);
+                FileUtil.closeOutputFile(file,out,editLogFileChannel);
             }
             lastSyncMaxTxId = maxTxId + 1;
         }
