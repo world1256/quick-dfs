@@ -4,18 +4,18 @@
 package com.quick.dfs.namenode.rpc.model;
 
 /**
- * Protobuf type {@code com.quick.dfs.namenode.rpc.CreateFileResponse}
+ * Protobuf type {@code com.quick.dfs.namenode.rpc.AllocateDataNodesResponse}
  */
-public  final class CreateFileResponse extends
+public  final class AllocateDataNodesResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:com.quick.dfs.namenode.rpc.CreateFileResponse)
-    CreateFileResponseOrBuilder {
-  // Use CreateFileResponse.newBuilder() to construct.
-  private CreateFileResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // @@protoc_insertion_point(message_implements:com.quick.dfs.namenode.rpc.AllocateDataNodesResponse)
+    AllocateDataNodesResponseOrBuilder {
+  // Use AllocateDataNodesResponse.newBuilder() to construct.
+  private AllocateDataNodesResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private CreateFileResponse() {
-    status_ = 0;
+  private AllocateDataNodesResponse() {
+    dataNodes_ = "";
   }
 
   @Override
@@ -23,7 +23,7 @@ public  final class CreateFileResponse extends
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
-  private CreateFileResponse(
+  private AllocateDataNodesResponse(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -43,9 +43,10 @@ public  final class CreateFileResponse extends
             }
             break;
           }
-          case 8: {
+          case 10: {
+            String s = input.readStringRequireUtf8();
 
-            status_ = input.readInt32();
+            dataNodes_ = s;
             break;
           }
         }
@@ -61,23 +62,48 @@ public  final class CreateFileResponse extends
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_CreateFileResponse_descriptor;
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_AllocateDataNodesResponse_descriptor;
   }
 
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_CreateFileResponse_fieldAccessorTable
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_AllocateDataNodesResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            CreateFileResponse.class, Builder.class);
+            AllocateDataNodesResponse.class, Builder.class);
   }
 
-  public static final int STATUS_FIELD_NUMBER = 1;
-  private int status_;
+  public static final int DATANODES_FIELD_NUMBER = 1;
+  private volatile Object dataNodes_;
   /**
-   * <code>optional int32 status = 1;</code>
+   * <code>optional string dataNodes = 1;</code>
    */
-  public int getStatus() {
-    return status_;
+  public String getDataNodes() {
+    Object ref = dataNodes_;
+    if (ref instanceof String) {
+      return (String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      String s = bs.toStringUtf8();
+      dataNodes_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string dataNodes = 1;</code>
+   */
+  public com.google.protobuf.ByteString
+      getDataNodesBytes() {
+    Object ref = dataNodes_;
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (String) ref);
+      dataNodes_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   private byte memoizedIsInitialized = -1;
@@ -92,8 +118,8 @@ public  final class CreateFileResponse extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (status_ != 0) {
-      output.writeInt32(1, status_);
+    if (!getDataNodesBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, dataNodes_);
     }
   }
 
@@ -102,9 +128,8 @@ public  final class CreateFileResponse extends
     if (size != -1) return size;
 
     size = 0;
-    if (status_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(1, status_);
+    if (!getDataNodesBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, dataNodes_);
     }
     memoizedSize = size;
     return size;
@@ -116,14 +141,14 @@ public  final class CreateFileResponse extends
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof CreateFileResponse)) {
+    if (!(obj instanceof AllocateDataNodesResponse)) {
       return super.equals(obj);
     }
-    CreateFileResponse other = (CreateFileResponse) obj;
+    AllocateDataNodesResponse other = (AllocateDataNodesResponse) obj;
 
     boolean result = true;
-    result = result && (getStatus()
-        == other.getStatus());
+    result = result && getDataNodes()
+        .equals(other.getDataNodes());
     return result;
   }
 
@@ -134,65 +159,65 @@ public  final class CreateFileResponse extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
-    hash = (37 * hash) + STATUS_FIELD_NUMBER;
-    hash = (53 * hash) + getStatus();
+    hash = (37 * hash) + DATANODES_FIELD_NUMBER;
+    hash = (53 * hash) + getDataNodes().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static CreateFileResponse parseFrom(
+  public static AllocateDataNodesResponse parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static CreateFileResponse parseFrom(
+  public static AllocateDataNodesResponse parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static CreateFileResponse parseFrom(byte[] data)
+  public static AllocateDataNodesResponse parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static CreateFileResponse parseFrom(
+  public static AllocateDataNodesResponse parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static CreateFileResponse parseFrom(java.io.InputStream input)
+  public static AllocateDataNodesResponse parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static CreateFileResponse parseFrom(
+  public static AllocateDataNodesResponse parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static CreateFileResponse parseDelimitedFrom(java.io.InputStream input)
+  public static AllocateDataNodesResponse parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static CreateFileResponse parseDelimitedFrom(
+  public static AllocateDataNodesResponse parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static CreateFileResponse parseFrom(
+  public static AllocateDataNodesResponse parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static CreateFileResponse parseFrom(
+  public static AllocateDataNodesResponse parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -204,7 +229,7 @@ public  final class CreateFileResponse extends
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(CreateFileResponse prototype) {
+  public static Builder newBuilder(AllocateDataNodesResponse prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   public Builder toBuilder() {
@@ -219,25 +244,25 @@ public  final class CreateFileResponse extends
     return builder;
   }
   /**
-   * Protobuf type {@code com.quick.dfs.namenode.rpc.CreateFileResponse}
+   * Protobuf type {@code com.quick.dfs.namenode.rpc.AllocateDataNodesResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.CreateFileResponse)
-      CreateFileResponseOrBuilder {
+      // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.AllocateDataNodesResponse)
+      com.quick.dfs.namenode.rpc.model.AllocateDataNodesResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_CreateFileResponse_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_AllocateDataNodesResponse_descriptor;
     }
 
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_CreateFileResponse_fieldAccessorTable
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_AllocateDataNodesResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              CreateFileResponse.class, Builder.class);
+              AllocateDataNodesResponse.class, Builder.class);
     }
 
-    // Construct using com.quick.dfs.namenode.rpc.model.CreateFileResponse.newBuilder()
+    // Construct using com.quick.dfs.namenode.rpc.model.AllocateDataNodesResponse.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -254,31 +279,31 @@ public  final class CreateFileResponse extends
     }
     public Builder clear() {
       super.clear();
-      status_ = 0;
+      dataNodes_ = "";
 
       return this;
     }
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_CreateFileResponse_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_AllocateDataNodesResponse_descriptor;
     }
 
-    public CreateFileResponse getDefaultInstanceForType() {
-      return CreateFileResponse.getDefaultInstance();
+    public AllocateDataNodesResponse getDefaultInstanceForType() {
+      return AllocateDataNodesResponse.getDefaultInstance();
     }
 
-    public CreateFileResponse build() {
-      CreateFileResponse result = buildPartial();
+    public AllocateDataNodesResponse build() {
+      AllocateDataNodesResponse result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    public CreateFileResponse buildPartial() {
-      CreateFileResponse result = new CreateFileResponse(this);
-      result.status_ = status_;
+    public AllocateDataNodesResponse buildPartial() {
+      AllocateDataNodesResponse result = new AllocateDataNodesResponse(this);
+      result.dataNodes_ = dataNodes_;
       onBuilt();
       return result;
     }
@@ -310,18 +335,19 @@ public  final class CreateFileResponse extends
       return (Builder) super.addRepeatedField(field, value);
     }
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof CreateFileResponse) {
-        return mergeFrom((CreateFileResponse)other);
+      if (other instanceof AllocateDataNodesResponse) {
+        return mergeFrom((AllocateDataNodesResponse)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(CreateFileResponse other) {
-      if (other == CreateFileResponse.getDefaultInstance()) return this;
-      if (other.getStatus() != 0) {
-        setStatus(other.getStatus());
+    public Builder mergeFrom(AllocateDataNodesResponse other) {
+      if (other == AllocateDataNodesResponse.getDefaultInstance()) return this;
+      if (!other.getDataNodes().isEmpty()) {
+        dataNodes_ = other.dataNodes_;
+        onChanged();
       }
       onChanged();
       return this;
@@ -335,11 +361,11 @@ public  final class CreateFileResponse extends
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      CreateFileResponse parsedMessage = null;
+      AllocateDataNodesResponse parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (CreateFileResponse) e.getUnfinishedMessage();
+        parsedMessage = (AllocateDataNodesResponse) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -349,28 +375,71 @@ public  final class CreateFileResponse extends
       return this;
     }
 
-    private int status_ ;
+    private Object dataNodes_ = "";
     /**
-     * <code>optional int32 status = 1;</code>
+     * <code>optional string dataNodes = 1;</code>
      */
-    public int getStatus() {
-      return status_;
+    public String getDataNodes() {
+      Object ref = dataNodes_;
+      if (!(ref instanceof String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        dataNodes_ = s;
+        return s;
+      } else {
+        return (String) ref;
+      }
     }
     /**
-     * <code>optional int32 status = 1;</code>
+     * <code>optional string dataNodes = 1;</code>
      */
-    public Builder setStatus(int value) {
-      
-      status_ = value;
+    public com.google.protobuf.ByteString
+        getDataNodesBytes() {
+      Object ref = dataNodes_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (String) ref);
+        dataNodes_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string dataNodes = 1;</code>
+     */
+    public Builder setDataNodes(
+        String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      dataNodes_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>optional int32 status = 1;</code>
+     * <code>optional string dataNodes = 1;</code>
      */
-    public Builder clearStatus() {
+    public Builder clearDataNodes() {
       
-      status_ = 0;
+      dataNodes_ = getDefaultInstance().getDataNodes();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string dataNodes = 1;</code>
+     */
+    public Builder setDataNodesBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      dataNodes_ = value;
       onChanged();
       return this;
     }
@@ -385,39 +454,39 @@ public  final class CreateFileResponse extends
     }
 
 
-    // @@protoc_insertion_point(builder_scope:com.quick.dfs.namenode.rpc.CreateFileResponse)
+    // @@protoc_insertion_point(builder_scope:com.quick.dfs.namenode.rpc.AllocateDataNodesResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:com.quick.dfs.namenode.rpc.CreateFileResponse)
-  private static final CreateFileResponse DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:com.quick.dfs.namenode.rpc.AllocateDataNodesResponse)
+  private static final AllocateDataNodesResponse DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new CreateFileResponse();
+    DEFAULT_INSTANCE = new AllocateDataNodesResponse();
   }
 
-  public static CreateFileResponse getDefaultInstance() {
+  public static AllocateDataNodesResponse getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<CreateFileResponse>
-      PARSER = new com.google.protobuf.AbstractParser<CreateFileResponse>() {
-    public CreateFileResponse parsePartialFrom(
+  private static final com.google.protobuf.Parser<AllocateDataNodesResponse>
+      PARSER = new com.google.protobuf.AbstractParser<AllocateDataNodesResponse>() {
+    public AllocateDataNodesResponse parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new CreateFileResponse(input, extensionRegistry);
+        return new AllocateDataNodesResponse(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<CreateFileResponse> parser() {
+  public static com.google.protobuf.Parser<AllocateDataNodesResponse> parser() {
     return PARSER;
   }
 
   @Override
-  public com.google.protobuf.Parser<CreateFileResponse> getParserForType() {
+  public com.google.protobuf.Parser<AllocateDataNodesResponse> getParserForType() {
     return PARSER;
   }
 
-  public CreateFileResponse getDefaultInstanceForType() {
+  public AllocateDataNodesResponse getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

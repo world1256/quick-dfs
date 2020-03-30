@@ -18,6 +18,7 @@ public class BackupNode {
         BackupNode backupNode = new BackupNode();
         backupNode.init();
         backupNode.start();
+        backupNode.run();
     }
 
     private void init(){
@@ -31,6 +32,16 @@ public class BackupNode {
         editLogFetcher.start();
         FSImageCheckPointer fsImageCheckPointer = new FSImageCheckPointer(this,nameSystem,namenode);
         fsImageCheckPointer.start();
+    }
+
+    public void run(){
+        while(isRunning){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public boolean isRunning() {

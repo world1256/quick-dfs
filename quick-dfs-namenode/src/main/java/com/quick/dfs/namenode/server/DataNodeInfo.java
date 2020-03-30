@@ -17,6 +17,11 @@ public class DataNodeInfo {
      */
     private long lastHeartbeatTime;
 
+    /**
+     * dataNode 上存储的文件总大小
+     */
+    private long storedDataSize;
+
     public DataNodeInfo(String ip,String hostName){
         this.ip = ip;
         this.hostName = hostName;
@@ -44,5 +49,25 @@ public class DataNodeInfo {
 
     public void setLastHeartbeatTime(long lastHeartbeatTime) {
         this.lastHeartbeatTime = lastHeartbeatTime;
+    }
+
+    public long getStoredDataSize() {
+        return storedDataSize;
+    }
+
+    public void setStoredDataSize(long storedDataSize) {
+        this.storedDataSize = storedDataSize;
+    }
+
+    /**
+     * @方法名: addStoredDataSize
+     * @描述:  累加当前dataNode存储的数据量大小
+     * @param fileSize  
+     * @return void  
+     * @作者: fansy
+     * @日期: 2020/3/30 9:45 
+    */  
+    public void addStoredDataSize(long fileSize){
+        this.storedDataSize += fileSize;
     }
 }

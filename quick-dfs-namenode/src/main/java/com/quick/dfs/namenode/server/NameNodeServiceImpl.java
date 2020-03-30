@@ -388,4 +388,25 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    /**
+     * @方法名: allocateDataNodes
+     * @描述:   定位文件需要上传到哪些dataNode上
+     * @param request
+     * @param responseObserver
+     * @return void
+     * @作者: fansy
+     * @日期: 2020/3/30 9:32
+    */
+    @Override
+    public void allocateDataNodes(AllocateDataNodesRequest request, StreamObserver<AllocateDataNodesResponse> responseObserver) {
+        long fileSize = request.getFileSize();
+        List<DataNodeInfo> dataNodes = this.dataNodeManager.allocateDataNodes(fileSize);
+        String dataNodesJson = JSONArray.toJSONString(dataNodes);
+
+        AllocateDataNodesResponse response = AllocateDataNodesResponse.newBuilder()
+                .setDataNodes(dataNodesJson).build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 }

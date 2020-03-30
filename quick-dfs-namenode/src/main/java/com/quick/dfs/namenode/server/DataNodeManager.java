@@ -1,10 +1,9 @@
 package com.quick.dfs.namenode.server;
 
+import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.thread.Daemon;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -67,6 +66,36 @@ public class DataNodeManager {
             dataNode.setLastHeartbeatTime(System.currentTimeMillis());
         }
         return true;
+    }
+
+    /**
+     * @方法名: allocateDataNodes
+     * @描述:   获取文件应该上报到的dataNode
+     * @param fileSize
+     * @return java.util.List<com.quick.dfs.namenode.server.DataNodeInfo>
+     * @作者: fansy
+     * @日期: 2020/3/30 10:16
+    */
+    public List<DataNodeInfo> allocateDataNodes(long fileSize){
+        List<DataNodeInfo> dataNodeInfoList = new ArrayList<>();
+        for(DataNodeInfo dataNodeInfo : dataNodes.values()){
+            dataNodeInfoList.add(dataNodeInfo);
+        }
+
+        //根据dataNode存储数据量大小进行排序
+        dataNodeInfoList.sort(Comparator.comparing(DataNodeInfo::getStoredDataSize));
+
+        //这里取存储数据量最少的那些dataNode
+        List<DataNodeInfo> allocateDataNodes = new ArrayList<>();
+        if(dataNodeInfoList.size() >= ConfigConstant.DATA_STORE_REPLICA){
+            for(int i = 0; i<ConfigConstant.DATA_STORE_REPLICA; i++){
+                allocateDataNodes.add(dataNodeInfoList.get(i));
+
+                //dataNode保存的数据量大小累加一下
+                dataNodeInfoList.get(i).addStoredDataSize(fileSize);
+            }
+        }
+        return allocateDataNodes;
     }
 
     /**

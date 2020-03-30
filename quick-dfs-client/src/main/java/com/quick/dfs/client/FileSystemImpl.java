@@ -77,6 +77,10 @@ public class FileSystemImpl implements FileSystem{
             return false;
         }
 
+
+        String dataNodesJson = allocateDataNodes(fileName,file.length);
+
+        NIOClient.sendFile("",file,file.length);
         return true;
     }
 
@@ -98,6 +102,22 @@ public class FileSystemImpl implements FileSystem{
             return true;
         }
         return false;
+    }
+
+    /**
+     * @方法名: allocateDataNodes
+     * @描述:  获取文件上报到的dataNode节点
+     * @param fileName
+     * @param fileSize
+     * @return java.lang.String
+     * @作者: fansy
+     * @日期: 2020/3/30 11:09
+    */
+    private String allocateDataNodes(String fileName,long fileSize){
+        AllocateDataNodesRequest request = AllocateDataNodesRequest.newBuilder()
+                .setFileName(fileName).setFileSize(fileSize).build();
+        AllocateDataNodesResponse response = this.namenode.allocateDataNodes(request);
+        return response.getDataNodes();
     }
 
 }
