@@ -86,4 +86,15 @@ public interface ConfigConstant {
      * datanode 接收文件上传的端口
      */
     Integer DATA_NODE_UPLOAD_PORT = 9000;
+
+    /**
+     * datanode 处理文件上传的线程数量
+     */
+    Integer DATA_NODE_UPLOAD_THREAD_COUNT = 3;
+
+    /**
+     * datanode 数据存放目录
+     */
+//    String DATA_NODE_DATA_PATH = "/home/quick-dfs/data";
+    String DATA_NODE_DATA_PATH = "G:\\quick-dfs\\datanode\\data\\";
 }

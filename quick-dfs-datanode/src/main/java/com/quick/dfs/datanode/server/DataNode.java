@@ -30,6 +30,9 @@ public class DataNode {
         this.shouldRun = true;
         this.nameNodeOfferService = new NameNodeOfferService();
         nameNodeOfferService.start();
+
+        //启动文件处理服务组件
+        new DataNodeNIOServer().start();
     }
 
     /**
