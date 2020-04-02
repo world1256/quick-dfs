@@ -74,10 +74,8 @@ public class NameNodeServiceActor {
         @Override
         public void run() {
             try{
-                String ip = "";
-                String hostname = "";
                 RegisterRequest registerRequest = RegisterRequest.newBuilder()
-                        .setIp(ip).setHostname(hostname).build();
+                        .setIp(ConfigConstant.DATA_NODE_IP).setHostname(ConfigConstant.DATA_NODE_HOST_NAME).build();
                 RegisterResponse registerResponse = namenode.register(registerRequest);
                 latch.countDown();
             }catch (Exception e){
@@ -97,11 +95,8 @@ public class NameNodeServiceActor {
             while (true){
                 //TODO  send heartbeat
                 try {
-                    String ip = "";
-                    String hostname = "";
-
                     HeartbeatRequest heartbeatRequest = HeartbeatRequest.newBuilder()
-                            .setIp(ip).setHostname(hostname).build();
+                            .setIp(ConfigConstant.DATA_NODE_IP).setHostname(ConfigConstant.DATA_NODE_HOST_NAME).build();
                     HeartbeatResponse heartbeatResponse = namenode.heartbeat(heartbeatRequest);
                     Thread.sleep(ConfigConstant.DATA_NODE_HEARTBEAT_INTERVAL);
                 }catch (Exception e){

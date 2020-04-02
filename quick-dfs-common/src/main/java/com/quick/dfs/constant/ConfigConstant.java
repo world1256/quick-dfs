@@ -75,7 +75,7 @@ public interface ConfigConstant {
     /**
      * datanode  上报心跳时间间隔
      */
-    Long DATA_NODE_HEARTBEAT_INTERVAL =30 * 1000l;
+    Long DATA_NODE_HEARTBEAT_INTERVAL =030 * 1000l;
 
     /**
      * 数据存储副本数量
@@ -96,5 +96,15 @@ public interface ConfigConstant {
      * datanode 数据存放目录
      */
 //    String DATA_NODE_DATA_PATH = "/home/quick-dfs/data";
-    String DATA_NODE_DATA_PATH = "G:\\quick-dfs\\datanode\\data\\";
+    String DATA_NODE_DATA_PATH = "G:\\quick-dfs\\0datanode\\data";
+
+    /**
+     * datanode 主机名
+     */
+    String DATA_NODE_HOST_NAME = "";
+
+    /**
+     * datanode ip地址
+     */
+    String DATA_NODE_IP = "";
 }

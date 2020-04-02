@@ -22,13 +22,15 @@ public class NIOClient {
      * @方法名: sendFile
      * @描述:   上报文件到dataNode
      * @param hostName
+     * @param fileName
      * @param file
      * @param fileSize  
      * @return void  
      * @作者: fansy
      * @日期: 2020/3/30 11:02 
     */  
-    public static void sendFile(String hostName,byte[] file,long fileSize){
+    public static void sendFile(String hostName,String fileName,byte[] file,long fileSize){
+        //建立一个短连接  发送完一个文件后就关闭连接
         SocketChannel channel = null;
         Selector selector = null;
         try{
@@ -52,11 +54,20 @@ public class NIOClient {
                         if(channel.isConnectionPending()){
                             channel.finishConnect();
 
-                            int totalLength = 8 + (int)fileSize;
+                            byte[] fileNameBytes = fileName.getBytes();
+
+                            //依次存放文件名长度+文件名+文件长度+文件大小
+                            int totalLength = 4 + fileNameBytes.length + 8 + (int)fileSize;
+
                             ByteBuffer buffer = ByteBuffer.allocate(totalLength);
+
+                            buffer.putInt(fileNameBytes.length);
+                            buffer.put(fileNameBytes);
                             buffer.putLong(fileSize);
                             buffer.put(file);
+
                             buffer.flip();
+
                             channel.write(buffer);
 
                             key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_READ);

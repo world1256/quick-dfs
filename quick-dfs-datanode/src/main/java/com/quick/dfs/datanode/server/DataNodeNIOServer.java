@@ -2,6 +2,7 @@ package com.quick.dfs.datanode.server;
 
 import com.quick.dfs.constant.ConfigConstant;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -116,32 +117,14 @@ public class DataNodeNIOServer extends Thread{
                     ByteBuffer buffer = ByteBuffer.allocate(10 * 1024);
                     int length = -1;
 
-                    String fileName = null;
-                    long fileLength = 0;
-                    long readFileLength = 0;
-                    if(cachedFiles.containsKey(remoteAddr)){
-                        fileName = cachedFiles.get(remoteAddr).fileName;
-                        fileLength = cachedFiles.get(remoteAddr).fileLength;
-                        readFileLength = cachedFiles.get(remoteAddr).readFileLength;
-                    }else{
-                        fileName = ConfigConstant.DATA_NODE_DATA_PATH + UUID.randomUUID().toString();
 
-                        length = channel.read(buffer);
-                        buffer.flip();
 
-                        //取出文件长度
-                        if(length > 8){
-                            byte[] fileLengthBytes = new byte[8];
-                            buffer.get(fileLengthBytes,0,8);
-                            ByteBuffer fileLengthBuffer = ByteBuffer.allocate(8);
-                            fileLengthBuffer.put(fileLengthBytes);
-                            fileLengthBuffer.flip();
-                            fileLength = fileLengthBuffer.getLong();
-                        }else if(length <= 0){
-                            channel.close();
-                            continue;
-                        }
+                    String fileName = getFileName(channel,buffer);
+                    if(fileName == null){
+                        continue;
                     }
+                    long fileLength = getFileLength(channel,buffer);
+                    long readFileLength = getReadFileLength(channel,buffer);
 
                     FileOutputStream out = new FileOutputStream(fileName);
                     FileChannel fileChannel = out.getChannel();
@@ -195,6 +178,109 @@ public class DataNodeNIOServer extends Thread{
             }
         }
     }
+
+    /**
+     * @方法名: getFileName
+     * @描述:   获取文件名  顺便创建文件目录
+     * @param channel
+     * @param buffer
+     * @return java.lang.String
+     * @作者: fansy
+     * @日期: 2020/4/2 15:25
+    */
+    private String getFileName(SocketChannel channel,ByteBuffer buffer) throws Exception {
+        String fileName = null;
+        String remoteAddr = channel.getRemoteAddress().toString();
+        if(cachedFiles.containsKey(remoteAddr)){
+            fileName = cachedFiles.get(remoteAddr).fileName;
+            return fileName;
+        }
+
+        fileName = getFileNameFromChannel(channel,buffer);
+        if(fileName == null){
+            return fileName;
+        }
+
+        //如果文件目录不存在  先创建文件目录
+        String dirPath = ConfigConstant.DATA_NODE_DATA_PATH + fileName.substring(0,fileName.lastIndexOf("/")+1);
+        File dir = new File(dirPath);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        fileName = ConfigConstant.DATA_NODE_DATA_PATH + fileName;
+        return fileName;
+    }
+
+    /**  
+     * @方法名: getFileNameFromChannel
+     * @描述:   从channel中读取文件名
+     * @param channel
+     * @param buffer  
+     * @return java.lang.String  
+     * @作者: fansy
+     * @日期: 2020/4/2 15:13 
+    */  
+    private String getFileNameFromChannel(SocketChannel channel,ByteBuffer buffer) throws Exception {
+        int length = channel.read(buffer);
+        if(length > 0){
+            byte[] fileNameLengthBytes = new byte[4];
+            buffer.get(fileNameLengthBytes,0,4);
+
+            ByteBuffer fileNameLengthbuffer = ByteBuffer.wrap(fileNameLengthBytes);
+            int fileNameLength = fileNameLengthbuffer.getInt();
+
+            byte[] fileNameBytes = new byte[fileNameLength];
+            buffer.get(fileNameBytes,0,fileNameLength);
+            String fileName = new String(fileNameBytes);
+
+            return fileName;
+        }
+        return null;
+    }
+
+    /**  
+     * @方法名: getFileLength
+     * @描述:   获取文件的长度
+     * @param channel
+     * @param buffer  
+     * @return long  
+     * @作者: fansy
+     * @日期: 2020/4/2 15:38 
+    */  
+    private long getFileLength(SocketChannel channel,ByteBuffer buffer) throws Exception {
+        long fileLength = 0;
+        String remoteAddr = channel.getRemoteAddress().toString();
+        if(cachedFiles.containsKey(remoteAddr)){
+            fileLength = cachedFiles.get(remoteAddr).fileLength;
+        }else {
+            byte[] fileLengthBytes = new byte[8];
+            buffer.get(fileLengthBytes,0,8);
+
+            ByteBuffer fileLengthBuffer = ByteBuffer.wrap(fileLengthBytes);
+            fileLength = fileLengthBuffer.getLong();
+        }
+        return fileLength;
+    }
+
+    /**
+     * @方法名: getReadFileLength
+     * @描述:   获取已经读取了的文件长度
+     * @param channel
+     * @param buffer
+     * @return long
+     * @作者: fansy
+     * @日期: 2020/4/2 15:42
+    */
+    private long getReadFileLength(SocketChannel channel,ByteBuffer buffer) throws Exception {
+        long readFileLength = 0;
+        String remoteAddr = channel.getRemoteAddress().toString();
+        if(cachedFiles.containsKey(remoteAddr)){
+            readFileLength = cachedFiles.get(remoteAddr).readFileLength;
+        }
+        return readFileLength;
+    }
+
+
 
     class CachedFile{
 

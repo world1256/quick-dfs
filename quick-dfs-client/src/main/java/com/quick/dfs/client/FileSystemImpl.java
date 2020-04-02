@@ -1,9 +1,11 @@
 package com.quick.dfs.client;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.constant.StatusCode;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
-import com.quick.dfs.constant.ConfigConstant;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NegotiationType;
 import io.grpc.netty.NettyChannelBuilder;
@@ -80,7 +82,13 @@ public class FileSystemImpl implements FileSystem{
 
         String dataNodesJson = allocateDataNodes(fileName,file.length);
 
-        NIOClient.sendFile("",file,file.length);
+        JSONArray dataNodes = JSONArray.parseArray(dataNodesJson);
+        for(int i = 0;i < dataNodes.size();i++){
+            JSONObject dataNode = dataNodes.getJSONObject(i);
+            String hostName = dataNode.getString("hostName");
+            NIOClient.sendFile(hostName,fileName,file,file.length);
+        }
+
         return true;
     }
 
