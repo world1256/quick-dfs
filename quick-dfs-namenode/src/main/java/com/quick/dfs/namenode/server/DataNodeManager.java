@@ -45,8 +45,14 @@ public class DataNodeManager {
      * @return
      */
     public boolean register(String ip,String hostName){
+        String key = ip + "-" +hostName;
+        if(dataNodes.containsKey(key)){
+            System.out.println("已经存在该dataNode,不需要再次注册...");
+            return false;
+        }
         DataNodeInfo  dataNode = new DataNodeInfo(ip,hostName);
-        dataNodes.put(ip + "-" +hostName,dataNode);
+        dataNodes.put(key,dataNode);
+        System.out.println("dataNode 进行注册，ip: " + ip + " ,hostname: "+hostName);
         return true;
     }
 

@@ -1,9 +1,5 @@
 package com.quick.dfs.datanode.server;
 
-import com.quick.dfs.constant.ConfigConstant;
-
-import java.io.File;
-
 /**
  * @项目名称: quick-dfs
  * @描述: DataNode启动入口
@@ -44,22 +40,20 @@ public class DataNode {
         this.shouldRun = true;
         this.nameNode = new NameNodeRpcClient();
         boolean registerSuccess = this.nameNode.register();
-        //注册成功
-        if(!registerSuccess){
-            System.out.println("向NameNode注册失败，直接退出...");
-            System.exit(1);
-        }
 
         this.storageManager = new StorageManager();
+        //注册成功
+        if(registerSuccess){
+            //全量上报文件存储信息
+            StorageInfo storageInfo = this.storageManager.getStorageInfo();
+            this.nameNode.reportCompleteStorageInfo(storageInfo);
+        }else{
+            System.out.println("不需要全量上报文件存储信息...");
+        }
+
         //启动心跳
         this.heartbeatManager = new HeartbeatManager(nameNode,storageManager);
         this.heartbeatManager.start();
-
-        //全量上报文件存储信息
-        StorageInfo storageInfo = this.storageManager.getStorageInfo();
-        if(storageInfo != null){
-            this.nameNode.reportCompleteStorageInfo(storageInfo);
-        }
 
         //启动文件处理服务组件
         new DataNodeNIOServer(nameNode).start();
