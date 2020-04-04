@@ -18,7 +18,8 @@ message HeartbeatRequest{
     string hostname  = 2;  
 }  
 message HeartbeatResponse{  
-    int32 status  = 1;   
+    int32 status  = 1;
+    string commands = 2;
 }
 message MkDirRequest{
     string path = 1;

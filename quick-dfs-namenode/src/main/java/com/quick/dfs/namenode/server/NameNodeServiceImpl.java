@@ -3,6 +3,7 @@ package com.quick.dfs.namenode.server;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.quick.dfs.constant.CommandType;
 import com.quick.dfs.constant.StatusCode;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
@@ -94,13 +95,18 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     @Override
     public void heartbeat(HeartbeatRequest request, StreamObserver<HeartbeatResponse> responseObserver) {
         HeartbeatResponse response = null;
-        if(isRunning){
-            this.dataNodeManager.heatbeat(request.getIp(),request.getHostname());
+        boolean success = this.dataNodeManager.heatbeat(request.getIp(),request.getHostname());
+        if(success){
             response = HeartbeatResponse.newBuilder()
-                    .setStatus(StatusCode.STATUS_SUCCESS).build();
+                    .setStatus(StatusCode.STATUS_SUCCESS)
+                    .build();
         }else{
+            //心跳失败 需要重新注册并且上报全量文件存储信息
+            String commands = CommandType.REGISTER + CommandType.SPLIT + CommandType.REPORT_COMPLETE_STORAGE_INFO;
             response = HeartbeatResponse.newBuilder()
-                    .setStatus(StatusCode.STATUS_SHUTDOWN).build();
+                    .setStatus(StatusCode.STATUS_FAILURE)
+                    .setCommands(commands)
+                    .build();
         }
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -431,6 +437,36 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
             e.printStackTrace();
             response = InformReplicaReceivedResponse.newBuilder().setStatus(StatusCode.STATUS_FAILURE).build();
         }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    /**  
+     * 方法名: reportCompleteStorageInfo
+     * 描述:   dataNode上报全量存储信息
+     * @param request
+     * @param responseObserver  
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/4/4 13:29 
+     */  
+    @Override
+    public void reportCompleteStorageInfo(ReportCompleteStorageInfoRequest request, StreamObserver<ReportCompleteStorageInfoResponse> responseObserver) {
+        String ip = request.getIp();
+        String hostname = request.getHostname();
+        String fileNamesJson = request.getFileNames();
+        long storedDataSize = request.getStoredDataSize();
+
+        this.dataNodeManager.setStoredDataSize(ip,hostname,storedDataSize);
+
+        JSONArray fileNames = JSONArray.parseArray(fileNamesJson);
+        for(int i = 0;i < fileNames.size();i++){
+            String fileName = fileNames.getString(i);
+            this.nameSystem.addReceivedReplica(ip,hostname,fileName);
+        }
+
+        ReportCompleteStorageInfoResponse response = ReportCompleteStorageInfoResponse
+                .newBuilder().setStatus(StatusCode.STATUS_SUCCESS).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

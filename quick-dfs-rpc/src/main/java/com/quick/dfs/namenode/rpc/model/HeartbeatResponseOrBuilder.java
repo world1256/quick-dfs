@@ -11,4 +11,14 @@ public interface HeartbeatResponseOrBuilder extends
    * <code>optional int32 status = 1;</code>
    */
   int getStatus();
+
+  /**
+   * <code>optional string commands = 2;</code>
+   */
+  String getCommands();
+  /**
+   * <code>optional string commands = 2;</code>
+   */
+  com.google.protobuf.ByteString
+      getCommandsBytes();
 }

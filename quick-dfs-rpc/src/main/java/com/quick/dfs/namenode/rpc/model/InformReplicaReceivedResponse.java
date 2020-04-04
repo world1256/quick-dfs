@@ -224,7 +224,7 @@ public  final class InformReplicaReceivedResponse extends
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.InformReplicaReceivedResponse)
-      com.quick.dfs.namenode.rpc.model.InformReplicaReceivedResponseOrBuilder {
+      InformReplicaReceivedResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_InformReplicaReceivedResponse_descriptor;

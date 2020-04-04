@@ -318,7 +318,7 @@ public class FSNameSystem {
      * 作者: fansy
      * 日期: 2020/4/4 13:02
      */
-    public void addReceivedReplica(String ip,String hostname,String fileName) throws Exception{
+    public void addReceivedReplica(String ip,String hostname,String fileName){
         List<DataNodeInfo> dataNodes = this.replicasByFileName.get(fileName);
         if(dataNodes == null){
             dataNodes = new ArrayList<>();

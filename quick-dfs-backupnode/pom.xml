@@ -24,11 +24,6 @@
             <artifactId>quick-dfs-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.56</version>
-        </dependency>
     </dependencies>
 
 </project>

@@ -4,20 +4,21 @@
 package com.quick.dfs.namenode.rpc.model;
 
 /**
- * Protobuf type {@code com.quick.dfs.namenode.rpc.InformReplicaReceivedRequest}
+ * Protobuf type {@code com.quick.dfs.namenode.rpc.ReportCompleteStorageInfoRequest}
  */
-public  final class InformReplicaReceivedRequest extends
+public  final class ReportCompleteStorageInfoRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:com.quick.dfs.namenode.rpc.InformReplicaReceivedRequest)
-    InformReplicaReceivedRequestOrBuilder {
-  // Use InformReplicaReceivedRequest.newBuilder() to construct.
-  private InformReplicaReceivedRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // @@protoc_insertion_point(message_implements:com.quick.dfs.namenode.rpc.ReportCompleteStorageInfoRequest)
+    ReportCompleteStorageInfoRequestOrBuilder {
+  // Use ReportCompleteStorageInfoRequest.newBuilder() to construct.
+  private ReportCompleteStorageInfoRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private InformReplicaReceivedRequest() {
+  private ReportCompleteStorageInfoRequest() {
     ip_ = "";
     hostname_ = "";
-    fileName_ = "";
+    fileNames_ = "";
+    storedDataSize_ = 0L;
   }
 
   @Override
@@ -25,7 +26,7 @@ public  final class InformReplicaReceivedRequest extends
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
-  private InformReplicaReceivedRequest(
+  private ReportCompleteStorageInfoRequest(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -60,7 +61,12 @@ public  final class InformReplicaReceivedRequest extends
           case 26: {
             String s = input.readStringRequireUtf8();
 
-            fileName_ = s;
+            fileNames_ = s;
+            break;
+          }
+          case 32: {
+
+            storedDataSize_ = input.readInt64();
             break;
           }
         }
@@ -76,14 +82,14 @@ public  final class InformReplicaReceivedRequest extends
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_InformReplicaReceivedRequest_descriptor;
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_ReportCompleteStorageInfoRequest_descriptor;
   }
 
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_InformReplicaReceivedRequest_fieldAccessorTable
+    return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_ReportCompleteStorageInfoRequest_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            InformReplicaReceivedRequest.class, Builder.class);
+            ReportCompleteStorageInfoRequest.class, Builder.class);
   }
 
   public static final int IP_FIELD_NUMBER = 1;
@@ -154,38 +160,47 @@ public  final class InformReplicaReceivedRequest extends
     }
   }
 
-  public static final int FILENAME_FIELD_NUMBER = 3;
-  private volatile Object fileName_;
+  public static final int FILENAMES_FIELD_NUMBER = 3;
+  private volatile Object fileNames_;
   /**
-   * <code>optional string fileName = 3;</code>
+   * <code>optional string fileNames = 3;</code>
    */
-  public String getFileName() {
-    Object ref = fileName_;
+  public String getFileNames() {
+    Object ref = fileNames_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       String s = bs.toStringUtf8();
-      fileName_ = s;
+      fileNames_ = s;
       return s;
     }
   }
   /**
-   * <code>optional string fileName = 3;</code>
+   * <code>optional string fileNames = 3;</code>
    */
   public com.google.protobuf.ByteString
-      getFileNameBytes() {
-    Object ref = fileName_;
+      getFileNamesBytes() {
+    Object ref = fileNames_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (String) ref);
-      fileName_ = b;
+      fileNames_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
     }
+  }
+
+  public static final int STOREDDATASIZE_FIELD_NUMBER = 4;
+  private long storedDataSize_;
+  /**
+   * <code>optional int64 storedDataSize = 4;</code>
+   */
+  public long getStoredDataSize() {
+    return storedDataSize_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -206,8 +221,11 @@ public  final class InformReplicaReceivedRequest extends
     if (!getHostnameBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, hostname_);
     }
-    if (!getFileNameBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, fileName_);
+    if (!getFileNamesBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, fileNames_);
+    }
+    if (storedDataSize_ != 0L) {
+      output.writeInt64(4, storedDataSize_);
     }
   }
 
@@ -222,8 +240,12 @@ public  final class InformReplicaReceivedRequest extends
     if (!getHostnameBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, hostname_);
     }
-    if (!getFileNameBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, fileName_);
+    if (!getFileNamesBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, fileNames_);
+    }
+    if (storedDataSize_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(4, storedDataSize_);
     }
     memoizedSize = size;
     return size;
@@ -235,18 +257,20 @@ public  final class InformReplicaReceivedRequest extends
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof InformReplicaReceivedRequest)) {
+    if (!(obj instanceof ReportCompleteStorageInfoRequest)) {
       return super.equals(obj);
     }
-    InformReplicaReceivedRequest other = (InformReplicaReceivedRequest) obj;
+    ReportCompleteStorageInfoRequest other = (ReportCompleteStorageInfoRequest) obj;
 
     boolean result = true;
     result = result && getIp()
         .equals(other.getIp());
     result = result && getHostname()
         .equals(other.getHostname());
-    result = result && getFileName()
-        .equals(other.getFileName());
+    result = result && getFileNames()
+        .equals(other.getFileNames());
+    result = result && (getStoredDataSize()
+        == other.getStoredDataSize());
     return result;
   }
 
@@ -261,65 +285,68 @@ public  final class InformReplicaReceivedRequest extends
     hash = (53 * hash) + getIp().hashCode();
     hash = (37 * hash) + HOSTNAME_FIELD_NUMBER;
     hash = (53 * hash) + getHostname().hashCode();
-    hash = (37 * hash) + FILENAME_FIELD_NUMBER;
-    hash = (53 * hash) + getFileName().hashCode();
+    hash = (37 * hash) + FILENAMES_FIELD_NUMBER;
+    hash = (53 * hash) + getFileNames().hashCode();
+    hash = (37 * hash) + STOREDDATASIZE_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getStoredDataSize());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static InformReplicaReceivedRequest parseFrom(
+  public static ReportCompleteStorageInfoRequest parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static InformReplicaReceivedRequest parseFrom(
+  public static ReportCompleteStorageInfoRequest parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static InformReplicaReceivedRequest parseFrom(byte[] data)
+  public static ReportCompleteStorageInfoRequest parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static InformReplicaReceivedRequest parseFrom(
+  public static ReportCompleteStorageInfoRequest parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static InformReplicaReceivedRequest parseFrom(java.io.InputStream input)
+  public static ReportCompleteStorageInfoRequest parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static InformReplicaReceivedRequest parseFrom(
+  public static ReportCompleteStorageInfoRequest parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static InformReplicaReceivedRequest parseDelimitedFrom(java.io.InputStream input)
+  public static ReportCompleteStorageInfoRequest parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static InformReplicaReceivedRequest parseDelimitedFrom(
+  public static ReportCompleteStorageInfoRequest parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static InformReplicaReceivedRequest parseFrom(
+  public static ReportCompleteStorageInfoRequest parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static InformReplicaReceivedRequest parseFrom(
+  public static ReportCompleteStorageInfoRequest parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -331,7 +358,7 @@ public  final class InformReplicaReceivedRequest extends
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(InformReplicaReceivedRequest prototype) {
+  public static Builder newBuilder(ReportCompleteStorageInfoRequest prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   public Builder toBuilder() {
@@ -346,25 +373,25 @@ public  final class InformReplicaReceivedRequest extends
     return builder;
   }
   /**
-   * Protobuf type {@code com.quick.dfs.namenode.rpc.InformReplicaReceivedRequest}
+   * Protobuf type {@code com.quick.dfs.namenode.rpc.ReportCompleteStorageInfoRequest}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.InformReplicaReceivedRequest)
-      InformReplicaReceivedRequestOrBuilder {
+      // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.ReportCompleteStorageInfoRequest)
+      ReportCompleteStorageInfoRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_InformReplicaReceivedRequest_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_ReportCompleteStorageInfoRequest_descriptor;
     }
 
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_InformReplicaReceivedRequest_fieldAccessorTable
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_ReportCompleteStorageInfoRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              InformReplicaReceivedRequest.class, Builder.class);
+              ReportCompleteStorageInfoRequest.class, Builder.class);
     }
 
-    // Construct using com.quick.dfs.namenode.rpc.model.InformReplicaReceivedRequest.newBuilder()
+    // Construct using com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoRequest.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -385,33 +412,36 @@ public  final class InformReplicaReceivedRequest extends
 
       hostname_ = "";
 
-      fileName_ = "";
+      fileNames_ = "";
+
+      storedDataSize_ = 0L;
 
       return this;
     }
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_InformReplicaReceivedRequest_descriptor;
+      return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_ReportCompleteStorageInfoRequest_descriptor;
     }
 
-    public InformReplicaReceivedRequest getDefaultInstanceForType() {
-      return InformReplicaReceivedRequest.getDefaultInstance();
+    public ReportCompleteStorageInfoRequest getDefaultInstanceForType() {
+      return ReportCompleteStorageInfoRequest.getDefaultInstance();
     }
 
-    public InformReplicaReceivedRequest build() {
-      InformReplicaReceivedRequest result = buildPartial();
+    public ReportCompleteStorageInfoRequest build() {
+      ReportCompleteStorageInfoRequest result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    public InformReplicaReceivedRequest buildPartial() {
-      InformReplicaReceivedRequest result = new InformReplicaReceivedRequest(this);
+    public ReportCompleteStorageInfoRequest buildPartial() {
+      ReportCompleteStorageInfoRequest result = new ReportCompleteStorageInfoRequest(this);
       result.ip_ = ip_;
       result.hostname_ = hostname_;
-      result.fileName_ = fileName_;
+      result.fileNames_ = fileNames_;
+      result.storedDataSize_ = storedDataSize_;
       onBuilt();
       return result;
     }
@@ -443,16 +473,16 @@ public  final class InformReplicaReceivedRequest extends
       return (Builder) super.addRepeatedField(field, value);
     }
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof InformReplicaReceivedRequest) {
-        return mergeFrom((InformReplicaReceivedRequest)other);
+      if (other instanceof ReportCompleteStorageInfoRequest) {
+        return mergeFrom((ReportCompleteStorageInfoRequest)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(InformReplicaReceivedRequest other) {
-      if (other == InformReplicaReceivedRequest.getDefaultInstance()) return this;
+    public Builder mergeFrom(ReportCompleteStorageInfoRequest other) {
+      if (other == ReportCompleteStorageInfoRequest.getDefaultInstance()) return this;
       if (!other.getIp().isEmpty()) {
         ip_ = other.ip_;
         onChanged();
@@ -461,9 +491,12 @@ public  final class InformReplicaReceivedRequest extends
         hostname_ = other.hostname_;
         onChanged();
       }
-      if (!other.getFileName().isEmpty()) {
-        fileName_ = other.fileName_;
+      if (!other.getFileNames().isEmpty()) {
+        fileNames_ = other.fileNames_;
         onChanged();
+      }
+      if (other.getStoredDataSize() != 0L) {
+        setStoredDataSize(other.getStoredDataSize());
       }
       onChanged();
       return this;
@@ -477,11 +510,11 @@ public  final class InformReplicaReceivedRequest extends
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      InformReplicaReceivedRequest parsedMessage = null;
+      ReportCompleteStorageInfoRequest parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (InformReplicaReceivedRequest) e.getUnfinishedMessage();
+        parsedMessage = (ReportCompleteStorageInfoRequest) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -629,71 +662,97 @@ public  final class InformReplicaReceivedRequest extends
       return this;
     }
 
-    private Object fileName_ = "";
+    private Object fileNames_ = "";
     /**
-     * <code>optional string fileName = 3;</code>
+     * <code>optional string fileNames = 3;</code>
      */
-    public String getFileName() {
-      Object ref = fileName_;
+    public String getFileNames() {
+      Object ref = fileNames_;
       if (!(ref instanceof String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
-        fileName_ = s;
+        fileNames_ = s;
         return s;
       } else {
         return (String) ref;
       }
     }
     /**
-     * <code>optional string fileName = 3;</code>
+     * <code>optional string fileNames = 3;</code>
      */
     public com.google.protobuf.ByteString
-        getFileNameBytes() {
-      Object ref = fileName_;
+        getFileNamesBytes() {
+      Object ref = fileNames_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
-        fileName_ = b;
+        fileNames_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     /**
-     * <code>optional string fileName = 3;</code>
+     * <code>optional string fileNames = 3;</code>
      */
-    public Builder setFileName(
+    public Builder setFileNames(
         String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      fileName_ = value;
+      fileNames_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>optional string fileName = 3;</code>
+     * <code>optional string fileNames = 3;</code>
      */
-    public Builder clearFileName() {
+    public Builder clearFileNames() {
       
-      fileName_ = getDefaultInstance().getFileName();
+      fileNames_ = getDefaultInstance().getFileNames();
       onChanged();
       return this;
     }
     /**
-     * <code>optional string fileName = 3;</code>
+     * <code>optional string fileNames = 3;</code>
      */
-    public Builder setFileNameBytes(
+    public Builder setFileNamesBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      fileName_ = value;
+      fileNames_ = value;
+      onChanged();
+      return this;
+    }
+
+    private long storedDataSize_ ;
+    /**
+     * <code>optional int64 storedDataSize = 4;</code>
+     */
+    public long getStoredDataSize() {
+      return storedDataSize_;
+    }
+    /**
+     * <code>optional int64 storedDataSize = 4;</code>
+     */
+    public Builder setStoredDataSize(long value) {
+      
+      storedDataSize_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional int64 storedDataSize = 4;</code>
+     */
+    public Builder clearStoredDataSize() {
+      
+      storedDataSize_ = 0L;
       onChanged();
       return this;
     }
@@ -708,39 +767,39 @@ public  final class InformReplicaReceivedRequest extends
     }
 
 
-    // @@protoc_insertion_point(builder_scope:com.quick.dfs.namenode.rpc.InformReplicaReceivedRequest)
+    // @@protoc_insertion_point(builder_scope:com.quick.dfs.namenode.rpc.ReportCompleteStorageInfoRequest)
   }
 
-  // @@protoc_insertion_point(class_scope:com.quick.dfs.namenode.rpc.InformReplicaReceivedRequest)
-  private static final InformReplicaReceivedRequest DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:com.quick.dfs.namenode.rpc.ReportCompleteStorageInfoRequest)
+  private static final ReportCompleteStorageInfoRequest DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new InformReplicaReceivedRequest();
+    DEFAULT_INSTANCE = new ReportCompleteStorageInfoRequest();
   }
 
-  public static InformReplicaReceivedRequest getDefaultInstance() {
+  public static ReportCompleteStorageInfoRequest getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<InformReplicaReceivedRequest>
-      PARSER = new com.google.protobuf.AbstractParser<InformReplicaReceivedRequest>() {
-    public InformReplicaReceivedRequest parsePartialFrom(
+  private static final com.google.protobuf.Parser<ReportCompleteStorageInfoRequest>
+      PARSER = new com.google.protobuf.AbstractParser<ReportCompleteStorageInfoRequest>() {
+    public ReportCompleteStorageInfoRequest parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new InformReplicaReceivedRequest(input, extensionRegistry);
+        return new ReportCompleteStorageInfoRequest(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<InformReplicaReceivedRequest> parser() {
+  public static com.google.protobuf.Parser<ReportCompleteStorageInfoRequest> parser() {
     return PARSER;
   }
 
   @Override
-  public com.google.protobuf.Parser<InformReplicaReceivedRequest> getParserForType() {
+  public com.google.protobuf.Parser<ReportCompleteStorageInfoRequest> getParserForType() {
     return PARSER;
   }
 
-  public InformReplicaReceivedRequest getDefaultInstanceForType() {
+  public ReportCompleteStorageInfoRequest getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 

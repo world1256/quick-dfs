@@ -1,5 +1,7 @@
 package com.quick.dfs.datanode.server;
 
+import com.alibaba.fastjson.JSONArray;
+import com.quick.dfs.constant.StatusCode;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
 import com.quick.dfs.thread.Daemon;
@@ -31,35 +33,42 @@ public class NameNodeRpcClient {
         this.namenode = NameNodeServiceGrpc.newBlockingStub(channel);
     }
 
-    public void start(){
-        register();
-        startHearbeat();
-    }
 
     /**
      * @方法名: register
      * @描述:   向nameNode发起注册请求
-     * @return void
+     * @return boolean
      * @作者: fansy
      * @日期: 2020/3/19 11:02 
     */  
-    public void register(){
-        new RegisterThread().start();
+    public boolean register(){
+
+        RegisterRequest registerRequest = RegisterRequest.newBuilder()
+                .setIp(ConfigConstant.DATA_NODE_IP).setHostname(ConfigConstant.DATA_NODE_HOST_NAME).build();
+        RegisterResponse registerResponse = namenode.register(registerRequest);
+
+        if(registerResponse.getStatus() == StatusCode.STATUS_SUCCESS){
+            return  true;
+        }
+        return false;
     }
 
-    /***  
-     * @方法名: startHearbeat
-     * @描述:   开始发送心跳
-     * @param   
-     * @return void  
-     * @作者: fansy
-     * @日期: 2020/3/20 16:18 
-    */  
-    public void startHearbeat(){
-        new HeartbeatThread().start();
+    /**
+     * 方法名: heartbeat
+     * 描述:   向nameNode发送心跳
+     * @param
+     * @return com.quick.dfs.namenode.rpc.model.HeartbeatResponse
+     * 作者: fansy
+     * 日期: 2020/4/4 14:18
+     */
+    public HeartbeatResponse heartbeat(){
+        HeartbeatRequest heartbeatRequest = HeartbeatRequest.newBuilder()
+                .setIp(ConfigConstant.DATA_NODE_IP).setHostname(ConfigConstant.DATA_NODE_HOST_NAME).build();
+        HeartbeatResponse heartbeatResponse = namenode.heartbeat(heartbeatRequest);
+        return heartbeatResponse;
     }
 
-    /**  
+    /**
      * 方法名: informReplicaReceived
      * 描述:   向nameNode上报自己接收到的文件
      * @param fileName  
@@ -75,42 +84,22 @@ public class NameNodeRpcClient {
     }
 
     /**
-     * 注册线程
+     * 方法名: reportCompleteStorageInfo
+     * 描述:   上报全量文件存储信息
+     * @param
+     * @return void
+     * 作者: fansy
+     * 日期: 2020/4/4 13:46
      */
-    class RegisterThread extends Thread{
-
-        //这里进行注册操作
-        @Override
-        public void run() {
-            try{
-                RegisterRequest registerRequest = RegisterRequest.newBuilder()
-                        .setIp(ConfigConstant.DATA_NODE_IP).setHostname(ConfigConstant.DATA_NODE_HOST_NAME).build();
-                RegisterResponse registerResponse = namenode.register(registerRequest);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-        }
+    public void reportCompleteStorageInfo(StorageInfo storageInfo){
+        ReportCompleteStorageInfoRequest request = ReportCompleteStorageInfoRequest
+                .newBuilder()
+                .setIp(ConfigConstant.DATA_NODE_IP)
+                .setHostname(ConfigConstant.DATA_NODE_HOST_NAME)
+                .setFileNames(JSONArray.toJSONString(storageInfo.getFileNames()))
+                .setStoredDataSize(storageInfo.getStoredDataSize())
+                .build();
+        this.namenode.reportCompleteStorageInfo(request);
     }
 
-    /**
-     * 心跳线程
-     */
-    class HeartbeatThread extends Daemon {
-
-        @Override
-        public void run() {
-            while (true){
-                //TODO  send heartbeat
-                try {
-                    HeartbeatRequest heartbeatRequest = HeartbeatRequest.newBuilder()
-                            .setIp(ConfigConstant.DATA_NODE_IP).setHostname(ConfigConstant.DATA_NODE_HOST_NAME).build();
-                    HeartbeatResponse heartbeatResponse = namenode.heartbeat(heartbeatRequest);
-                    Thread.sleep(ConfigConstant.DATA_NODE_HEARTBEAT_INTERVAL);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 }

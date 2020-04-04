@@ -62,9 +62,13 @@ public class DataNodeManager {
     public boolean heatbeat(String ip,String hostName){
         String key = ip + "-" +hostName;
         DataNodeInfo dataNode = dataNodes.get(key);
-        if(dataNode != null){
-            dataNode.setLastHeartbeatTime(System.currentTimeMillis());
+
+        //nameNode中没有该dataNode信息  需要下发命令进行重新注册以及上报存储文件信息
+        if(dataNode == null){
+            return false;
         }
+
+        dataNode.setLastHeartbeatTime(System.currentTimeMillis());
         return true;
     }
 
@@ -97,6 +101,23 @@ public class DataNodeManager {
         }
         return allocateDataNodes;
     }
+
+    /**  
+     * 方法名: setStoredDataSize
+     * 描述:   更新dataNode存储数据总量
+     * @param ip
+     * @param hostname
+     * @param storedDataSize  
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/4/4 13:21 
+     */  
+    public void setStoredDataSize(String ip,String hostname,long storedDataSize){
+        String key = ip + "-" +hostname;
+        DataNodeInfo dataNode = this.dataNodes.get(key);
+        dataNode.setStoredDataSize(storedDataSize);
+    }
+
 
     /**
      * 方法名: getDataNode
