@@ -46,8 +46,8 @@ public class NameNode {
      * @日期: 2020/3/18 15:21 
     */  
     private void init(){
-        this.fsNameSystem = new FSNameSystem();
         this.dataNodeManager = new DataNodeManager();
+        this.fsNameSystem = new FSNameSystem(dataNodeManager);
         this.rpcServer = new NameNodeRpcServer(fsNameSystem,dataNodeManager);
         this.fsImageUploadServer = new FSImageUploadServer();
     }

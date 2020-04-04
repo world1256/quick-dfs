@@ -59,3 +59,20 @@ message AllocateDataNodesRequest{
 message AllocateDataNodesResponse{
     string dataNodes = 1;
 }
+message InformReplicaReceivedRequest{
+    string ip = 1;
+    string hostname = 2;
+    string fileName = 3;
+}
+message InformReplicaReceivedResponse{
+    int32 status = 1;
+}
+message ReportCompleteStorageInfoRequest{
+    string ip = 1;
+    string hostname = 2;
+    string fileNames = 3;
+    int64 storedDataSize = 4;
+}
+message ReportCompleteStorageInfoResponse{
+    int32 status = 1;
+}

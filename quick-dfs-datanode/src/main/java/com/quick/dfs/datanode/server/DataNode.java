@@ -16,7 +16,7 @@ public class DataNode {
     /**
      * 和一组NameNode的通信组件
      */
-    private NameNodeOfferService nameNodeOfferService;
+    private NameNodeRpcClient nameNode;
 
     /**
      * @方法名: init
@@ -28,11 +28,11 @@ public class DataNode {
     */
     public void init(){
         this.shouldRun = true;
-        this.nameNodeOfferService = new NameNodeOfferService();
-        nameNodeOfferService.start();
+        this.nameNode = new NameNodeRpcClient();
+        nameNode.start();
 
         //启动文件处理服务组件
-        new DataNodeNIOServer().start();
+        new DataNodeNIOServer(nameNode).start();
     }
 
     /**

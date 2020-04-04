@@ -25,7 +25,10 @@ public class DataNodeNIOServer extends Thread{
 
     private Map<String,CachedFile> cachedFiles = new HashMap<>();
 
-    public DataNodeNIOServer(){
+    private NameNodeRpcClient nameNode;
+
+    public DataNodeNIOServer(NameNodeRpcClient nameNode){
+        this.nameNode = nameNode;
         ServerSocketChannel channel = null;
         try {
             selector = Selector.open();
@@ -119,14 +122,14 @@ public class DataNodeNIOServer extends Thread{
 
 
 
-                    String fileName = getFileName(channel,buffer);
+                    FileName fileName = getFileName(channel,buffer);
                     if(fileName == null){
                         continue;
                     }
                     long fileLength = getFileLength(channel,buffer);
                     long readFileLength = getReadFileLength(channel,buffer);
 
-                    FileOutputStream out = new FileOutputStream(fileName);
+                    FileOutputStream out = new FileOutputStream(fileName.absoluteFileName);
                     FileChannel fileChannel = out.getChannel();
                     fileChannel.position(fileChannel.size());
 
@@ -158,6 +161,10 @@ public class DataNodeNIOServer extends Thread{
                         ByteBuffer responseBuffer = ByteBuffer.wrap("SUCCESS".getBytes());
                         channel.write(responseBuffer);
                         cachedFiles.remove(remoteAddr);
+                        System.out.println("文件读取完毕，返回响应给客户端："+remoteAddr);
+
+                        //向nameNode上报接收到的文件信息
+                        nameNode.informReplicaReceived(fileName.relativeFileName);
                     }else{
                         CachedFile cachedFile = new CachedFile(fileName,fileLength,readFileLength);
                         cachedFiles.put(remoteAddr,cachedFile);
@@ -188,31 +195,31 @@ public class DataNodeNIOServer extends Thread{
      * @作者: fansy
      * @日期: 2020/4/2 15:25
     */
-    private String getFileName(SocketChannel channel,ByteBuffer buffer) throws Exception {
-        String fileName = null;
+    private FileName getFileName(SocketChannel channel,ByteBuffer buffer) throws Exception {
+        FileName fileName = null;
         String remoteAddr = channel.getRemoteAddress().toString();
         if(cachedFiles.containsKey(remoteAddr)){
             fileName = cachedFiles.get(remoteAddr).fileName;
             return fileName;
         }
 
-        fileName = getFileNameFromChannel(channel,buffer);
-        if(fileName == null){
-            return fileName;
+        String relativeFileName = getRelativeFileName(channel,buffer);
+        if(relativeFileName == null){
+            return null;
         }
 
         //如果文件目录不存在  先创建文件目录
-        String dirPath = ConfigConstant.DATA_NODE_DATA_PATH + fileName.substring(0,fileName.lastIndexOf("/")+1);
+        String dirPath = ConfigConstant.DATA_NODE_DATA_PATH + relativeFileName.substring(0,relativeFileName.lastIndexOf("/")+1);
         File dir = new File(dirPath);
         if(!dir.exists()){
             dir.mkdirs();
         }
-        fileName = ConfigConstant.DATA_NODE_DATA_PATH + fileName;
-        return fileName;
+        String absoluteFileName = ConfigConstant.DATA_NODE_DATA_PATH + relativeFileName;
+        return new FileName(relativeFileName,absoluteFileName);
     }
 
     /**  
-     * @方法名: getFileNameFromChannel
+     * @方法名: getRelativeFileName
      * @描述:   从channel中读取文件名
      * @param channel
      * @param buffer  
@@ -220,7 +227,7 @@ public class DataNodeNIOServer extends Thread{
      * @作者: fansy
      * @日期: 2020/4/2 15:13 
     */  
-    private String getFileNameFromChannel(SocketChannel channel,ByteBuffer buffer) throws Exception {
+    private String getRelativeFileName(SocketChannel channel,ByteBuffer buffer) throws Exception {
         int length = channel.read(buffer);
         if(length > 0){
             byte[] fileNameLengthBytes = new byte[4];
@@ -280,17 +287,38 @@ public class DataNodeNIOServer extends Thread{
         return readFileLength;
     }
 
+    /**
+     * 文件名
+     */
+    class FileName{
+        /**
+         * 相对路径文件名
+         */
+        private String relativeFileName;
 
+        /**
+         * 绝对路径文件名
+         */
+        private String absoluteFileName;
 
+        public FileName(String relativeFileName,String absoluteFileName){
+            this.relativeFileName = relativeFileName;
+            this.absoluteFileName = absoluteFileName;
+        }
+    }
+
+    /**
+     * 当前处理上报请求中缓存的文件信息
+     */
     class CachedFile{
 
-        private String fileName;
+        private FileName fileName;
 
         private long fileLength;
 
         private long readFileLength;
 
-        public CachedFile(String fileName,long fileLength,long readFileLength){
+        public CachedFile(FileName fileName,long fileLength,long readFileLength){
             this.fileName = fileName;
             this.fileLength = fileLength;
             this.readFileLength = readFileLength;

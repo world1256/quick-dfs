@@ -99,6 +99,20 @@ public class DataNodeManager {
     }
 
     /**
+     * 方法名: getDataNode
+     * 描述:   获取dataNode信息
+     * @param ip
+     * @param hostname
+     * @return com.quick.dfs.namenode.server.DataNodeInfo
+     * 作者: fansy
+     * 日期: 2020/4/4 12:53
+     */
+    public DataNodeInfo getDataNode(String ip,String hostname){
+        String key = ip + "-" +hostname;
+        return dataNodes.get(key);
+    }
+
+    /**
      * 定时检测 DataNode活性的后台线程
      */
     class DataNodeAliveMonitor extends Daemon {

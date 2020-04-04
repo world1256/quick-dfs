@@ -75,7 +75,7 @@ public interface ConfigConstant {
     /**
      * datanode  上报心跳时间间隔
      */
-    Long DATA_NODE_HEARTBEAT_INTERVAL =030 * 1000l;
+    Long DATA_NODE_HEARTBEAT_INTERVAL = 30 * 1000l;
 
     /**
      * 数据存储副本数量

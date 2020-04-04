@@ -1,9 +1,6 @@
 package com.quick.dfs.datanode.server;
 
-import com.quick.dfs.namenode.rpc.model.HeartbeatRequest;
-import com.quick.dfs.namenode.rpc.model.HeartbeatResponse;
-import com.quick.dfs.namenode.rpc.model.RegisterRequest;
-import com.quick.dfs.namenode.rpc.model.RegisterResponse;
+import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
 import com.quick.dfs.thread.Daemon;
 import com.quick.dfs.constant.ConfigConstant;
@@ -19,14 +16,14 @@ import java.util.concurrent.CountDownLatch;
  * @作者: fansy
  * @日期: 2020/3/19 10:56
  **/
-public class NameNodeServiceActor {
+public class NameNodeRpcClient {
 
     /**
      * namenode通信组件
      */
     private NameNodeServiceGrpc.NameNodeServiceBlockingStub namenode;
 
-    public NameNodeServiceActor(){
+    public NameNodeRpcClient(){
         ManagedChannel channel = NettyChannelBuilder
                 .forAddress(ConfigConstant.NAME_NODE_HOST_NAME,ConfigConstant.NAME_NODE_DEFAULT_PORT)
                 .negotiationType(NegotiationType.PLAINTEXT)
@@ -34,17 +31,20 @@ public class NameNodeServiceActor {
         this.namenode = NameNodeServiceGrpc.newBlockingStub(channel);
     }
 
+    public void start(){
+        register();
+        startHearbeat();
+    }
 
     /**
      * @方法名: register
      * @描述:   向nameNode发起注册请求
-     * @param latch  
-     * @return void  
+     * @return void
      * @作者: fansy
      * @日期: 2020/3/19 11:02 
     */  
-    public void register(CountDownLatch latch){
-        new RegisterThread(latch).start();
+    public void register(){
+        new RegisterThread().start();
     }
 
     /***  
@@ -59,16 +59,25 @@ public class NameNodeServiceActor {
         new HeartbeatThread().start();
     }
 
+    /**  
+     * 方法名: informReplicaReceived
+     * 描述:   向nameNode上报自己接收到的文件
+     * @param fileName  
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/4/4 12:37 
+     */  
+    public void informReplicaReceived(String fileName){
+        InformReplicaReceivedRequest request = InformReplicaReceivedRequest.newBuilder()
+                .setFileName(fileName)
+                .build();
+        namenode.informReplicaReceived(request);
+    }
+
     /**
      * 注册线程
      */
     class RegisterThread extends Thread{
-
-        CountDownLatch latch;
-
-        public RegisterThread(CountDownLatch latch){
-            this.latch = latch;
-        }
 
         //这里进行注册操作
         @Override
@@ -77,7 +86,6 @@ public class NameNodeServiceActor {
                 RegisterRequest registerRequest = RegisterRequest.newBuilder()
                         .setIp(ConfigConstant.DATA_NODE_IP).setHostname(ConfigConstant.DATA_NODE_HOST_NAME).build();
                 RegisterResponse registerResponse = namenode.register(registerRequest);
-                latch.countDown();
             }catch (Exception e){
                 e.printStackTrace();
             }

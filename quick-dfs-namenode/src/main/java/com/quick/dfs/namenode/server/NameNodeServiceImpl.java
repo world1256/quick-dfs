@@ -370,7 +370,6 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     public void createFile(CreateFileRequest request, StreamObserver<CreateFileResponse> responseObserver) {
         CreateFileResponse response = null;
         String fileName = request.getFileName();
-
         if(isRunning){
             boolean success = this.nameSystem.createFile(fileName);
             if(success){
@@ -406,6 +405,32 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
 
         AllocateDataNodesResponse response = AllocateDataNodesResponse.newBuilder()
                 .setDataNodes(dataNodesJson).build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    /**
+     * 方法名: informReplicaReceived
+     * 描述:   dataNode上报接收到的文件信息
+     * @param request
+     * @param responseObserver
+     * @return void
+     * 作者: fansy
+     * 日期: 2020/4/4 12:15
+     */
+    @Override
+    public void informReplicaReceived(InformReplicaReceivedRequest request, StreamObserver<InformReplicaReceivedResponse> responseObserver) {
+        String ip = request.getIp();
+        String hostname = request.getHostname();
+        String fileName = request.getFileName();
+        InformReplicaReceivedResponse response = null;
+        try{
+            this.nameSystem.addReceivedReplica(ip,hostname,fileName);
+            response = InformReplicaReceivedResponse.newBuilder().setStatus(StatusCode.STATUS_SUCCESS).build();
+        }catch (Exception e){
+            e.printStackTrace();
+            response = InformReplicaReceivedResponse.newBuilder().setStatus(StatusCode.STATUS_FAILURE).build();
+        }
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

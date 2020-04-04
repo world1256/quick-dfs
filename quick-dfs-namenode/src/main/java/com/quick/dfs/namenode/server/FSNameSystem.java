@@ -12,6 +12,8 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @项目名称: quick-dfs
@@ -36,7 +38,18 @@ public class FSNameSystem {
      */
     private long checkpointTxid;
 
-    public FSNameSystem(){
+    /**
+     * datanode 信息管理组件
+     */
+    private DataNodeManager dataNodeManager;
+
+    /**
+     * 文件副本信息   文件保存在哪些dataNode上
+     */
+    private Map<String,List<DataNodeInfo>> replicasByFileName = new ConcurrentHashMap<>();
+
+    public FSNameSystem(DataNodeManager dataNodeManager){
+        this.dataNodeManager = dataNodeManager;
         this.directory = new FSDirectory();
         this.editLog = new FSEditLog(this);
         recoveryNamespace();
@@ -293,6 +306,26 @@ public class FSNameSystem {
             default:
                 break;
         }
+    }
+
+    /**
+     * 方法名: addReceivedReplica
+     * 描述:   给指定的文件增加一个成功接收的副本
+     * @param ip
+     * @param hostname
+     * @param fileName
+     * @return void
+     * 作者: fansy
+     * 日期: 2020/4/4 13:02
+     */
+    public void addReceivedReplica(String ip,String hostname,String fileName) throws Exception{
+        List<DataNodeInfo> dataNodes = this.replicasByFileName.get(fileName);
+        if(dataNodes == null){
+            dataNodes = new ArrayList<>();
+            this.replicasByFileName.put(fileName,dataNodes);
+        }
+        DataNodeInfo dataNode = this.dataNodeManager.getDataNode(ip,hostname);
+        dataNodes.add(dataNode);
     }
 
 }

@@ -17,4 +17,6 @@ service NameNodeService {
 	rpc updateCheckpointTxid(UpdateCheckpointTxidRequest) returns (UpdateCheckpointTxidResponse);
 	rpc createFile(CreateFileRequest) returns (CreateFileResponse);
 	rpc allocateDataNodes(AllocateDataNodesRequest) returns (AllocateDataNodesResponse);
+	rpc informReplicaReceived(InformReplicaReceivedRequest) returns (InformReplicaReceivedResponse);
+	rpc reportCompleteStorageInfo(ReportCompleteStorageInfoRequest) returns (ReportCompleteStorageInfoResponse);
 }
