@@ -6,6 +6,7 @@ import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.constant.StatusCode;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
+import com.quick.dfs.util.StringUtil;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NegotiationType;
 import io.grpc.netty.NettyChannelBuilder;
@@ -19,6 +20,7 @@ import io.grpc.netty.NettyChannelBuilder;
 public class FileSystemImpl implements FileSystem{
 
     private NameNodeServiceGrpc.NameNodeServiceBlockingStub namenode;
+    private NIOClient nioClient;
 
     public FileSystemImpl(){
         ManagedChannel channel = NettyChannelBuilder
@@ -26,6 +28,7 @@ public class FileSystemImpl implements FileSystem{
                 .negotiationType(NegotiationType.PLAINTEXT)
                 .build();
         this.namenode = NameNodeServiceGrpc.newBlockingStub(channel);
+        this.nioClient = new NIOClient();
     }
 
     /**
@@ -86,7 +89,7 @@ public class FileSystemImpl implements FileSystem{
         for(int i = 0;i < dataNodes.size();i++){
             JSONObject dataNode = dataNodes.getJSONObject(i);
             String hostName = dataNode.getString("hostName");
-            NIOClient.sendFile(hostName,fileName,file,file.length);
+            nioClient.sendFile(hostName,fileName,file,file.length);
         }
 
         return true;
@@ -128,4 +131,43 @@ public class FileSystemImpl implements FileSystem{
         return response.getDataNodes();
     }
 
+    /**
+     * 方法名: download
+     * 描述:   下载文件
+     * @param fileName
+     * @return byte[]
+     * 作者: fansy
+     * 日期: 2020/4/6 13:34
+     */
+    @Override
+    public byte[] download(String fileName) throws Exception {
+        byte[] fileBytes = null;
+        //获取文件所在dataNode hostname
+        String hostname = getDataNodeHostNameForFile(fileName);
+        if(StringUtil.isNotEmpty(hostname)){
+            fileBytes = nioClient.readFile(hostname,fileName);
+        }
+        return fileBytes;
+    }
+
+    /**  
+     * 方法名: getDataNodeHostNameForFile
+     * 描述:   获取文件所在dataNode hostname
+     * @param fileName  
+     * @return java.lang.String  
+     * 作者: fansy 
+     * 日期: 2020/4/6 13:41 
+     */  
+    private String getDataNodeHostNameForFile(String fileName){
+        GetDataNodeForFileRequest request = GetDataNodeForFileRequest.newBuilder()
+                .setFileName(fileName).build();
+        GetDataNodeForFileResponse response = this.namenode.getDataNodeForFile(request);
+        if(response.getStatus() == StatusCode.STATUS_SUCCESS){
+            String dataNodeInfoJson = response.getDataNodeInfo();
+            JSONObject dataNodeInfo = JSONObject.parseObject(dataNodeInfoJson);
+            String hostName = dataNodeInfo.getString("hostName");
+            return hostName;
+        }
+        return null;
+    }
 }

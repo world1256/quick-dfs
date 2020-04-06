@@ -77,3 +77,10 @@ message ReportCompleteStorageInfoRequest{
 message ReportCompleteStorageInfoResponse{
     int32 status = 1;
 }
+message GetDataNodeForFileRequest{
+    string fileName = 1;
+}
+message GetDataNodeForFileResponse{
+    int32 status = 1;
+    string dataNodeInfo = 2;
+}

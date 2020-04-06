@@ -24,7 +24,7 @@ public final class NameNodeServer {
   static {
     String[] descriptorData = {
       "\n\027NameNodeRpcServer.proto\022\032com.quick.dfs" +
-      ".namenode.rpc\032\026NameNodeRpcModel.proto2\300\t" +
+      ".namenode.rpc\032\026NameNodeRpcModel.proto2\306\n" +
       "\n\017NameNodeService\022e\n\010register\022+.com.quic" +
       "k.dfs.namenode.rpc.RegisterRequest\032,.com" +
       ".quick.dfs.namenode.rpc.RegisterResponse" +
@@ -55,8 +55,12 @@ public final class NameNodeServer {
       "StorageInfo\022<.com.quick.dfs.namenode.rpc",
       ".ReportCompleteStorageInfoRequest\032=.com." +
       "quick.dfs.namenode.rpc.ReportCompleteSto" +
-      "rageInfoResponseB6\n\"com.quick.dfs.nameno" +
-      "de.rpc.serviceB\016NameNodeServerP\001b\006proto3"
+      "rageInfoResponse\022\203\001\n\022getDataNodeForFile\022" +
+      "5.com.quick.dfs.namenode.rpc.GetDataNode" +
+      "ForFileRequest\0326.com.quick.dfs.namenode." +
+      "rpc.GetDataNodeForFileResponseB6\n\"com.qu" +
+      "ick.dfs.namenode.rpc.serviceB\016NameNodeSe" +
+      "rverP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

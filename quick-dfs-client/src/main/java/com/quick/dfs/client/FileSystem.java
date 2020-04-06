@@ -38,4 +38,14 @@ public interface FileSystem {
      * 日期: 2020/3/29 19:30
      */
     boolean upload(byte[] file,String fileName)throws Exception;
+
+    /**  
+     * 方法名: download
+     * 描述:   下载文件
+     * @param fileName  
+     * @return byte[]  
+     * 作者: fansy 
+     * 日期: 2020/4/6 13:34 
+     */  
+    byte[] download(String fileName)throws Exception;
 }

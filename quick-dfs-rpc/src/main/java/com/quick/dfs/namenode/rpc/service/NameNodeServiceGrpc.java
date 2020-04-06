@@ -111,6 +111,15 @@ public class NameNodeServiceGrpc {
               "com.quick.dfs.namenode.rpc.NameNodeService", "reportCompleteStorageInfo"),
           io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoRequest.getDefaultInstance()),
           io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoResponse.getDefaultInstance()));
+  @io.grpc.ExperimentalApi
+  public static final io.grpc.MethodDescriptor<com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest,
+      com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse> METHOD_GET_DATA_NODE_FOR_FILE =
+      io.grpc.MethodDescriptor.create(
+          io.grpc.MethodDescriptor.MethodType.UNARY,
+          generateFullMethodName(
+              "com.quick.dfs.namenode.rpc.NameNodeService", "getDataNodeForFile"),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse.getDefaultInstance()));
 
   public static NameNodeServiceStub newStub(io.grpc.Channel channel) {
     return new NameNodeServiceStub(channel);
@@ -157,6 +166,9 @@ public class NameNodeServiceGrpc {
 
     public void reportCompleteStorageInfo(com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoRequest request,
                                           io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoResponse> responseObserver);
+
+    public void getDataNodeForFile(com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest request,
+                                   io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse> responseObserver);
   }
 
   public static interface NameNodeServiceBlockingClient {
@@ -180,6 +192,8 @@ public class NameNodeServiceGrpc {
     public com.quick.dfs.namenode.rpc.model.InformReplicaReceivedResponse informReplicaReceived(com.quick.dfs.namenode.rpc.model.InformReplicaReceivedRequest request);
 
     public com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoResponse reportCompleteStorageInfo(com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoRequest request);
+
+    public com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse getDataNodeForFile(com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest request);
   }
 
   public static interface NameNodeServiceFutureClient {
@@ -213,6 +227,9 @@ public class NameNodeServiceGrpc {
 
     public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoResponse> reportCompleteStorageInfo(
             com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoRequest request);
+
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse> getDataNodeForFile(
+            com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest request);
   }
 
   public static class NameNodeServiceStub extends io.grpc.stub.AbstractStub<NameNodeServiceStub>
@@ -301,6 +318,13 @@ public class NameNodeServiceGrpc {
       asyncUnaryCall(
           getChannel().newCall(METHOD_REPORT_COMPLETE_STORAGE_INFO, getCallOptions()), request, responseObserver);
     }
+
+    @Override
+    public void getDataNodeForFile(com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest request,
+        io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(METHOD_GET_DATA_NODE_FOR_FILE, getCallOptions()), request, responseObserver);
+    }
   }
 
   public static class NameNodeServiceBlockingStub extends io.grpc.stub.AbstractStub<NameNodeServiceBlockingStub>
@@ -378,6 +402,12 @@ public class NameNodeServiceGrpc {
     public com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoResponse reportCompleteStorageInfo(com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoRequest request) {
       return blockingUnaryCall(
           getChannel(), METHOD_REPORT_COMPLETE_STORAGE_INFO, getCallOptions(), request);
+    }
+
+    @Override
+    public com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse getDataNodeForFile(com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest request) {
+      return blockingUnaryCall(
+          getChannel(), METHOD_GET_DATA_NODE_FOR_FILE, getCallOptions(), request);
     }
   }
 
@@ -467,6 +497,13 @@ public class NameNodeServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(METHOD_REPORT_COMPLETE_STORAGE_INFO, getCallOptions()), request);
     }
+
+    @Override
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse> getDataNodeForFile(
+        com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(METHOD_GET_DATA_NODE_FOR_FILE, getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_REGISTER = 0;
@@ -479,6 +516,7 @@ public class NameNodeServiceGrpc {
   private static final int METHODID_ALLOCATE_DATA_NODES = 7;
   private static final int METHODID_INFORM_REPLICA_RECEIVED = 8;
   private static final int METHODID_REPORT_COMPLETE_STORAGE_INFO = 9;
+  private static final int METHODID_GET_DATA_NODE_FOR_FILE = 10;
 
   private static class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -535,6 +573,10 @@ public class NameNodeServiceGrpc {
         case METHODID_REPORT_COMPLETE_STORAGE_INFO:
           serviceImpl.reportCompleteStorageInfo((com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoRequest) request,
               (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoResponse>) responseObserver);
+          break;
+        case METHODID_GET_DATA_NODE_FOR_FILE:
+          serviceImpl.getDataNodeForFile((com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest) request,
+              (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -624,6 +666,13 @@ public class NameNodeServiceGrpc {
               com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoRequest,
               com.quick.dfs.namenode.rpc.model.ReportCompleteStorageInfoResponse>(
                 serviceImpl, METHODID_REPORT_COMPLETE_STORAGE_INFO)))
+        .addMethod(
+          METHOD_GET_DATA_NODE_FOR_FILE,
+          asyncUnaryCall(
+            new MethodHandlers<
+              com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest,
+              com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse>(
+                serviceImpl, METHODID_GET_DATA_NODE_FOR_FILE)))
         .build();
   }
 }

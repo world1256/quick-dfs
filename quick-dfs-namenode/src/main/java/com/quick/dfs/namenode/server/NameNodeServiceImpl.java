@@ -476,4 +476,34 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    /**  
+     * 方法名: getDataNodeForFile
+     * 描述:   获取文件所在dataNode
+     *        这里随机返回一个dataNode  尽量让请求均匀分布到各个dataNode上去
+     * @param request
+     * @param responseObserver  
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/4/6 13:15 
+     */  
+    @Override
+    public void getDataNodeForFile(GetDataNodeForFileRequest request, StreamObserver<GetDataNodeForFileResponse> responseObserver) {
+        String fileName = request.getFileName();
+        DataNodeInfo dataNodeInfo = this.nameSystem.getDataNodeForFile(fileName);
+
+        GetDataNodeForFileResponse response = null;
+        if(fileName == null){
+            response = GetDataNodeForFileResponse.newBuilder()
+                    .setStatus(StatusCode.STATUS_FAILURE)
+                    .build();
+        }else{
+            response = GetDataNodeForFileResponse.newBuilder()
+                    .setStatus(StatusCode.STATUS_SUCCESS)
+                    .setDataNodeInfo(JSONObject.toJSONString(dataNodeInfo))
+                    .build();
+        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 }

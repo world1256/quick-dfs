@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -326,6 +327,25 @@ public class FSNameSystem {
         }
         DataNodeInfo dataNode = this.dataNodeManager.getDataNode(ip,hostname);
         dataNodes.add(dataNode);
+    }
+
+    /**
+     * 方法名: getDataNodeForFile
+     * 描述:    获取文件所在dataNode
+     *        这里随机返回一个dataNode  尽量让请求均匀分布到各个dataNode上去
+     * @param fileName
+     * @return com.quick.dfs.namenode.server.DataNodeInfo
+     * 作者: fansy
+     * 日期: 2020/4/6 13:19
+     */
+    public DataNodeInfo getDataNodeForFile(String fileName){
+        DataNodeInfo dataNodeInfo = null;
+        List<DataNodeInfo> dataNodeInfos = replicasByFileName.get(fileName);
+        if(dataNodeInfos != null){
+            int index = new Random().nextInt(dataNodeInfos.size());
+            dataNodeInfo = dataNodeInfos.get(index);
+        }
+        return dataNodeInfo;
     }
 
 }
