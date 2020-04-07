@@ -20,9 +20,12 @@ public class HeartbeatManager {
 
     private StorageManager storageManager;
 
-    public HeartbeatManager(NameNodeRpcClient nameNode,StorageManager storageManager){
+    private ReplicateManager replicateManager;
+
+    public HeartbeatManager(NameNodeRpcClient nameNode,StorageManager storageManager,ReplicateManager replicateManager){
         this.nameNode = nameNode;
         this.storageManager = storageManager;
+        this.replicateManager = replicateManager;
     }
 
     /**
@@ -82,6 +85,8 @@ public class HeartbeatManager {
                     break;
                 //复制文件
                 case CommandType.REPLICATE:
+                    JSONObject relicateTask = command.getJSONObject("content");
+                    this.replicateManager.addReplicateTask(relicateTask);
                     break;
                 default:
                     break;

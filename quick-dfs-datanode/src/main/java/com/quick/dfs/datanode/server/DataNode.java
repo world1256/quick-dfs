@@ -24,6 +24,11 @@ public class DataNode {
     private StorageManager storageManager;
 
     /**
+     * 文件复制管理组件
+     */
+    private ReplicateManager replicateManager;
+
+    /**
      * 心跳管理组件
      */
     private HeartbeatManager heartbeatManager;
@@ -51,8 +56,9 @@ public class DataNode {
             System.out.println("不需要全量上报文件存储信息...");
         }
 
+        this.replicateManager = new ReplicateManager();
         //启动心跳
-        this.heartbeatManager = new HeartbeatManager(nameNode,storageManager);
+        this.heartbeatManager = new HeartbeatManager(nameNode,storageManager,replicateManager);
         this.heartbeatManager.start();
 
         //启动文件处理服务组件
