@@ -96,7 +96,7 @@ public interface ConfigConstant {
      * datanode 数据存放目录
      */
 //    String DATA_NODE_DATA_PATH = "/home/quick-dfs/data";
-    String DATA_NODE_DATA_PATH = "G:\\quick-dfs\\0datanode\\data";
+    String DATA_NODE_DATA_PATH = "G:\\quick-dfs\\datanode\\data";
 
     /**
      * datanode 主机名

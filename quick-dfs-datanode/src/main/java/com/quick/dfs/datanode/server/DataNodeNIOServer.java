@@ -2,19 +2,18 @@ package com.quick.dfs.datanode.server;
 
 import com.quick.dfs.constant.ClientRequestType;
 import com.quick.dfs.constant.ConfigConstant;
-import com.quick.dfs.util.FileUtil;
-import com.sun.beans.editors.ByteEditor;
-import io.netty.buffer.ByteBuf;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -25,8 +24,6 @@ import java.util.concurrent.LinkedBlockingDeque;
  * @日期: 2020/3/30 11:20
  **/
 public class DataNodeNIOServer extends Thread{
-
-    private static Integer BUFFER_SIZE = 10 * 1024;
 
     private Selector selector;
 
@@ -61,6 +58,11 @@ public class DataNodeNIOServer extends Thread{
      * 缓存没读取完的文件内容
      */
     private Map<String,ByteBuffer> fileByClient = new ConcurrentHashMap<>();
+
+    /**
+     * 缓存没发送完的文件内容
+     */
+    private Map<String,ByteBuffer> sendFileByClient = new ConcurrentHashMap<>();
 
     private NameNodeRpcClient nameNode;
 
@@ -385,23 +387,6 @@ public class DataNodeNIOServer extends Thread{
     }
 
     /**
-     * @方法名: getReadFileLength
-     * @描述:   获取已经读取了的文件长度
-     * @param channel
-     * @return long
-     * @作者: fansy
-     * @日期: 2020/4/2 15:42
-    */
-    private long getReadFileLength(SocketChannel channel) throws Exception {
-        long readFileLength = 0;
-        String client = channel.getRemoteAddress().toString();
-        if(cachedRequestByClient.containsKey(client)){
-            readFileLength = cachedRequestByClient.get(client).readFileLength;
-        }
-        return readFileLength;
-    }
-
-    /**
      * 方法名: handleSendFileRequest
      * 描述:   处理客户端的上传文件请求
      * @param channel
@@ -419,51 +404,47 @@ public class DataNodeNIOServer extends Thread{
         if(fileLength == null){
             return;
         }
-        long readFileLength = getReadFileLength(channel);
 
-        FileOutputStream out = null;
-        FileChannel fileChannel = null;
-        try{
-            out = new FileOutputStream(fileName.absoluteFileName);
-            fileChannel = out.getChannel();
-            fileChannel.position(fileChannel.size());
+        ByteBuffer fileBuffer = null;
+        if(fileByClient.containsKey(client)){
+            fileBuffer = fileByClient.get(client);
+        }else{
+            fileBuffer = ByteBuffer.allocate(fileLength.intValue());
+        }
 
-            ByteBuffer fileBuffer = null;
-            if(fileByClient.containsKey(client)){
-                fileBuffer = fileByClient.get(client);
-            }else{
-                fileBuffer = ByteBuffer.allocate(fileLength.intValue());
-            }
+        channel.read(fileBuffer);
 
-            readFileLength += channel.read(fileBuffer);
+        if(!fileBuffer.hasRemaining()){
+            FileOutputStream out = null;
+            FileChannel fileChannel = null;
+            try {
+                out = new FileOutputStream(fileName.absoluteFileName);
+                fileChannel = out.getChannel();
 
-            if(!fileBuffer.hasRemaining()){
                 fileBuffer.rewind();
                 fileChannel.write(fileBuffer);
                 fileByClient.remove(client);
-            }else{
-                cachedRequestByClient.get(client).readFileLength = readFileLength;
-                fileByClient.put(client, fileBuffer);
-                return;
+                System.out.println("文件上传完毕，写入磁盘...");
+
+                ByteBuffer responseBuffer = ByteBuffer.wrap("SUCCESS".getBytes());
+                channel.write(responseBuffer);
+                cachedRequestByClient.remove(client);
+                System.out.println("文件读取完毕，返回响应给客户端：" + client);
+
+                //向nameNode上报接收到的文件信息
+                nameNode.informReplicaReceived(fileName.relativeFileName,fileLength);
+                System.out.println("上报接收到文件信息给nameNode...");
+
+                //不再响应该channel的读请求
+                key.interestOps(key.interestOps() & ~SelectionKey.OP_READ);
+            }finally {
+                fileChannel.close();
+                out.close();
             }
-        }finally {
-            fileChannel.close();
-            out.close();
+        }else{
+            fileByClient.put(client, fileBuffer);
         }
 
-        if(fileLength == readFileLength){
-            ByteBuffer responseBuffer = ByteBuffer.wrap("SUCCESS".getBytes());
-            channel.write(responseBuffer);
-            cachedRequestByClient.remove(client);
-            System.out.println("文件读取完毕，返回响应给客户端："+client);
-
-            //向nameNode上报接收到的文件信息
-            nameNode.informReplicaReceived(fileName.relativeFileName);
-            System.out.println("上报接收到文件信息给nameNode...");
-
-            //不再响应该channel的读请求
-            key.interestOps(key.interestOps() &~ SelectionKey.OP_READ);
-        }
     }
 
     /**
@@ -476,29 +457,38 @@ public class DataNodeNIOServer extends Thread{
      * 日期: 2020/4/6 15:26
      */
     private void handleReadFileRequest(SocketChannel channel,SelectionKey key) throws Exception {
-        FileName fileName = getFileName(channel);
-        if(fileName == null){
-            channel.close();
-            return;
+        String client = channel.getRemoteAddress().toString();
+        ByteBuffer buffer = null;
+        if(sendFileByClient.containsKey(client)){
+            buffer = sendFileByClient.get(client);
+        }else{
+            FileName fileName = getFileName(channel);
+            if(fileName == null){
+                channel.close();
+                return;
+            }
+            FileInputStream in = new FileInputStream(fileName.absoluteFileName);
+            FileChannel fileChannel = in.getChannel();
+
+            buffer = ByteBuffer.allocate( 8 + (int)fileChannel.size());
+            buffer.putLong(fileChannel.size());
+            fileChannel.read(buffer);
+            fileChannel.close();
+            in.close();
+            buffer.rewind();
         }
 
-        String client = channel.getRemoteAddress().toString();
-
-        FileInputStream in = new FileInputStream(fileName.absoluteFileName);
-        FileChannel fileChannel = in.getChannel();
-
-        ByteBuffer buffer = ByteBuffer.allocate( 8 + (int)fileChannel.size());
-        buffer.putLong(fileChannel.size());
-        fileChannel.read(buffer);
-
-        buffer.rewind();
         channel.write(buffer);
-
-        fileChannel.close();
-        in.close();
-
-        System.out.println("文件发送给client "+client+" 完毕...");
-        key.interestOps(key.interestOps() &~ SelectionKey.OP_READ);
+        if(buffer.hasRemaining()){
+            sendFileByClient.put(client,buffer);
+            System.out.println("文件发送没有完成，下次继续发送...");
+            key.interestOps(key.interestOps() &~ SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        }else{
+            sendFileByClient.remove(client);
+            cachedRequestByClient.remove(client);
+            System.out.println("文件发送给client "+client+" 完毕...");
+            key.interestOps(key.interestOps() &~ SelectionKey.OP_READ &~ SelectionKey.OP_WRITE);
+        }
     }
 
 
@@ -528,8 +518,6 @@ public class DataNodeNIOServer extends Thread{
         private FileName fileName;
 
         private long fileLength;
-
-        private long readFileLength;
     }
 
 

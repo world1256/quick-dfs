@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.constant.EditLogOp;
+import com.quick.dfs.constant.SPLITOR;
 import com.quick.dfs.util.FileUtil;
 
 import java.io.*;
@@ -48,6 +49,11 @@ public class FSNameSystem {
      * 文件副本信息   文件保存在哪些dataNode上
      */
     private Map<String,List<DataNodeInfo>> replicasByFileName = new ConcurrentHashMap<>();
+
+    /**
+     * 每个dataNode上有哪些文件
+     */
+    private Map<String,List<String>> filesByDataNode = new ConcurrentHashMap<>();
 
     public FSNameSystem(DataNodeManager dataNodeManager){
         this.dataNodeManager = dataNodeManager;
@@ -235,9 +241,9 @@ public class FSNameSystem {
         }finally {
             FileUtil.closeInputFile(in,channel);
         }
-    }
+     }
 
-    /**
+     /**
      * 方法名: loadEditLog
      * 描述:   加载editlog文件到namespace中
      * @param
@@ -261,14 +267,14 @@ public class FSNameSystem {
 
         //对日志文件进行排序  元数据恢复必须严格按照操作顺序来
         files.sort((x,y)->{
-            long xStart = Long.valueOf(x.getName().split("-")[0]);
-            long yStart = Long.valueOf(y.getName().split("-")[0]);
+            long xStart = Long.valueOf(x.getName().split(SPLITOR.TX_ID_START_END)[0]);
+            long yStart = Long.valueOf(y.getName().split(SPLITOR.TX_ID_START_END)[0]);
             return (int)(xStart - yStart);
         });
 
         List<String> flushedTxids = this.editLog.getFlushedTxid();
         for(File file : files){
-            long endTxid = Long.valueOf(file.getName().split("-")[1].split("[.]")[0]);
+            long endTxid = Long.valueOf(file.getName().split(SPLITOR.TX_ID_START_END)[1].split(SPLITOR.FILE_NAME)[0]);
             //如果当前日志不在checkpoint 快照中  需要读取恢复
             if(endTxid > checkpointTxid){
                 System.out.println("读取editLog恢复元数据："+file.getName());
@@ -282,7 +288,7 @@ public class FSNameSystem {
                         editLog2Namespace(editLog);
                     }
                 }
-                flushedTxids.add(file.getName().split("[.]")[0]);
+                flushedTxids.add(file.getName().split(SPLITOR.FILE_NAME)[0]);
             }
         }
     }
@@ -315,11 +321,12 @@ public class FSNameSystem {
      * @param ip
      * @param hostname
      * @param fileName
+     * @param fileLength
      * @return void
      * 作者: fansy
      * 日期: 2020/4/4 13:02
      */
-    public void addReceivedReplica(String ip,String hostname,String fileName){
+    public void addReceivedReplica(String ip,String hostname,String fileName,long fileLength){
         List<DataNodeInfo> dataNodes = this.replicasByFileName.get(fileName);
         if(dataNodes == null){
             dataNodes = new ArrayList<>();
@@ -327,6 +334,14 @@ public class FSNameSystem {
         }
         DataNodeInfo dataNode = this.dataNodeManager.getDataNode(ip,hostname);
         dataNodes.add(dataNode);
+
+        String key = ip + "-" +hostname;
+        List<String> files = this.filesByDataNode.get(key);
+        if(files == null){
+            files = new ArrayList<>();
+            this.filesByDataNode.put(key,files);
+        }
+        files.add(fileName + SPLITOR.FILE_NAME_LENGTH + fileLength);
     }
 
     /**
@@ -348,4 +363,57 @@ public class FSNameSystem {
         return dataNodeInfo;
     }
 
+    /**
+     * @方法名: getFilesByDataNode
+     * @描述:   获取指定dataNode上存储的文件信息
+     * @param ip
+     * @param hostname
+     * @return java.util.List<java.lang.String>
+     * @作者: fansy
+     * @日期: 2020/4/7 14:23
+    */
+    public List<String> getFilesByDataNode(String ip,String hostname){
+        String key = ip + SPLITOR.DATA_NODE_IP_HOST +hostname;
+        return filesByDataNode.get(key);
+    }
+
+    /**  
+     * @方法名: getReplicaSource   
+     * @描述:   获取需要复制的文件源数据节点
+     * @param fileName
+     * @param deadDataNode  
+     * @return com.quick.dfs.namenode.server.DataNodeInfo  
+     * @作者: fansy
+     * @日期: 2020/4/7 15:41 
+    */  
+    public DataNodeInfo getReplicaSource(String fileName,DataNodeInfo deadDataNode){
+        List<DataNodeInfo> dataNodeInfos = replicasByFileName.get(fileName);
+        if(dataNodeInfos != null){
+            for(DataNodeInfo dataNode : dataNodeInfos){
+                if(!dataNode.equals(deadDataNode)){
+                    return dataNode;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @方法名: removeDeadDataNode
+     * @描述:   移除死掉的DataNode 相关信息
+     * @param deadDataNode
+     * @return void
+     * @作者: fansy
+     * @日期: 2020/4/7 15:50
+    */
+    public void removeDeadDataNode(DataNodeInfo deadDataNode){
+        String key = deadDataNode.getIp() + SPLITOR.DATA_NODE_IP_HOST + deadDataNode.getHostName();
+        List<String> files = filesByDataNode.get(key);
+        for(String file : files){
+            List<DataNodeInfo> dataNodes = replicasByFileName.get(file);
+            dataNodes.remove(deadDataNode);
+        }
+        filesByDataNode.remove(key);
+    }
+    
 }

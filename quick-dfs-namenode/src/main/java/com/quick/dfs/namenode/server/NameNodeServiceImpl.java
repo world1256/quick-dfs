@@ -4,15 +4,17 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.quick.dfs.constant.CommandType;
+import com.quick.dfs.constant.ConfigConstant;
+import com.quick.dfs.constant.SPLITOR;
 import com.quick.dfs.constant.StatusCode;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
-import com.quick.dfs.constant.ConfigConstant;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -101,17 +103,35 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     @Override
     public void heartbeat(HeartbeatRequest request, StreamObserver<HeartbeatResponse> responseObserver) {
         HeartbeatResponse response = null;
-        boolean success = this.dataNodeManager.heatbeat(request.getIp(),request.getHostname());
+        String ip = request.getIp();
+        String hostname = request.getHostname();
+
+        List<Command> commands = new ArrayList<>();
+        boolean success = this.dataNodeManager.heatbeat(ip,hostname);
         if(success){
+            DataNodeInfo dataNodeInfo = this.dataNodeManager.getDataNode(ip,hostname);
+            ReplicateTask replicateTask = dataNodeInfo.getReplicateTask();
+            if(replicateTask != null){
+                String content = JSONObject.toJSONString(replicateTask);
+                Command replica = new Command(CommandType.REPLICATE,content);
+                commands.add(replica);
+            }
+            String commandsJson = JSONArray.toJSONString(commands);
             response = HeartbeatResponse.newBuilder()
                     .setStatus(StatusCode.STATUS_SUCCESS)
+                    .setCommands(commandsJson)
                     .build();
         }else{
             //心跳失败 需要重新注册并且上报全量文件存储信息
-            String commands = CommandType.REGISTER + CommandType.SPLIT + CommandType.REPORT_COMPLETE_STORAGE_INFO;
+            Command register = new Command(CommandType.REGISTER);
+            Command report = new Command(CommandType.REPORT_COMPLETE_STORAGE_INFO);
+            commands.add(register);
+            commands.add(report);
+
+            String commandsJson = JSONArray.toJSONString(commands);
             response = HeartbeatResponse.newBuilder()
                     .setStatus(StatusCode.STATUS_FAILURE)
-                    .setCommands(commands)
+                    .setCommands(commandsJson)
                     .build();
         }
         responseObserver.onNext(response);
@@ -280,7 +300,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
      * @日期: 2020/3/24 17:03 
     */  
     private boolean existInFlushedFile(long syncedTxid,String bufferedFlushedTxid){
-        String[] flushedTxidArr = bufferedFlushedTxid.split("-");
+        String[] flushedTxidArr = bufferedFlushedTxid.split(SPLITOR.TX_ID_START_END);
         long startTxid = Long.parseLong(flushedTxidArr[0]);
         long endTxid = Long.parseLong(flushedTxidArr[1]);
         long fetchBeginTxId = syncedTxid + 1;
@@ -435,9 +455,10 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         String ip = request.getIp();
         String hostname = request.getHostname();
         String fileName = request.getFileName();
+        long fileLength = request.getFileLength();
         InformReplicaReceivedResponse response = null;
         try{
-            this.nameSystem.addReceivedReplica(ip,hostname,fileName);
+            this.nameSystem.addReceivedReplica(ip,hostname,fileName,fileLength);
             response = InformReplicaReceivedResponse.newBuilder().setStatus(StatusCode.STATUS_SUCCESS).build();
         }catch (Exception e){
             e.printStackTrace();
@@ -465,10 +486,13 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
 
         this.dataNodeManager.setStoredDataSize(ip,hostname,storedDataSize);
 
-        JSONArray fileNames = JSONArray.parseArray(fileNamesJson);
-        for(int i = 0;i < fileNames.size();i++){
-            String fileName = fileNames.getString(i);
-            this.nameSystem.addReceivedReplica(ip,hostname,fileName);
+        JSONArray files = JSONArray.parseArray(fileNamesJson);
+        for(int i = 0;i < files.size();i++){
+            String file = files.getString(i);
+            String[] fileInfo = file.split(SPLITOR.FILE_NAME_LENGTH);
+            String fileName = fileInfo[0];
+            long fileSize = Long.parseLong(fileInfo[1]);
+            this.nameSystem.addReceivedReplica(ip,hostname,fileName,fileSize);
         }
 
         ReportCompleteStorageInfoResponse response = ReportCompleteStorageInfoResponse

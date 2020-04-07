@@ -36,4 +36,9 @@ public interface InformReplicaReceivedRequestOrBuilder extends
    */
   com.google.protobuf.ByteString
       getFileNameBytes();
+
+  /**
+   * <code>optional int64 fileLength = 4;</code>
+   */
+  long getFileLength();
 }

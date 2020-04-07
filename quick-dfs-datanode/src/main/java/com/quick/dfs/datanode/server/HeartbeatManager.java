@@ -1,5 +1,7 @@
 package com.quick.dfs.datanode.server;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.quick.dfs.constant.CommandType;
 import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.namenode.rpc.model.HeartbeatResponse;
@@ -64,9 +66,11 @@ public class HeartbeatManager {
      * 日期: 2020/4/4 14:27
      */
     private void executeCommands(String commands){
-        String[] commandArr = commands.split(CommandType.SPLIT);
-        for(String command : commandArr){
-            switch (command){
+        JSONArray commandsJson = JSONArray.parseArray(commands);
+        for(int i = 0;i < commandsJson.size();i++){
+            JSONObject command = commandsJson.getJSONObject(i);
+            String commandType = command.getString("type");
+            switch (commandType){
                 //重新注册
                 case CommandType.REGISTER:
                     this.nameNode.register();
@@ -75,6 +79,9 @@ public class HeartbeatManager {
                 case CommandType.REPORT_COMPLETE_STORAGE_INFO:
                     StorageInfo storageInfo = this.storageManager.getStorageInfo();
                     this.nameNode.reportCompleteStorageInfo(storageInfo);
+                    break;
+                //复制文件
+                case CommandType.REPLICATE:
                     break;
                 default:
                     break;

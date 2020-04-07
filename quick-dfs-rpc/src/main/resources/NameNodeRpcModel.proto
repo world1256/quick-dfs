@@ -64,6 +64,7 @@ message InformReplicaReceivedRequest{
     string ip = 1;
     string hostname = 2;
     string fileName = 3;
+    int64 fileLength = 4;
 }
 message InformReplicaReceivedResponse{
     int32 status = 1;

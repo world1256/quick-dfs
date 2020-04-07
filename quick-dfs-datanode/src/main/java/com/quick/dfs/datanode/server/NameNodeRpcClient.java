@@ -76,9 +76,12 @@ public class NameNodeRpcClient {
      * 作者: fansy 
      * 日期: 2020/4/4 12:37 
      */  
-    public void informReplicaReceived(String fileName){
+    public void informReplicaReceived(String fileName,long fileLength){
         InformReplicaReceivedRequest request = InformReplicaReceivedRequest.newBuilder()
                 .setFileName(fileName)
+                .setHostname(ConfigConstant.DATA_NODE_HOST_NAME)
+                .setIp(ConfigConstant.DATA_NODE_IP)
+                .setFileLength(fileLength)
                 .build();
         namenode.informReplicaReceived(request);
     }
@@ -96,7 +99,7 @@ public class NameNodeRpcClient {
                 .newBuilder()
                 .setIp(ConfigConstant.DATA_NODE_IP)
                 .setHostname(ConfigConstant.DATA_NODE_HOST_NAME)
-                .setFileNames(JSONArray.toJSONString(storageInfo.getFileNames()))
+                .setFileNames(JSONArray.toJSONString(storageInfo.getFiles()))
                 .setStoredDataSize(storageInfo.getStoredDataSize())
                 .build();
         this.namenode.reportCompleteStorageInfo(request);

@@ -44,9 +44,8 @@ public class StorageManager {
     private void scanFiles(File dir,StorageInfo storageInfo){
         if(dir.isFile()){
             String path = dir.getPath();
-            String fileName = path.substring(ConfigConstant.DATA_NODE_DATA_PATH.length()-2);
-            storageInfo.addFileName(fileName);
-            storageInfo.addStoredDataSize(dir.length());
+            String fileName = path.substring(ConfigConstant.DATA_NODE_DATA_PATH.length()-1);
+            storageInfo.addFile(fileName,dir.length());
             return;
         }
 

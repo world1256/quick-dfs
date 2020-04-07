@@ -1,6 +1,7 @@
 package com.quick.dfs.namenode.server;
 
 import com.quick.dfs.constant.ConfigConstant;
+import com.quick.dfs.constant.SPLITOR;
 import com.quick.dfs.thread.Daemon;
 
 import java.util.*;
@@ -27,6 +28,11 @@ public class DataNodeManager {
     private Map<String,DataNodeInfo> dataNodes = new ConcurrentHashMap<String, DataNodeInfo>();
 
     /**
+     * 元数据管理组件
+     */
+    private FSNameSystem nameSystem;
+
+    /**
      * 方法名: DataNodeManager
      * 描述:  初始化   启动DataNode活性检测线程
      * @param
@@ -38,6 +44,10 @@ public class DataNodeManager {
         new DataNodeAliveMonitor().start();
     }
 
+    public void setNameSystem(FSNameSystem nameSystem) {
+        this.nameSystem = nameSystem;
+    }
+
     /**
      * DataNode注册到NameNode中
      * @param ip
@@ -45,7 +55,7 @@ public class DataNodeManager {
      * @return
      */
     public boolean register(String ip,String hostName){
-        String key = ip + "-" +hostName;
+        String key = ip + SPLITOR.DATA_NODE_IP_HOST +hostName;
         if(dataNodes.containsKey(key)){
             System.out.println("已经存在该dataNode,不需要再次注册...");
             return false;
@@ -66,7 +76,7 @@ public class DataNodeManager {
      * 日期: 2020/3/20 19:49 
      */  
     public boolean heatbeat(String ip,String hostName){
-        String key = ip + "-" +hostName;
+        String key = ip + SPLITOR.DATA_NODE_IP_HOST + hostName;
         DataNodeInfo dataNode = dataNodes.get(key);
 
         //nameNode中没有该dataNode信息  需要下发命令进行重新注册以及上报存储文件信息
@@ -119,7 +129,7 @@ public class DataNodeManager {
      * 日期: 2020/4/4 13:21 
      */  
     public void setStoredDataSize(String ip,String hostname,long storedDataSize){
-        String key = ip + "-" +hostname;
+        String key = ip + SPLITOR.DATA_NODE_IP_HOST +hostname;
         DataNodeInfo dataNode = this.dataNodes.get(key);
         dataNode.setStoredDataSize(storedDataSize);
     }
@@ -135,8 +145,58 @@ public class DataNodeManager {
      * 日期: 2020/4/4 12:53
      */
     public DataNodeInfo getDataNode(String ip,String hostname){
-        String key = ip + "-" +hostname;
+        String key = ip + SPLITOR.DATA_NODE_IP_HOST +hostname;
         return dataNodes.get(key);
+    }
+
+    /**  
+     * @方法名: createLostReplicaTask
+     * @描述: 创建文件复制任务
+     * @param deadDataNode
+     * @return void
+     * @作者: fansy
+     * @日期: 2020/4/7 14:15 
+    */  
+    public void createLostReplicaTask(DataNodeInfo deadDataNode){
+        List<String> files = this.nameSystem.getFilesByDataNode(deadDataNode.getIp(),deadDataNode.getHostName());
+
+        for(String file : files){
+            String filename = file.split(SPLITOR.FILE_NAME_LENGTH)[0];
+            Long fileLength = Long.valueOf(file.split(SPLITOR.FILE_NAME_LENGTH)[1]);
+
+            //文件所在源数据节点
+            DataNodeInfo sourceDataNode = this.nameSystem.getReplicaSource(filename,deadDataNode);
+            //文件需要复制到的数据节点
+            DataNodeInfo destDataNode = allocateReplicaDataNode(fileLength);
+
+            if(sourceDataNode != null && destDataNode != null){
+                ReplicateTask replicateTask = new ReplicateTask(filename,fileLength,sourceDataNode,destDataNode);
+                deadDataNode.addReplicateTask(replicateTask);
+            }
+        }
+
+    }
+
+    /**  
+     * @方法名: allocateReplicaDataNode
+     * @描述:   找到一个文件复制任务的目标数据节点
+     * @param fileSize  
+     * @return com.quick.dfs.namenode.server.DataNodeInfo  
+     * @作者: fansy
+     * @日期: 2020/4/7 15:03
+    */  
+    public DataNodeInfo allocateReplicaDataNode(long fileSize){
+        List<DataNodeInfo> dataNodeInfoList = new ArrayList<>();
+        for(DataNodeInfo dataNodeInfo : dataNodes.values()){
+            dataNodeInfoList.add(dataNodeInfo);
+        }
+
+        //根据dataNode存储数据量大小进行排序
+        dataNodeInfoList.sort(Comparator.comparing(DataNodeInfo::getStoredDataSize));
+        if(dataNodeInfoList.size()>0){
+            return  dataNodeInfoList.get(0);
+        }
+        return null;
     }
 
     /**
@@ -156,7 +216,14 @@ public class DataNodeManager {
                     });
 
                     for(String key : deadDataNodes){
-                        dataNodes.remove(key);
+                        //从dataNode信息中移除死掉的dataNode
+                        DataNodeInfo deadDataNode = dataNodes.remove(key);
+
+                        //为死掉的dataNode创建文件复制任务
+                        createLostReplicaTask(deadDataNode);
+
+                        //移除掉死掉的dataNode的相关信息
+                        nameSystem.removeDeadDataNode(deadDataNode);
                     }
 
                     Thread.sleep(DATA_NODE_ALIVE_MONITOR_INTERVAL);

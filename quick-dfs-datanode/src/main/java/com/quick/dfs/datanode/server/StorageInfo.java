@@ -1,5 +1,7 @@
 package com.quick.dfs.datanode.server;
 
+import com.quick.dfs.constant.SPLITOR;
+
 import java.util.List;
 
 /**
@@ -10,16 +12,16 @@ import java.util.List;
  **/
 public class StorageInfo {
 
-    private List<String> fileNames;
+    private List<String> files;
 
     private long storedDataSize;
 
-    public List<String> getFileNames() {
-        return fileNames;
+    public List<String> getFiles() {
+        return files;
     }
 
-    public void setFileNames(List<String> fileNames) {
-        this.fileNames = fileNames;
+    public void setFiles(List<String> files) {
+        this.files = files;
     }
 
     public long getStoredDataSize() {
@@ -30,11 +32,9 @@ public class StorageInfo {
         this.storedDataSize = storedDataSize;
     }
 
-    public void addFileName(String fileName){
-        this.fileNames.add(fileName);
-    }
-
-    public void addStoredDataSize(long fileSize){
+    public void addFile(String fileName,long fileSize){
+        this.files.add(fileName + SPLITOR.FILE_NAME_LENGTH + fileSize);
         this.storedDataSize += fileSize;
     }
+
 }

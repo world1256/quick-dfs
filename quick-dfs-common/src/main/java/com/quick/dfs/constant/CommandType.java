@@ -22,4 +22,9 @@ public interface CommandType {
      * 全量上报文件存储信息
      */
     String REPORT_COMPLETE_STORAGE_INFO = "2";
+
+    /**
+     * 文件备份
+     */
+    String REPLICATE = "3";
 }

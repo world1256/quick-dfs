@@ -1,5 +1,8 @@
 package com.quick.dfs.namenode.server;
 
+import java.util.Objects;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
  * @项目名称: quick-dfs
  * @描述: DataNode相关信息
@@ -22,9 +25,12 @@ public class DataNodeInfo {
      */
     private long storedDataSize;
 
+    private ConcurrentLinkedQueue<ReplicateTask> replicateTaskQueue = new ConcurrentLinkedQueue<>();
+
     public DataNodeInfo(String ip,String hostName){
         this.ip = ip;
         this.hostName = hostName;
+        this.lastHeartbeatTime = System.currentTimeMillis();
     }
 
     public String getIp() {
@@ -69,5 +75,46 @@ public class DataNodeInfo {
     */  
     public void addStoredDataSize(long fileSize){
         this.storedDataSize += fileSize;
+    }
+
+    /**
+     * @方法名: addReplicateTask
+     * @描述:   将复制任务加入队列
+     * @param task
+     * @return void
+     * @作者: fansy
+     * @日期: 2020/4/7 16:00
+    */
+    public void addReplicateTask(ReplicateTask task){
+        this.replicateTaskQueue.offer(task);
+    }
+
+    /**  
+     * @方法名: getReplicateTask
+     * @描述:   获取复制任务队列中的一个复制任务
+     * @param   
+     * @return com.quick.dfs.namenode.server.ReplicateTask  
+     * @作者: fansy
+     * @日期: 2020/4/7 16:14 
+    */  
+    public ReplicateTask getReplicateTask(){
+        if(!replicateTaskQueue.isEmpty()){
+            return replicateTaskQueue.poll();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataNodeInfo that = (DataNodeInfo) o;
+        return ip.equals(that.ip) &&
+                hostName.equals(that.hostName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ip, hostName);
     }
 }

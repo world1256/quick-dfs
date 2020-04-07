@@ -34,6 +34,7 @@ public class NIOClient {
         //建立一个短连接  发送完一个文件后就关闭连接
         SocketChannel channel = null;
         Selector selector = null;
+        ByteBuffer buffer = null;
         try{
             channel = SocketChannel.open();
             channel.configureBlocking(false);
@@ -52,32 +53,47 @@ public class NIOClient {
                     if(key.isConnectable()){
                         channel = (SocketChannel) key.channel();
 
+                        //完成连接建立
                         if(channel.isConnectionPending()){
-                            channel.finishConnect();
+                          channel.finishConnect();
+                        }
 
-                            byte[] fileNameBytes = fileName.getBytes();
+                        byte[] fileNameBytes = fileName.getBytes();
 
-                            //依次存放请求类型+文件名长度+文件名+文件长度+文件内容
-                            int totalLength = 4 + 4 + fileNameBytes.length + 8 + (int)fileSize;
+                        //依次存放请求类型+文件名长度+文件名+文件长度+文件内容
+                        int totalLength = 4 + 4 + fileNameBytes.length + 8 + (int)fileSize;
 
-                            ByteBuffer buffer = ByteBuffer.allocate(totalLength);
+                        buffer = ByteBuffer.allocate(totalLength);
 
-                            buffer.putInt(ClientRequestType.SEND_FILE);
-                            buffer.putInt(fileNameBytes.length);
-                            buffer.put(fileNameBytes);
-                            buffer.putLong(fileSize);
-                            buffer.put(file);
+                        buffer.putInt(ClientRequestType.SEND_FILE);
+                        buffer.putInt(fileNameBytes.length);
+                        buffer.put(fileNameBytes);
+                        buffer.putLong(fileSize);
+                        buffer.put(file);
 
-                            buffer.flip();
+                        buffer.rewind();
 
-                            channel.write(buffer);
+                        channel.write(buffer);
 
+                        if(buffer.hasRemaining()){
+                            System.out.println("文件没有发送完毕,下次继续发送...");
+                            key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_WRITE);
+                        }else{
+                            System.out.println("client文件上传完毕,准备读取服务端的响应...");
+                            //不再监听连接事件   监听读取事件
                             key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
                         }
-                    }else if(key.isReadable()){
+                    }else if(key.isWritable()){
+                        channel = (SocketChannel) key.channel();
+                        channel.write(buffer);
+                        if(!buffer.hasRemaining()){
+                            System.out.println("client文件上传完毕,准备读取服务端的响应...");
+                            key.interestOps(key.interestOps() &~ SelectionKey.OP_WRITE | SelectionKey.OP_READ);
+                        }
+                    } else if(key.isReadable()){
                         channel = (SocketChannel) key.channel();
 
-                        ByteBuffer buffer = ByteBuffer.allocate(1024);
+                        buffer = ByteBuffer.allocate(1024);
 
                         int length = channel.read(buffer);
                         if(length > 0){
@@ -147,19 +163,19 @@ public class NIOClient {
                         channel = (SocketChannel) key.channel();
                         if(channel.isConnectionPending()){
                             channel.finishConnect();
-
-                            //依次存放请求类型+文件名长度+文件名
-                            int totalLength = 4 + 4 + fileName.getBytes().length;
-                            ByteBuffer buffer = ByteBuffer.allocate(totalLength);
-                            buffer.putInt(ClientRequestType.READ_FILE);
-                            buffer.putInt(fileName.getBytes().length);
-                            buffer.put(fileName.getBytes());
-                            buffer.flip();
-
-                            channel.write(buffer);
-                            System.out.println("发送文件读取请求到 "+hostName+" 完成...");
-                            key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
                         }
+
+                        //依次存放请求类型+文件名长度+文件名
+                        int totalLength = 4 + 4 + fileName.getBytes().length;
+                        ByteBuffer buffer = ByteBuffer.allocate(totalLength);
+                        buffer.putInt(ClientRequestType.READ_FILE);
+                        buffer.putInt(fileName.getBytes().length);
+                        buffer.put(fileName.getBytes());
+                        buffer.rewind();
+
+                        channel.write(buffer);
+                        System.out.println("发送文件读取请求到 "+hostName+" 完成...");
+                        key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
 
                     }else if(key.isReadable()){
                         channel = (SocketChannel) key.channel();
@@ -170,6 +186,7 @@ public class NIOClient {
                             }
                             channel.read(fileLengthBuffer);
                             if(!fileBuffer.hasRemaining()){
+                                fileLengthBuffer.rewind();
                                 fileLength = fileLengthBuffer.getLong();
                             }
                         }else{

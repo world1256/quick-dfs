@@ -18,6 +18,7 @@ public  final class InformReplicaReceivedRequest extends
     ip_ = "";
     hostname_ = "";
     fileName_ = "";
+    fileLength_ = 0L;
   }
 
   @Override
@@ -61,6 +62,11 @@ public  final class InformReplicaReceivedRequest extends
             String s = input.readStringRequireUtf8();
 
             fileName_ = s;
+            break;
+          }
+          case 32: {
+
+            fileLength_ = input.readInt64();
             break;
           }
         }
@@ -188,6 +194,15 @@ public  final class InformReplicaReceivedRequest extends
     }
   }
 
+  public static final int FILELENGTH_FIELD_NUMBER = 4;
+  private long fileLength_;
+  /**
+   * <code>optional int64 fileLength = 4;</code>
+   */
+  public long getFileLength() {
+    return fileLength_;
+  }
+
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
@@ -209,6 +224,9 @@ public  final class InformReplicaReceivedRequest extends
     if (!getFileNameBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, fileName_);
     }
+    if (fileLength_ != 0L) {
+      output.writeInt64(4, fileLength_);
+    }
   }
 
   public int getSerializedSize() {
@@ -224,6 +242,10 @@ public  final class InformReplicaReceivedRequest extends
     }
     if (!getFileNameBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, fileName_);
+    }
+    if (fileLength_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(4, fileLength_);
     }
     memoizedSize = size;
     return size;
@@ -247,6 +269,8 @@ public  final class InformReplicaReceivedRequest extends
         .equals(other.getHostname());
     result = result && getFileName()
         .equals(other.getFileName());
+    result = result && (getFileLength()
+        == other.getFileLength());
     return result;
   }
 
@@ -263,6 +287,9 @@ public  final class InformReplicaReceivedRequest extends
     hash = (53 * hash) + getHostname().hashCode();
     hash = (37 * hash) + FILENAME_FIELD_NUMBER;
     hash = (53 * hash) + getFileName().hashCode();
+    hash = (37 * hash) + FILELENGTH_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getFileLength());
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -387,6 +414,8 @@ public  final class InformReplicaReceivedRequest extends
 
       fileName_ = "";
 
+      fileLength_ = 0L;
+
       return this;
     }
 
@@ -412,6 +441,7 @@ public  final class InformReplicaReceivedRequest extends
       result.ip_ = ip_;
       result.hostname_ = hostname_;
       result.fileName_ = fileName_;
+      result.fileLength_ = fileLength_;
       onBuilt();
       return result;
     }
@@ -464,6 +494,9 @@ public  final class InformReplicaReceivedRequest extends
       if (!other.getFileName().isEmpty()) {
         fileName_ = other.fileName_;
         onChanged();
+      }
+      if (other.getFileLength() != 0L) {
+        setFileLength(other.getFileLength());
       }
       onChanged();
       return this;
@@ -694,6 +727,32 @@ public  final class InformReplicaReceivedRequest extends
   checkByteStringIsUtf8(value);
       
       fileName_ = value;
+      onChanged();
+      return this;
+    }
+
+    private long fileLength_ ;
+    /**
+     * <code>optional int64 fileLength = 4;</code>
+     */
+    public long getFileLength() {
+      return fileLength_;
+    }
+    /**
+     * <code>optional int64 fileLength = 4;</code>
+     */
+    public Builder setFileLength(long value) {
+      
+      fileLength_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional int64 fileLength = 4;</code>
+     */
+    public Builder clearFileLength() {
+      
+      fileLength_ = 0L;
       onChanged();
       return this;
     }

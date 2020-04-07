@@ -28,6 +28,7 @@ public class FSImageUploader extends Thread{
     public void run() {
         SocketChannel channel = null;
         Selector selector = null;
+        ByteBuffer buffer = null;
         try{
             channel = SocketChannel.open();
             channel.configureBlocking(false);
@@ -49,15 +50,28 @@ public class FSImageUploader extends Thread{
                         channel = (SocketChannel) key.channel();
                         if(channel.isConnectionPending()){
                             channel.finishConnect();
-                            ByteBuffer buffer = ByteBuffer.wrap(fsImage.getFsImageJosn().getBytes());
-                            System.out.println("准备上传fsimage文件数据，大小为：" + buffer.capacity());
-                            channel.write(buffer);
                         }
-                        key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
+                        buffer = ByteBuffer.wrap(fsImage.getFsImageJosn().getBytes());
+                        System.out.println("准备上传fsimage文件数据，大小为：" + buffer.capacity());
+                        channel.write(buffer);
+                        if(buffer.hasRemaining()){
+                            System.out.println("本次上传fsimage没有完成，下次继续发送...");
+                            key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_WRITE);
+                        }else{
+                            System.out.println("上传fsimage完毕，等待namenode响应...");
+                            key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
+                        }
 //                        channel.register(selector,SelectionKey.OP_READ);
-                    }else if(key.isReadable()){
+                    }else if(key.isWritable()){
                         channel = (SocketChannel) key.channel();
-                        ByteBuffer buffer = ByteBuffer.allocate(1024);
+                        channel.write(buffer);
+                        if(!buffer.hasRemaining()){
+                            System.out.println("上传fsimage完毕，等待namenode响应...");
+                            key.interestOps(key.interestOps() &~ SelectionKey.OP_WRITE | SelectionKey.OP_READ);
+                        }
+                    } else if(key.isReadable()){
+                        channel = (SocketChannel) key.channel();
+                        buffer = ByteBuffer.allocate(1024);
                         int length = channel.read(buffer);
                         if(length > 0){
                             String response = new String(buffer.array(),0,length);

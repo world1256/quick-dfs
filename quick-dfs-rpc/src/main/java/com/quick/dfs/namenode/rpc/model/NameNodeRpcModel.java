@@ -152,19 +152,19 @@ public final class NameNodeRpcModel {
       "nse\022\016\n\006status\030\001 \001(\005\">\n\030AllocateDataNodes" +
       "Request\022\020\n\010fileName\030\001 \001(\t\022\020\n\010fileSize\030\002 " +
       "\001(\003\".\n\031AllocateDataNodesResponse\022\021\n\tdata" +
-      "Nodes\030\001 \001(\t\"N\n\034InformReplicaReceivedRequ",
+      "Nodes\030\001 \001(\t\"b\n\034InformReplicaReceivedRequ",
       "est\022\n\n\002ip\030\001 \001(\t\022\020\n\010hostname\030\002 \001(\t\022\020\n\010fil" +
-      "eName\030\003 \001(\t\"/\n\035InformReplicaReceivedResp" +
-      "onse\022\016\n\006status\030\001 \001(\005\"k\n ReportCompleteSt" +
-      "orageInfoRequest\022\n\n\002ip\030\001 \001(\t\022\020\n\010hostname" +
-      "\030\002 \001(\t\022\021\n\tfileNames\030\003 \001(\t\022\026\n\016storedDataS" +
-      "ize\030\004 \001(\003\"3\n!ReportCompleteStorageInfoRe" +
-      "sponse\022\016\n\006status\030\001 \001(\005\"-\n\031GetDataNodeFor" +
-      "FileRequest\022\020\n\010fileName\030\001 \001(\t\"B\n\032GetData" +
-      "NodeForFileResponse\022\016\n\006status\030\001 \001(\005\022\024\n\014d" +
-      "ataNodeInfo\030\002 \001(\tB6\n com.quick.dfs.namen",
-      "ode.rpc.modelB\020NameNodeRpcModelP\001b\006proto" +
-      "3"
+      "eName\030\003 \001(\t\022\022\n\nfileLength\030\004 \001(\003\"/\n\035Infor" +
+      "mReplicaReceivedResponse\022\016\n\006status\030\001 \001(\005" +
+      "\"k\n ReportCompleteStorageInfoRequest\022\n\n\002" +
+      "ip\030\001 \001(\t\022\020\n\010hostname\030\002 \001(\t\022\021\n\tfileNames\030" +
+      "\003 \001(\t\022\026\n\016storedDataSize\030\004 \001(\003\"3\n!ReportC" +
+      "ompleteStorageInfoResponse\022\016\n\006status\030\001 \001" +
+      "(\005\"-\n\031GetDataNodeForFileRequest\022\020\n\010fileN" +
+      "ame\030\001 \001(\t\"B\n\032GetDataNodeForFileResponse\022" +
+      "\016\n\006status\030\001 \001(\005\022\024\n\014dataNodeInfo\030\002 \001(\tB6\n",
+      " com.quick.dfs.namenode.rpc.modelB\020NameN" +
+      "odeRpcModelP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -279,7 +279,7 @@ public final class NameNodeRpcModel {
     internal_static_com_quick_dfs_namenode_rpc_InformReplicaReceivedRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_quick_dfs_namenode_rpc_InformReplicaReceivedRequest_descriptor,
-        new String[] { "Ip", "Hostname", "FileName", });
+        new String[] { "Ip", "Hostname", "FileName", "FileLength", });
     internal_static_com_quick_dfs_namenode_rpc_InformReplicaReceivedResponse_descriptor =
       getDescriptor().getMessageTypes().get(17);
     internal_static_com_quick_dfs_namenode_rpc_InformReplicaReceivedResponse_fieldAccessorTable = new
