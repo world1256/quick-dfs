@@ -107,4 +107,9 @@ public interface ConfigConstant {
      * datanode ip地址
      */
     String DATA_NODE_IP = "";
+
+    /**
+     * datanode  文件复制 线程数量
+     */
+    Integer DATA_NODE_REPLICATE_THREAD_COUNT = 3;
 }

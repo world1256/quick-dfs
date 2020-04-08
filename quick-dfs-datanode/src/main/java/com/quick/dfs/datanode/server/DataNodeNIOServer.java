@@ -2,6 +2,7 @@ package com.quick.dfs.datanode.server;
 
 import com.quick.dfs.constant.ClientRequestType;
 import com.quick.dfs.constant.ConfigConstant;
+import com.quick.dfs.util.FileUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -285,13 +286,7 @@ public class DataNodeNIOServer extends Thread{
             return null;
         }
 
-        //如果文件目录不存在  先创建文件目录
-        String dirPath = ConfigConstant.DATA_NODE_DATA_PATH + relativeFileName.substring(0,relativeFileName.lastIndexOf("/")+1);
-        File dir = new File(dirPath);
-        if(!dir.exists()){
-            dir.mkdirs();
-        }
-        String absoluteFileName = ConfigConstant.DATA_NODE_DATA_PATH + relativeFileName;
+        String absoluteFileName = FileUtil.getAbsoluteFileName(relativeFileName);
 
         //将文件名保存到未完成请求缓存中
         fileName.relativeFileName = relativeFileName;

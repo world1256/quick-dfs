@@ -1,9 +1,8 @@
 package com.quick.dfs.util;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import com.quick.dfs.constant.ConfigConstant;
+
+import java.io.*;
 import java.nio.channels.FileChannel;
 
 /**
@@ -36,7 +35,7 @@ public class FileUtil {
         }
     }
 
-    /**  
+    /**
      * 方法名: closeInputFile
      * 描述:   关闭文件输入IO
      * @param in
@@ -52,5 +51,24 @@ public class FileUtil {
         if(in != null){
             in.close();
         }
+    }
+
+    /**  
+     * @方法名: getAbsoluteFileName
+     * @描述:   获取文件存放的绝对路径名
+     *  文件夹不存在  则先创建文件夹
+     * @param relativeFileName  
+     * @return String
+     * @作者: fansy
+     * @日期: 2020/4/8 15:05 
+    */  
+    public static String getAbsoluteFileName(String relativeFileName){
+        //如果文件目录不存在  先创建文件目录
+        String dirPath = ConfigConstant.DATA_NODE_DATA_PATH + relativeFileName.substring(0,relativeFileName.lastIndexOf("/")+1);
+        File dir = new File(dirPath);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        return ConfigConstant.DATA_NODE_DATA_PATH + relativeFileName;
     }
 }
