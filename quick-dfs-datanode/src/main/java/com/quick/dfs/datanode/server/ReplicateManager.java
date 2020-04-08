@@ -18,11 +18,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  **/
 public class ReplicateManager {
 
+    /**
+     * 与nameNode通信组件
+     */
+    private NameNodeRpcClient nameNode;
+
     private ConcurrentLinkedQueue<JSONObject> replicateTaskQueue = new ConcurrentLinkedQueue<>();
 
     private NIOClient nioClient = new NIOClient();
 
-    public ReplicateManager(){
+    public ReplicateManager(NameNodeRpcClient nameNode){
+        this.nameNode = nameNode;
 
         for(int i = 0;i < ConfigConstant.DATA_NODE_UPLOAD_THREAD_COUNT;i++){
             new ReplicateWorker().start();
@@ -60,6 +66,7 @@ public class ReplicateManager {
                     }
 
                     String fileName = relicateTask.getString("fileName");
+                    long fileLength = relicateTask.getLong("fileLength");
                     JSONObject sourceDataNode = relicateTask.getJSONObject("sourceDataNode");
 
                     String hostName = sourceDataNode.getString("hostName");
@@ -75,6 +82,9 @@ public class ReplicateManager {
                     out = new FileOutputStream(absoluteFileName);
                     fileChannel = out.getChannel();
                     fileChannel.write(buffer);
+
+                    //向nameNode上报接收到的文件信息
+                    nameNode.informReplicaReceived(fileName,fileLength);
                 }catch (Exception e){
                     e.printStackTrace();
                 }finally {

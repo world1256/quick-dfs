@@ -2,6 +2,7 @@ package com.quick.dfs.namenode.server;
 
 import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.constant.SPLITOR;
+import com.quick.dfs.namenode.task.ReplicateTask;
 import com.quick.dfs.thread.Daemon;
 
 import java.util.*;

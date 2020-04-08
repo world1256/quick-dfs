@@ -5,6 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.constant.EditLogOp;
 import com.quick.dfs.constant.SPLITOR;
+import com.quick.dfs.namenode.task.RemoveTask;
 import com.quick.dfs.util.FileUtil;
 
 import java.io.*;
@@ -333,6 +334,15 @@ public class FSNameSystem {
             this.replicasByFileName.put(fileName,dataNodes);
         }
         DataNodeInfo dataNode = this.dataNodeManager.getDataNode(ip,hostname);
+
+        //如果文件副本数量超标了   直接删除该DataNode上的这个文件
+        if(dataNodes.size() == ConfigConstant.DATA_STORE_REPLICA){
+            dataNode.addStoredDataSize(-fileLength);
+            RemoveTask removeTask = new RemoveTask(fileName,dataNode);
+            dataNode.addRemoveTask(removeTask);
+            return;
+        }
+
         dataNodes.add(dataNode);
 
         String key = ip + "-" +hostname;

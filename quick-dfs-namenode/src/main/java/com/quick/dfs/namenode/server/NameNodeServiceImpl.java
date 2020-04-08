@@ -9,6 +9,8 @@ import com.quick.dfs.constant.SPLITOR;
 import com.quick.dfs.constant.StatusCode;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
+import com.quick.dfs.namenode.task.RemoveTask;
+import com.quick.dfs.namenode.task.ReplicateTask;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
@@ -110,12 +112,21 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         boolean success = this.dataNodeManager.heatbeat(ip,hostname);
         if(success){
             DataNodeInfo dataNodeInfo = this.dataNodeManager.getDataNode(ip,hostname);
-            ReplicateTask replicateTask = dataNodeInfo.getReplicateTask();
-            if(replicateTask != null){
+
+            ReplicateTask replicateTask;
+            while ((replicateTask = dataNodeInfo.getReplicateTask()) != null){
                 String content = JSONObject.toJSONString(replicateTask);
                 Command replica = new Command(CommandType.REPLICATE,content);
                 commands.add(replica);
             }
+
+            RemoveTask removeTask;
+            while((removeTask = dataNodeInfo.getRemoveTask())!= null){
+                String content = JSONObject.toJSONString(removeTask);
+                Command remove = new Command(CommandType.REMOVE,content);
+                commands.add(remove);
+            }
+
             String commandsJson = JSONArray.toJSONString(commands);
             response = HeartbeatResponse.newBuilder()
                     .setStatus(StatusCode.STATUS_SUCCESS)

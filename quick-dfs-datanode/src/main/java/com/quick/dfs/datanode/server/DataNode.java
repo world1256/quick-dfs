@@ -56,7 +56,7 @@ public class DataNode {
             System.out.println("不需要全量上报文件存储信息...");
         }
 
-        this.replicateManager = new ReplicateManager();
+        this.replicateManager = new ReplicateManager(nameNode);
         //启动心跳
         this.heartbeatManager = new HeartbeatManager(nameNode,storageManager,replicateManager);
         this.heartbeatManager.start();

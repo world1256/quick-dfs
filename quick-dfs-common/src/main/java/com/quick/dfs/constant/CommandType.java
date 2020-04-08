@@ -27,4 +27,9 @@ public interface CommandType {
      * 文件备份
      */
     String REPLICATE = "3";
+
+    /**
+     * 删除文件
+     */
+    String REMOVE = "4";
 }

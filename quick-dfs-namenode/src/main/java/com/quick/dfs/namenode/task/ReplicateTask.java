@@ -1,4 +1,6 @@
-package com.quick.dfs.namenode.server;
+package com.quick.dfs.namenode.task;
+
+import com.quick.dfs.namenode.server.DataNodeInfo;
 
 /**
  * @项目名称: quick-dfs

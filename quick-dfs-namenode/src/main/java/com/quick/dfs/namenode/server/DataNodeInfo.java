@@ -1,5 +1,8 @@
 package com.quick.dfs.namenode.server;
 
+import com.quick.dfs.namenode.task.RemoveTask;
+import com.quick.dfs.namenode.task.ReplicateTask;
+
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -25,7 +28,16 @@ public class DataNodeInfo {
      */
     private long storedDataSize;
 
+    /**
+     * 文件复制任务队列
+     */
     private ConcurrentLinkedQueue<ReplicateTask> replicateTaskQueue = new ConcurrentLinkedQueue<>();
+
+    /**
+     * 删除文件任务队列
+     */
+    private ConcurrentLinkedQueue<RemoveTask> removeTaskQueue = new ConcurrentLinkedQueue<>();
+
 
     public DataNodeInfo(String ip,String hostName){
         this.ip = ip;
@@ -93,15 +105,36 @@ public class DataNodeInfo {
      * @方法名: getReplicateTask
      * @描述:   获取复制任务队列中的一个复制任务
      * @param   
-     * @return com.quick.dfs.namenode.server.ReplicateTask  
+     * @return com.quick.dfs.namenode.task.ReplicateTask
      * @作者: fansy
      * @日期: 2020/4/7 16:14 
     */  
     public ReplicateTask getReplicateTask(){
-        if(!replicateTaskQueue.isEmpty()){
-            return replicateTaskQueue.poll();
-        }
-        return null;
+        return replicateTaskQueue.poll();
+    }
+
+    /**
+     * @方法名: addRemoveTask
+     * @描述:   将删除文件任务加入队列
+     * @param task
+     * @return void
+     * @作者: fansy
+     * @日期: 2020/4/8 16:31
+    */
+    public void addRemoveTask(RemoveTask task){
+        this.removeTaskQueue.offer(task);
+    }
+
+    /**
+     * @方法名: getRemoveTask
+     * @描述:   获取删除文件任务队列中的一个任务
+     * @param
+     * @return com.quick.dfs.namenode.task.RemoveTask
+     * @作者: fansy
+     * @日期: 2020/4/8 16:31
+    */
+    public RemoveTask getRemoveTask(){
+        return removeTaskQueue.poll();
     }
 
     @Override

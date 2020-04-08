@@ -6,7 +6,10 @@ import com.quick.dfs.constant.CommandType;
 import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.namenode.rpc.model.HeartbeatResponse;
 import com.quick.dfs.thread.Daemon;
+import com.quick.dfs.util.FileUtil;
 import com.quick.dfs.util.StringUtil;
+
+import java.io.File;
 
 /**
  * @项目名称: quick-dfs
@@ -87,6 +90,17 @@ public class HeartbeatManager {
                 case CommandType.REPLICATE:
                     JSONObject relicateTask = command.getJSONObject("content");
                     this.replicateManager.addReplicateTask(relicateTask);
+                    break;
+                //删除文件
+                case CommandType.REMOVE:
+                    //TODO 这里如果一次有大量的文件需要删除  耗时超过dataNode存活阈值的话   可能导致该dataNode被误判为宕机   后续考虑使用后台线程处理
+                    JSONObject removeTask = command.getJSONObject("content");
+                    String fileName = removeTask.getString("fileName");
+                    String absoluteFileName = FileUtil.getAbsoluteFileName(fileName);
+                    File file = new File(absoluteFileName);
+                    if(file.exists()){
+                        file.delete();
+                    }
                     break;
                 default:
                     break;
