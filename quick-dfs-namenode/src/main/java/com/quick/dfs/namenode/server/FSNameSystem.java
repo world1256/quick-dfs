@@ -7,6 +7,7 @@ import com.quick.dfs.constant.EditLogOp;
 import com.quick.dfs.constant.SPLITOR;
 import com.quick.dfs.namenode.task.RemoveTask;
 import com.quick.dfs.util.FileUtil;
+import com.quick.dfs.util.StringUtil;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -364,14 +365,29 @@ public class FSNameSystem {
      * 作者: fansy
      * 日期: 2020/4/6 13:19
      */
-    public DataNodeInfo getDataNodeForFile(String fileName){
-        DataNodeInfo dataNodeInfo = null;
+    public DataNodeInfo getDataNodeForFile(String fileName,String excludeDataNodeJson){
+        DataNodeInfo dataNodeInfo;
+        DataNodeInfo excludeDataNode = null;
+        if(StringUtil.isNotEmpty(excludeDataNodeJson)){
+            excludeDataNode = JSONObject.parseObject(excludeDataNodeJson,DataNodeInfo.class);
+        }
         List<DataNodeInfo> dataNodeInfos = replicasByFileName.get(fileName);
         if(dataNodeInfos != null){
-            int index = new Random().nextInt(dataNodeInfos.size());
-            dataNodeInfo = dataNodeInfos.get(index);
+            if(dataNodeInfos.size() == 1){
+                if(dataNodeInfos.get(0).equals(excludeDataNode)){
+                    return null;
+                }
+            }
+
+            while(true){
+                int index = new Random().nextInt(dataNodeInfos.size());
+                dataNodeInfo = dataNodeInfos.get(index);
+                if(!dataNodeInfo.equals(excludeDataNode)){
+                    return dataNodeInfo;
+                }
+            }
         }
-        return dataNodeInfo;
+        return null;
     }
 
     /**

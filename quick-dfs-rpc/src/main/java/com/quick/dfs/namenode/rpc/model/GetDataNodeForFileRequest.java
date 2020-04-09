@@ -16,6 +16,7 @@ public  final class GetDataNodeForFileRequest extends
   }
   private GetDataNodeForFileRequest() {
     fileName_ = "";
+    excludeDataNode_ = "";
   }
 
   @Override
@@ -47,6 +48,12 @@ public  final class GetDataNodeForFileRequest extends
             String s = input.readStringRequireUtf8();
 
             fileName_ = s;
+            break;
+          }
+          case 18: {
+            String s = input.readStringRequireUtf8();
+
+            excludeDataNode_ = s;
             break;
           }
         }
@@ -106,6 +113,40 @@ public  final class GetDataNodeForFileRequest extends
     }
   }
 
+  public static final int EXCLUDEDATANODE_FIELD_NUMBER = 2;
+  private volatile Object excludeDataNode_;
+  /**
+   * <code>optional string excludeDataNode = 2;</code>
+   */
+  public String getExcludeDataNode() {
+    Object ref = excludeDataNode_;
+    if (ref instanceof String) {
+      return (String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      String s = bs.toStringUtf8();
+      excludeDataNode_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string excludeDataNode = 2;</code>
+   */
+  public com.google.protobuf.ByteString
+      getExcludeDataNodeBytes() {
+    Object ref = excludeDataNode_;
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (String) ref);
+      excludeDataNode_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
@@ -121,6 +162,9 @@ public  final class GetDataNodeForFileRequest extends
     if (!getFileNameBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, fileName_);
     }
+    if (!getExcludeDataNodeBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, excludeDataNode_);
+    }
   }
 
   public int getSerializedSize() {
@@ -130,6 +174,9 @@ public  final class GetDataNodeForFileRequest extends
     size = 0;
     if (!getFileNameBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, fileName_);
+    }
+    if (!getExcludeDataNodeBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, excludeDataNode_);
     }
     memoizedSize = size;
     return size;
@@ -149,6 +196,8 @@ public  final class GetDataNodeForFileRequest extends
     boolean result = true;
     result = result && getFileName()
         .equals(other.getFileName());
+    result = result && getExcludeDataNode()
+        .equals(other.getExcludeDataNode());
     return result;
   }
 
@@ -161,6 +210,8 @@ public  final class GetDataNodeForFileRequest extends
     hash = (19 * hash) + getDescriptorForType().hashCode();
     hash = (37 * hash) + FILENAME_FIELD_NUMBER;
     hash = (53 * hash) + getFileName().hashCode();
+    hash = (37 * hash) + EXCLUDEDATANODE_FIELD_NUMBER;
+    hash = (53 * hash) + getExcludeDataNode().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -281,6 +332,8 @@ public  final class GetDataNodeForFileRequest extends
       super.clear();
       fileName_ = "";
 
+      excludeDataNode_ = "";
+
       return this;
     }
 
@@ -304,6 +357,7 @@ public  final class GetDataNodeForFileRequest extends
     public GetDataNodeForFileRequest buildPartial() {
       GetDataNodeForFileRequest result = new GetDataNodeForFileRequest(this);
       result.fileName_ = fileName_;
+      result.excludeDataNode_ = excludeDataNode_;
       onBuilt();
       return result;
     }
@@ -347,6 +401,10 @@ public  final class GetDataNodeForFileRequest extends
       if (other == GetDataNodeForFileRequest.getDefaultInstance()) return this;
       if (!other.getFileName().isEmpty()) {
         fileName_ = other.fileName_;
+        onChanged();
+      }
+      if (!other.getExcludeDataNode().isEmpty()) {
+        excludeDataNode_ = other.excludeDataNode_;
         onChanged();
       }
       onChanged();
@@ -440,6 +498,75 @@ public  final class GetDataNodeForFileRequest extends
   checkByteStringIsUtf8(value);
       
       fileName_ = value;
+      onChanged();
+      return this;
+    }
+
+    private Object excludeDataNode_ = "";
+    /**
+     * <code>optional string excludeDataNode = 2;</code>
+     */
+    public String getExcludeDataNode() {
+      Object ref = excludeDataNode_;
+      if (!(ref instanceof String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        excludeDataNode_ = s;
+        return s;
+      } else {
+        return (String) ref;
+      }
+    }
+    /**
+     * <code>optional string excludeDataNode = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getExcludeDataNodeBytes() {
+      Object ref = excludeDataNode_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (String) ref);
+        excludeDataNode_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string excludeDataNode = 2;</code>
+     */
+    public Builder setExcludeDataNode(
+        String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      excludeDataNode_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string excludeDataNode = 2;</code>
+     */
+    public Builder clearExcludeDataNode() {
+      
+      excludeDataNode_ = getDefaultInstance().getExcludeDataNode();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string excludeDataNode = 2;</code>
+     */
+    public Builder setExcludeDataNodeBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      excludeDataNode_ = value;
       onChanged();
       return this;
     }

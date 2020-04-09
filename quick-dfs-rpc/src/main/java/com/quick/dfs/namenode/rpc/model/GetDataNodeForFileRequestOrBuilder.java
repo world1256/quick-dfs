@@ -16,4 +16,14 @@ public interface GetDataNodeForFileRequestOrBuilder extends
    */
   com.google.protobuf.ByteString
       getFileNameBytes();
+
+  /**
+   * <code>optional string excludeDataNode = 2;</code>
+   */
+  String getExcludeDataNode();
+  /**
+   * <code>optional string excludeDataNode = 2;</code>
+   */
+  com.google.protobuf.ByteString
+      getExcludeDataNodeBytes();
 }

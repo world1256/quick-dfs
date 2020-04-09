@@ -546,10 +546,11 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     @Override
     public void getDataNodeForFile(GetDataNodeForFileRequest request, StreamObserver<GetDataNodeForFileResponse> responseObserver) {
         String fileName = request.getFileName();
-        DataNodeInfo dataNodeInfo = this.nameSystem.getDataNodeForFile(fileName);
+        String exclueDataNode = request.getExcludeDataNode();
+        DataNodeInfo dataNodeInfo = this.nameSystem.getDataNodeForFile(fileName,exclueDataNode);
 
         GetDataNodeForFileResponse response = null;
-        if(fileName == null){
+        if(dataNodeInfo == null){
             response = GetDataNodeForFileResponse.newBuilder()
                     .setStatus(StatusCode.STATUS_FAILURE)
                     .build();

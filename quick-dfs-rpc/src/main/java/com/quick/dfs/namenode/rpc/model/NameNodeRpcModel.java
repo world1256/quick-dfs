@@ -170,14 +170,15 @@ public final class NameNodeRpcModel {
       "ip\030\001 \001(\t\022\020\n\010hostname\030\002 \001(\t\022\021\n\tfileNames\030" +
       "\003 \001(\t\022\026\n\016storedDataSize\030\004 \001(\003\"3\n!ReportC" +
       "ompleteStorageInfoResponse\022\016\n\006status\030\001 \001" +
-      "(\005\"-\n\031GetDataNodeForFileRequest\022\020\n\010fileN" +
-      "ame\030\001 \001(\t\"B\n\032GetDataNodeForFileResponse\022" +
-      "\016\n\006status\030\001 \001(\005\022\024\n\014dataNodeInfo\030\002 \001(\t\"W\n",
-      "\027RelocateDataNodeRequest\022\020\n\010fileName\030\001 \001" +
-      "(\t\022\020\n\010fileSize\030\002 \001(\003\022\030\n\020excludeDataNodes" +
-      "\030\003 \001(\t\",\n\030RelocateDataNodeResponse\022\020\n\010da" +
-      "taNode\030\001 \001(\tB6\n com.quick.dfs.namenode.r" +
-      "pc.modelB\020NameNodeRpcModelP\001b\006proto3"
+      "(\005\"F\n\031GetDataNodeForFileRequest\022\020\n\010fileN" +
+      "ame\030\001 \001(\t\022\027\n\017excludeDataNode\030\002 \001(\t\"B\n\032Ge" +
+      "tDataNodeForFileResponse\022\016\n\006status\030\001 \001(\005",
+      "\022\024\n\014dataNodeInfo\030\002 \001(\t\"W\n\027RelocateDataNo" +
+      "deRequest\022\020\n\010fileName\030\001 \001(\t\022\020\n\010fileSize\030" +
+      "\002 \001(\003\022\030\n\020excludeDataNodes\030\003 \001(\t\",\n\030Reloc" +
+      "ateDataNodeResponse\022\020\n\010dataNode\030\001 \001(\tB6\n" +
+      " com.quick.dfs.namenode.rpc.modelB\020NameN" +
+      "odeRpcModelP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -316,7 +317,7 @@ public final class NameNodeRpcModel {
     internal_static_com_quick_dfs_namenode_rpc_GetDataNodeForFileRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_quick_dfs_namenode_rpc_GetDataNodeForFileRequest_descriptor,
-        new String[] { "FileName", });
+        new String[] { "FileName", "ExcludeDataNode", });
     internal_static_com_quick_dfs_namenode_rpc_GetDataNodeForFileResponse_descriptor =
       getDescriptor().getMessageTypes().get(21);
     internal_static_com_quick_dfs_namenode_rpc_GetDataNodeForFileResponse_fieldAccessorTable = new

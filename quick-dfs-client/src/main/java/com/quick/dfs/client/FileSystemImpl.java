@@ -173,10 +173,30 @@ public class FileSystemImpl implements FileSystem{
     @Override
     public byte[] download(String fileName) throws Exception {
         byte[] fileBytes = null;
+        String dataNodeJson = getDataNodeHostNameForFile(fileName,"");
+        if(StringUtil.isEmpty(dataNodeJson)){
+            return null;
+        }
+        JSONObject dataNode = JSONObject.parseObject(dataNodeJson);
         //获取文件所在dataNode hostname
-        String hostname = getDataNodeHostNameForFile(fileName);
+        String hostname = dataNode.getString("hostName");
         if(StringUtil.isNotEmpty(hostname)){
-            fileBytes = nioClient.readFile(hostname,fileName);
+            try{
+                fileBytes = nioClient.readFile(hostname,fileName);
+            }catch (Exception e){
+                e.printStackTrace();
+                dataNodeJson = getDataNodeHostNameForFile(fileName,dataNodeJson);
+                if(StringUtil.isEmpty(dataNodeJson)){
+                    return null;
+                }
+                dataNode = JSONObject.parseObject(dataNodeJson);
+                hostname = dataNode.getString("hostName");
+                try{
+                    fileBytes = nioClient.readFile(hostname,fileName);
+                }catch (Exception e2){
+                    throw e2;
+                }
+            }
         }
         return fileBytes;
     }
@@ -184,20 +204,20 @@ public class FileSystemImpl implements FileSystem{
     /**  
      * 方法名: getDataNodeHostNameForFile
      * 描述:   获取文件所在dataNode hostname
-     * @param fileName  
+     * @param fileName
+     * @param excludeDataNode 失败的节点
      * @return java.lang.String  
      * 作者: fansy 
      * 日期: 2020/4/6 13:41 
      */  
-    private String getDataNodeHostNameForFile(String fileName){
+    private String getDataNodeHostNameForFile(String fileName,String excludeDataNode){
         GetDataNodeForFileRequest request = GetDataNodeForFileRequest.newBuilder()
-                .setFileName(fileName).build();
+                .setFileName(fileName)
+                .setExcludeDataNode(excludeDataNode)
+                .build();
         GetDataNodeForFileResponse response = this.namenode.getDataNodeForFile(request);
         if(response.getStatus() == StatusCode.STATUS_SUCCESS){
-            String dataNodeInfoJson = response.getDataNodeInfo();
-            JSONObject dataNodeInfo = JSONObject.parseObject(dataNodeInfoJson);
-            String hostName = dataNodeInfo.getString("hostName");
-            return hostName;
+            return response.getDataNodeInfo();
         }
         return null;
     }

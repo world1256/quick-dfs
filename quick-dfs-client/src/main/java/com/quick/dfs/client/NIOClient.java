@@ -136,7 +136,7 @@ public class NIOClient {
      * 作者: fansy
      * 日期: 2020/4/6 16:04
      */
-    public  byte[] readFile(String hostName,String fileName){
+    public  byte[] readFile(String hostName,String fileName) throws Exception{
         byte[] fileBytes = null;
 
         ByteBuffer fileLengthBuffer = null;
@@ -207,7 +207,7 @@ public class NIOClient {
             }
 
         }catch (Exception e){
-            e.printStackTrace();
+            throw e;
         }finally {
             if(channel != null){
                 try {

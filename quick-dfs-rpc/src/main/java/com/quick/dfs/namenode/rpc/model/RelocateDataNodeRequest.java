@@ -327,7 +327,7 @@ public  final class RelocateDataNodeRequest extends
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:com.quick.dfs.namenode.rpc.RelocateDataNodeRequest)
-      com.quick.dfs.namenode.rpc.model.RelocateDataNodeRequestOrBuilder {
+      RelocateDataNodeRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return NameNodeRpcModel.internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeRequest_descriptor;
