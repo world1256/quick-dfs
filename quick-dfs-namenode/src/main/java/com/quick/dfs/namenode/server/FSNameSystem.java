@@ -337,15 +337,16 @@ public class FSNameSystem {
 
         //如果文件副本数量超标了   直接删除该DataNode上的这个文件
         if(dataNodes.size() == ConfigConstant.DATA_STORE_REPLICA){
-            dataNode.addStoredDataSize(-fileLength);
             RemoveTask removeTask = new RemoveTask(fileName,dataNode);
             dataNode.addRemoveTask(removeTask);
             return;
         }
 
+        //文件接收完毕再增加 dataNode已经存储的文件大小比较合理
+        dataNode.addStoredDataSize(fileLength);
         dataNodes.add(dataNode);
 
-        String key = ip + "-" +hostname;
+        String key = ip + SPLITOR.DATA_NODE_IP_HOST +hostname;
         List<String> files = this.filesByDataNode.get(key);
         if(files == null){
             files = new ArrayList<>();

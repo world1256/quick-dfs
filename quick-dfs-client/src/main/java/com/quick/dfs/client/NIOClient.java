@@ -26,11 +26,11 @@ public class NIOClient {
      * @param fileName
      * @param file
      * @param fileSize  
-     * @return void  
+     * @return boolean
      * @作者: fansy
      * @日期: 2020/3/30 11:02 
     */  
-    public void sendFile(String hostName,String fileName,byte[] file,long fileSize){
+    public boolean sendFile(String hostName,String fileName,byte[] file,long fileSize){
         //建立一个短连接  发送完一个文件后就关闭连接
         SocketChannel channel = null;
         Selector selector = null;
@@ -107,6 +107,7 @@ public class NIOClient {
 
         }catch (Exception e){
             e.printStackTrace();
+            return false;
         }finally {
             if(channel != null){
                 try {
@@ -123,6 +124,7 @@ public class NIOClient {
                 }
             }
         }
+        return true;
     }
 
     /**

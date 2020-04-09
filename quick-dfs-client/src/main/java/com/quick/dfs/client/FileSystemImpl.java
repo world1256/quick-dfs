@@ -89,7 +89,17 @@ public class FileSystemImpl implements FileSystem{
         for(int i = 0;i < dataNodes.size();i++){
             JSONObject dataNode = dataNodes.getJSONObject(i);
             String hostName = dataNode.getString("hostName");
-            nioClient.sendFile(hostName,fileName,file,file.length);
+
+            if(!nioClient.sendFile(hostName,fileName,file,file.length)){
+                //如果文件上传失败  重新上传到另外一台数据节点
+                hostName = relocateDataNode(fileName,file.length,dataNodesJson);
+                if(hostName != null){
+                    //再次上传失败  则抛出上传失败异常
+                    if(!nioClient.sendFile(hostName,fileName,file,file.length)){
+                        throw new Exception("file upload failed......");
+                    }
+                }
+            }
         }
 
         return true;
@@ -129,6 +139,27 @@ public class FileSystemImpl implements FileSystem{
                 .setFileName(fileName).setFileSize(fileSize).build();
         AllocateDataNodesResponse response = this.namenode.allocateDataNodes(request);
         return response.getDataNodes();
+    }
+
+    /**
+     * 重新分配一个上传文件的dataNode节点
+     * @param fileName
+     * @param fileSize
+     * @param excludeDataNodes 之前分配的节点不再分配
+     * @return
+     */
+    private String relocateDataNode(String fileName,long fileSize,String excludeDataNodes){
+        RelocateDataNodeRequest request = RelocateDataNodeRequest.newBuilder()
+                .setFileSize(fileSize)
+                .setExcludeDataNodes(excludeDataNodes)
+                .build();
+        RelocateDataNodeResponse response = this.namenode.relocateDataNode(request);
+        String dataNodeJson = response.getDataNode();
+        if(StringUtil.isNotEmpty(dataNodeJson)){
+            JSONObject dataNode = JSONObject.parseObject(dataNodeJson);
+            return dataNode.getString("hostName");
+        }
+        return null;
     }
 
     /**

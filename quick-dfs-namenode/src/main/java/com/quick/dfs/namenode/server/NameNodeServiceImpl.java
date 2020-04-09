@@ -452,6 +452,27 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         responseObserver.onCompleted();
     }
 
+    /**  
+     * @方法名: relocateDataNode
+     * @描述:   重新分配一个文件需要上传到的dataNode
+     * @param request
+     * @param responseObserver  
+     * @return void  
+     * @作者: fansy
+     * @日期: 2020/4/9 10:48 
+    */  
+    @Override
+    public void relocateDataNode(RelocateDataNodeRequest request, StreamObserver<RelocateDataNodeResponse> responseObserver) {
+        long fileSize = request.getFileSize();
+        List<DataNodeInfo> excludeDataNodes = JSONArray.parseArray(request.getExcludeDataNodes(),DataNodeInfo.class);
+        DataNodeInfo dataNodeInfo = this.dataNodeManager.relocateDataNode(fileSize,excludeDataNodes);
+        RelocateDataNodeResponse response = RelocateDataNodeResponse.newBuilder()
+                .setDataNode(JSONObject.toJSONString(dataNodeInfo))
+                .build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
     /**
      * 方法名: informReplicaReceived
      * 描述:   dataNode上报接收到的文件信息

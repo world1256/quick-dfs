@@ -111,12 +111,43 @@ public class DataNodeManager {
         if(dataNodeInfoList.size() >= ConfigConstant.DATA_STORE_REPLICA){
             for(int i = 0; i<ConfigConstant.DATA_STORE_REPLICA; i++){
                 allocateDataNodes.add(dataNodeInfoList.get(i));
-
-                //dataNode保存的数据量大小累加一下
-                dataNodeInfoList.get(i).addStoredDataSize(fileSize);
             }
         }
         return allocateDataNodes;
+    }
+
+    /**  
+     * @方法名: relocateDataNode
+     * @描述:   重新分配一个文件需要上传到的dataNode
+     * @param fileSize
+     * @param excludeDataNodes  
+     * @return com.quick.dfs.namenode.server.DataNodeInfo  
+     * @作者: fansy
+     * @日期: 2020/4/9 15:15 
+    */  
+    public DataNodeInfo relocateDataNode(long fileSize,List<DataNodeInfo> excludeDataNodes){
+        List<DataNodeInfo> dataNodeInfoList = new ArrayList<>();
+        for(DataNodeInfo dataNodeInfo : dataNodes.values()){
+            dataNodeInfoList.add(dataNodeInfo);
+        }
+
+        //根据dataNode存储数据量大小进行排序
+        dataNodeInfoList.sort(Comparator.comparing(DataNodeInfo::getStoredDataSize));
+
+        Set<DataNodeInfo> excludeDataNodeSet = new HashSet<>();
+        for(DataNodeInfo excludeDataNode : excludeDataNodes){
+            excludeDataNodeSet.add(excludeDataNode);
+        }
+
+        //这里取存储数据量最少的那些dataNode
+        if(dataNodeInfoList.size() >= ConfigConstant.DATA_STORE_REPLICA){
+            for(DataNodeInfo dataNodeInfo : dataNodeInfoList){
+                if(!excludeDataNodeSet.contains(dataNodeInfo)){
+                    return dataNodeInfo;
+                }
+            }
+        }
+        return null;
     }
 
     /**  

@@ -124,6 +124,16 @@ public final class NameNodeRpcModel {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_quick_dfs_namenode_rpc_GetDataNodeForFileResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -162,9 +172,12 @@ public final class NameNodeRpcModel {
       "ompleteStorageInfoResponse\022\016\n\006status\030\001 \001" +
       "(\005\"-\n\031GetDataNodeForFileRequest\022\020\n\010fileN" +
       "ame\030\001 \001(\t\"B\n\032GetDataNodeForFileResponse\022" +
-      "\016\n\006status\030\001 \001(\005\022\024\n\014dataNodeInfo\030\002 \001(\tB6\n",
-      " com.quick.dfs.namenode.rpc.modelB\020NameN" +
-      "odeRpcModelP\001b\006proto3"
+      "\016\n\006status\030\001 \001(\005\022\024\n\014dataNodeInfo\030\002 \001(\t\"W\n",
+      "\027RelocateDataNodeRequest\022\020\n\010fileName\030\001 \001" +
+      "(\t\022\020\n\010fileSize\030\002 \001(\003\022\030\n\020excludeDataNodes" +
+      "\030\003 \001(\t\",\n\030RelocateDataNodeResponse\022\020\n\010da" +
+      "taNode\030\001 \001(\tB6\n com.quick.dfs.namenode.r" +
+      "pc.modelB\020NameNodeRpcModelP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -310,6 +323,18 @@ public final class NameNodeRpcModel {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_quick_dfs_namenode_rpc_GetDataNodeForFileResponse_descriptor,
         new String[] { "Status", "DataNodeInfo", });
+    internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeRequest_descriptor =
+      getDescriptor().getMessageTypes().get(22);
+    internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeRequest_descriptor,
+        new String[] { "FileName", "FileSize", "ExcludeDataNodes", });
+    internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeResponse_descriptor =
+      getDescriptor().getMessageTypes().get(23);
+    internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_quick_dfs_namenode_rpc_RelocateDataNodeResponse_descriptor,
+        new String[] { "DataNode", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
