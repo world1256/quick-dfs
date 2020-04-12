@@ -2,8 +2,10 @@ package com.quick.dfs.namenode.server;
 
 import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.constant.SPLITOR;
+import com.quick.dfs.namenode.task.RemoveTask;
 import com.quick.dfs.namenode.task.ReplicateTask;
 import com.quick.dfs.thread.Daemon;
+import sun.awt.windows.ThemeReader;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -203,7 +205,7 @@ public class DataNodeManager {
 
             if(sourceDataNode != null && destDataNode != null){
                 ReplicateTask replicateTask = new ReplicateTask(filename,fileLength,sourceDataNode,destDataNode);
-                deadDataNode.addReplicateTask(replicateTask);
+                destDataNode.addReplicateTask(replicateTask);
             }
         }
 
@@ -231,6 +233,133 @@ public class DataNodeManager {
         return null;
     }
 
+    /**  
+     * 方法名: rebalance
+     * 描述:   数据节点 数据容量重平衡  使各个节点数据尽量均衡
+     * @param   
+     * @return void  
+     * 作者: fansy 
+     * 日期: 2020/4/12 13:15 
+     */  
+    public void rebalance(){
+        long totalDataSize = 0;
+        long avgDataSize = 0;
+
+        //数据节点上的文件容量   这里是分配任务  不对dataNode上保存的实际容量直接修改
+        //使用这个map来进行计算
+        Map<String,Long> dataNodeSize = new HashMap<>();
+        for(DataNodeInfo dataNodeInfo : dataNodes.values()){
+            totalDataSize += dataNodeInfo.getStoredDataSize();
+            avgDataSize = totalDataSize/dataNodes.size();
+            dataNodeSize.put(dataNodeInfo.getIp()+SPLITOR.DATA_NODE_IP_HOST+dataNodeInfo.getHostName(),dataNodeInfo.getStoredDataSize());
+        }
+
+        //数据总量大于平均值的节点   需要将数据迁移到其他节点
+        List<DataNodeInfo> sourceDataNodes = new ArrayList<>();
+        //数据总量小于平均值的节点   需要从其他节点接收数据
+        List<DataNodeInfo> destDataNodes = new ArrayList<>();
+
+        for(DataNodeInfo dataNodeInfo : dataNodes.values()){
+            if(dataNodeInfo.getStoredDataSize() > avgDataSize){
+                sourceDataNodes.add(dataNodeInfo);
+            }
+            if(dataNodeInfo.getStoredDataSize() < avgDataSize){
+                destDataNodes.add(dataNodeInfo);
+            }
+        }
+
+        List<RemoveTask> removeTasks = new ArrayList<>();
+        for(DataNodeInfo sourceDataNode : sourceDataNodes){
+            long maxReplicateSize = avgDataSize - sourceDataNode.getStoredDataSize();
+            for(DataNodeInfo destDataNode : destDataNodes){
+                String key = destDataNode.getIp()+SPLITOR.DATA_NODE_IP_HOST+destDataNode.getHostName();
+                long storedDataSize = dataNodeSize.get(key);
+                //如果目标节点能接收全部需要复制的文件  则一次处理
+                if(avgDataSize - storedDataSize >= maxReplicateSize){
+                    createRebalanceTask(sourceDataNode,destDataNode,maxReplicateSize,removeTasks);
+                    dataNodeSize.put(key,storedDataSize-maxReplicateSize);
+                    break;
+                }
+                //不能完全接收  那么接收一部分文件
+                else if(storedDataSize < avgDataSize){
+                    long maxRemoveSize = avgDataSize - destDataNode.getStoredDataSize();
+                    long removedSize = createRebalanceTask(sourceDataNode,destDataNode,maxRemoveSize,removeTasks);
+                    maxReplicateSize -= removedSize;
+                    dataNodeSize.put(key,storedDataSize-removedSize);
+                }
+            }
+        }
+        new DelayRemoveReplicateThread(removeTasks).start();
+    }
+
+    /**  
+     * 方法名: createRebalanceTask
+     * 描述:   创建重平衡任务
+     * @param sourceDataNode
+     * @param destDataNode
+     * @param maxReplicateSize
+     * @param removeTasks  
+     * @return long  
+     * 作者: fansy 
+     * 日期: 2020/4/12 14:04 
+     */  
+    public long createRebalanceTask(DataNodeInfo sourceDataNode,DataNodeInfo destDataNode
+            ,long maxReplicateSize,List<RemoveTask> removeTasks){
+        long removedSize = 0;
+        List<String> files = this.nameSystem.getFilesByDataNode(sourceDataNode.getIp(),sourceDataNode.getHostName());
+        for(String file : files){
+            String fileName = file.split(SPLITOR.FILE_NAME_LENGTH)[0];
+            long fileLength = Long.parseLong(file.split(SPLITOR.FILE_NAME_LENGTH)[1]);
+            if(removedSize + fileLength > maxReplicateSize){
+                break;
+            }
+
+            //文件删除任务   dataNode的数据大小   不在这里做处理   等后面分发removeTask时再减去容量大小
+            RemoveTask removeTask = new RemoveTask(fileName,sourceDataNode);
+            removeTasks.add(removeTask);
+
+            //文件复制任务  dataNode的数据大小  不在这里做处理   等上报接收文件成功的消息过来时再增加大小
+            ReplicateTask replicateTask  = new ReplicateTask(fileName,fileLength,sourceDataNode,destDataNode);
+            destDataNode.addReplicateTask(replicateTask);
+
+            removedSize += fileLength;
+        }
+        return removedSize;
+    }
+
+    /**
+     * 延时删除副本线程
+     */
+    class DelayRemoveReplicateThread extends Thread{
+
+        private List<RemoveTask> removeTasks;
+
+        public DelayRemoveReplicateThread(List<RemoveTask> removeTasks){
+            this.removeTasks = removeTasks;
+        }
+
+        @Override
+        public void run() {
+            long start = System.currentTimeMillis();
+
+            while (true){
+                try{
+                    long now = System.currentTimeMillis();
+                    //这里需要延迟一定时间再删除   确保重平衡产生的复制任务完全跑完
+                    if(now - start >= ConfigConstant.REBALANCE_REMOVE_REPLICATE_DELAY){
+                        for(RemoveTask removeTask : removeTasks){
+                            removeTask.getDataNodeInfo().addRemoveTask(removeTask);
+                        }
+                        break;
+                    }
+                    Thread.sleep(60 * 1000);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
     /**
      * 定时检测 DataNode活性的后台线程
      */

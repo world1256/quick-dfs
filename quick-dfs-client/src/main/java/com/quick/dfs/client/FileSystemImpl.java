@@ -221,4 +221,19 @@ public class FileSystemImpl implements FileSystem{
         }
         return null;
     }
+
+    /**
+     * 方法名: rebalance
+     * 描述:   数据节点重平衡
+     * @param
+     * @return void
+     * 作者: fansy
+     * 日期: 2020/4/12 14:24
+     */
+    @Override
+    public void rebalance() throws Exception {
+        RebalanceRequest request = RebalanceRequest.newBuilder().build();
+        RebalanceResponse response = this.namenode.rebalance(request);
+        System.out.println("重平衡的响应:"+response.getStatus());
+    }
 }

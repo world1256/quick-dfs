@@ -112,4 +112,9 @@ public interface ConfigConstant {
      * datanode  文件复制 线程数量
      */
     Integer DATA_NODE_REPLICATE_THREAD_COUNT = 3;
+
+    /**
+     * 重平衡 删除迁移副本的延时时间
+     */
+    Long REBALANCE_REMOVE_REPLICATE_DELAY = 24 * 60 * 60 * 1000l;
 }

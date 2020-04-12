@@ -129,6 +129,15 @@ public class NameNodeServiceGrpc {
               "com.quick.dfs.namenode.rpc.NameNodeService", "relocateDataNode"),
           io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.RelocateDataNodeRequest.getDefaultInstance()),
           io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.RelocateDataNodeResponse.getDefaultInstance()));
+  @io.grpc.ExperimentalApi
+  public static final io.grpc.MethodDescriptor<com.quick.dfs.namenode.rpc.model.RebalanceRequest,
+      com.quick.dfs.namenode.rpc.model.RebalanceResponse> METHOD_REBALANCE =
+      io.grpc.MethodDescriptor.create(
+          io.grpc.MethodDescriptor.MethodType.UNARY,
+          generateFullMethodName(
+              "com.quick.dfs.namenode.rpc.NameNodeService", "rebalance"),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.RebalanceRequest.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.quick.dfs.namenode.rpc.model.RebalanceResponse.getDefaultInstance()));
 
   public static NameNodeServiceStub newStub(io.grpc.Channel channel) {
     return new NameNodeServiceStub(channel);
@@ -181,6 +190,9 @@ public class NameNodeServiceGrpc {
 
     public void relocateDataNode(com.quick.dfs.namenode.rpc.model.RelocateDataNodeRequest request,
                                  io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.RelocateDataNodeResponse> responseObserver);
+
+    public void rebalance(com.quick.dfs.namenode.rpc.model.RebalanceRequest request,
+                          io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.RebalanceResponse> responseObserver);
   }
 
   public static interface NameNodeServiceBlockingClient {
@@ -208,6 +220,8 @@ public class NameNodeServiceGrpc {
     public com.quick.dfs.namenode.rpc.model.GetDataNodeForFileResponse getDataNodeForFile(com.quick.dfs.namenode.rpc.model.GetDataNodeForFileRequest request);
 
     public com.quick.dfs.namenode.rpc.model.RelocateDataNodeResponse relocateDataNode(com.quick.dfs.namenode.rpc.model.RelocateDataNodeRequest request);
+
+    public com.quick.dfs.namenode.rpc.model.RebalanceResponse rebalance(com.quick.dfs.namenode.rpc.model.RebalanceRequest request);
   }
 
   public static interface NameNodeServiceFutureClient {
@@ -247,6 +261,9 @@ public class NameNodeServiceGrpc {
 
     public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.RelocateDataNodeResponse> relocateDataNode(
             com.quick.dfs.namenode.rpc.model.RelocateDataNodeRequest request);
+
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.RebalanceResponse> rebalance(
+            com.quick.dfs.namenode.rpc.model.RebalanceRequest request);
   }
 
   public static class NameNodeServiceStub extends io.grpc.stub.AbstractStub<NameNodeServiceStub>
@@ -349,6 +366,13 @@ public class NameNodeServiceGrpc {
       asyncUnaryCall(
           getChannel().newCall(METHOD_RELOCATE_DATA_NODE, getCallOptions()), request, responseObserver);
     }
+
+    @Override
+    public void rebalance(com.quick.dfs.namenode.rpc.model.RebalanceRequest request,
+        io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.RebalanceResponse> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(METHOD_REBALANCE, getCallOptions()), request, responseObserver);
+    }
   }
 
   public static class NameNodeServiceBlockingStub extends io.grpc.stub.AbstractStub<NameNodeServiceBlockingStub>
@@ -438,6 +462,12 @@ public class NameNodeServiceGrpc {
     public com.quick.dfs.namenode.rpc.model.RelocateDataNodeResponse relocateDataNode(com.quick.dfs.namenode.rpc.model.RelocateDataNodeRequest request) {
       return blockingUnaryCall(
           getChannel(), METHOD_RELOCATE_DATA_NODE, getCallOptions(), request);
+    }
+
+    @Override
+    public com.quick.dfs.namenode.rpc.model.RebalanceResponse rebalance(com.quick.dfs.namenode.rpc.model.RebalanceRequest request) {
+      return blockingUnaryCall(
+          getChannel(), METHOD_REBALANCE, getCallOptions(), request);
     }
   }
 
@@ -541,6 +571,13 @@ public class NameNodeServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(METHOD_RELOCATE_DATA_NODE, getCallOptions()), request);
     }
+
+    @Override
+    public com.google.common.util.concurrent.ListenableFuture<com.quick.dfs.namenode.rpc.model.RebalanceResponse> rebalance(
+        com.quick.dfs.namenode.rpc.model.RebalanceRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(METHOD_REBALANCE, getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_REGISTER = 0;
@@ -555,6 +592,7 @@ public class NameNodeServiceGrpc {
   private static final int METHODID_REPORT_COMPLETE_STORAGE_INFO = 9;
   private static final int METHODID_GET_DATA_NODE_FOR_FILE = 10;
   private static final int METHODID_RELOCATE_DATA_NODE = 11;
+  private static final int METHODID_REBALANCE = 12;
 
   private static class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -619,6 +657,10 @@ public class NameNodeServiceGrpc {
         case METHODID_RELOCATE_DATA_NODE:
           serviceImpl.relocateDataNode((com.quick.dfs.namenode.rpc.model.RelocateDataNodeRequest) request,
               (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.RelocateDataNodeResponse>) responseObserver);
+          break;
+        case METHODID_REBALANCE:
+          serviceImpl.rebalance((com.quick.dfs.namenode.rpc.model.RebalanceRequest) request,
+              (io.grpc.stub.StreamObserver<com.quick.dfs.namenode.rpc.model.RebalanceResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -722,6 +764,13 @@ public class NameNodeServiceGrpc {
               com.quick.dfs.namenode.rpc.model.RelocateDataNodeRequest,
               com.quick.dfs.namenode.rpc.model.RelocateDataNodeResponse>(
                 serviceImpl, METHODID_RELOCATE_DATA_NODE)))
+        .addMethod(
+          METHOD_REBALANCE,
+          asyncUnaryCall(
+            new MethodHandlers<
+              com.quick.dfs.namenode.rpc.model.RebalanceRequest,
+              com.quick.dfs.namenode.rpc.model.RebalanceResponse>(
+                serviceImpl, METHODID_REBALANCE)))
         .build();
   }
 }

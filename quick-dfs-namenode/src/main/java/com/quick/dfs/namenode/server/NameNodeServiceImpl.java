@@ -563,4 +563,23 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    /**
+     * 方法名: rebalance
+     * 描述:   数据节点 重平衡   让数据尽量均匀分布
+     * @param request
+     * @param responseObserver
+     * @return void
+     * 作者: fansy
+     * 日期: 2020/4/12 14:21
+     */
+    @Override
+    public void rebalance(RebalanceRequest request, StreamObserver<RebalanceResponse> responseObserver) {
+        this.dataNodeManager.rebalance();
+
+        RebalanceResponse response = RebalanceResponse.newBuilder()
+                .setStatus(StatusCode.STATUS_SUCCESS).build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 }

@@ -48,4 +48,14 @@ public interface FileSystem {
      * 日期: 2020/4/6 13:34 
      */  
     byte[] download(String fileName)throws Exception;
+
+    /**
+     * 方法名: rebalance
+     * 描述:   数据节点重平衡
+     * @param
+     * @return void
+     * 作者: fansy
+     * 日期: 2020/4/12 14:22
+     */
+    void rebalance()throws Exception;
 }

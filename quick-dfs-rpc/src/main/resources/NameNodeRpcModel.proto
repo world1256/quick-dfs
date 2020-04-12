@@ -94,3 +94,8 @@ message RelocateDataNodeRequest{
 message RelocateDataNodeResponse{
     string dataNode = 1;
 }
+message RebalanceRequest{
+}
+message RebalanceResponse{
+    int32 status = 1;
+}
