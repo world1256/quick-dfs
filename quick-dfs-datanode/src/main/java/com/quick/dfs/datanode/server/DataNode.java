@@ -62,7 +62,7 @@ public class DataNode {
         this.heartbeatManager.start();
 
         //启动文件处理服务组件
-        new DataNodeNIOServer(nameNode).start();
+        new NIOServer(nameNode).start();
     }
 
     /**

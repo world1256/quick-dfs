@@ -1,44 +1,45 @@
 package com.quick.dfs.datanode.server;
 
 import com.quick.dfs.constant.ClientRequestType;
-import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.util.FileUtil;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.nio.channels.FileChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * @项目名称: quick-dfs
  * @描述:
  * @作者: fansy
- * @日期: 2020/3/30 11:20
+ * @日期: 2020/4/14 15:21
  **/
-public class DataNodeNIOServer extends Thread{
+public class NetworkRequest {
 
-    private Selector selector;
+    /**
+     * 本次网络请求对应的连接
+     */
+    private SelectionKey key;
 
-    private List<LinkedBlockingDeque<SelectionKey>> queues = new ArrayList<>();
+    /**
+     * 本次网络请求对应的连接
+     */
+    private SocketChannel channel;
 
     /**
      * 缓存没处理完的请求信息
      */
-    private Map<String,CachedRequest> cachedRequestByClient = new ConcurrentHashMap<>();
+    private Map<String, CachedRequest> cachedRequestByClient = new ConcurrentHashMap<>();
 
     /**
      * 缓存没读取完的请求类型
      */
-    private Map<String,ByteBuffer> requestTypeByClient = new ConcurrentHashMap<>();
+    private Map<String, ByteBuffer> requestTypeByClient = new ConcurrentHashMap<>();
 
     /**
      * 缓存没读取完的文件名长度
@@ -65,113 +66,46 @@ public class DataNodeNIOServer extends Thread{
      */
     private Map<String,ByteBuffer> sendFileByClient = new ConcurrentHashMap<>();
 
-    private NameNodeRpcClient nameNode;
-
-    public DataNodeNIOServer(NameNodeRpcClient nameNode){
-        this.nameNode = nameNode;
-        ServerSocketChannel channel = null;
-        try {
-            selector = Selector.open();
-            channel = ServerSocketChannel.open();
-            channel.configureBlocking(false);
-            channel.socket().bind(new InetSocketAddress(ConfigConstant.DATA_NODE_UPLOAD_PORT),100);
-            channel.register(selector, SelectionKey.OP_ACCEPT);
-
-            //启动指定数量的worker  来具体处理文件的上传
-            for(int i = 0;i < ConfigConstant.DATA_NODE_UPLOAD_THREAD_COUNT;i++){
-                LinkedBlockingDeque<SelectionKey> queue = new LinkedBlockingDeque<>();
-                queues.add(queue);
-                new Worker(queue).start();
-            }
-            System.out.println("DataNodeNIOServer启动成功，开始监听端口："+ConfigConstant.DATA_NODE_UPLOAD_PORT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public NetworkRequest(SelectionKey key,SocketChannel channel){
+        this.key = key;
+        this.channel = channel;
     }
 
-    @Override
-    public void run() {
-        while (true){
-            try {
-                selector.select();
-                Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-                while (iterator.hasNext()){
-                    SelectionKey key = iterator.next();
-                    iterator.remove();
-                    handEvent(key);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+
+    public void read(){
+        try {
+            Integer requestType = null;
+            String client = channel.getRemoteAddress().toString();
+            if(cachedRequestByClient.containsKey(client)){
+                requestType = cachedRequestByClient.get(client).requestType;
+            }else{
+                requestType = getRequestType();
             }
+
+            if(requestType == null){
+                return;
+            }
+
+            if(requestType == ClientRequestType.SEND_FILE){
+                handleSendFileRequest(channel,key);
+            }else if(requestType == ClientRequestType.READ_FILE){
+                handleReadFileRequest(channel,key);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     /**  
-     * 方法名: handEvent
-     * 描述:   请求分发到各个线程上
-     * @param key  
-     * @return void  
-     * 作者: fansy 
-     * 日期: 2020/4/6 15:11 
-     */  
-    private void handEvent(SelectionKey key) throws IOException {
-        SocketChannel channel = null;
-        try {
-            if (key.isAcceptable()) {
-                ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
-                channel = serverSocketChannel.accept();
-                if(channel != null){
-                    channel.configureBlocking(false);
-                    channel.register(selector,SelectionKey.OP_READ);
-                }
-            }else if(key.isReadable()){
-                //上报文件放到队列里交给 线程去处理
-                channel = (SocketChannel) key.channel();
-                String client = channel.getRemoteAddress().toString();
-                //对上传的客户端地址取模，让请求尽量均匀的分布在各个线程上
-                int queuesIndex = client.hashCode() % ConfigConstant.DATA_NODE_UPLOAD_THREAD_COUNT;
-                queues.get(queuesIndex).put(key);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            if(channel != null){
-                channel.close();
-            }
-        }
-    }
-
-
-    /**
-     * 处理请求的工作线程
-     */
-    class Worker extends Thread{
-
-        private LinkedBlockingDeque<SelectionKey> queue;
-
-        public Worker(LinkedBlockingDeque<SelectionKey> queue){
-            this.queue = queue;
-        }
-
-        @Override
-        public void run() {
-            while(true){
-                SocketChannel channel = null;
-                try {
-                    SelectionKey key = queue.take();
-                    channel = (SocketChannel) key.channel();
-                    handleRequest(key,channel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if(channel != null){
-                        try {
-                            channel.close();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
+     * @方法名: hasCompletedRead
+     * @描述:   是否完成了一个请求的读取
+     * @param   
+     * @return java.lang.Boolean  
+     * @作者: fansy
+     * @日期: 2020/4/14 15:36 
+    */  
+    public Boolean hasCompletedRead() {
+        return false;
     }
 
     /**
@@ -195,7 +129,7 @@ public class DataNodeNIOServer extends Thread{
         if(cachedRequestByClient.containsKey(remoteAddr)){
             handleSendFileRequest(channel,key);
         }else{
-            Integer requestType = getRequestType(channel);
+            Integer requestType = getRequestType();
 
             if(requestType == null){
                 return;
@@ -213,12 +147,11 @@ public class DataNodeNIOServer extends Thread{
     /**
      * 方法名: getRequestType
      * 描述:   获取请求类型
-     * @param channel
      * @return long
      * 作者: fansy
      * 日期: 2020/4/6 14:54
      */
-    private Integer getRequestType(SocketChannel channel) throws IOException {
+    private Integer getRequestType() throws IOException {
         Integer requestType = null;
 
         String client = channel.getRemoteAddress().toString();
@@ -273,7 +206,7 @@ public class DataNodeNIOServer extends Thread{
      * @return java.lang.String
      * @作者: fansy
      * @日期: 2020/4/2 15:25
-    */
+     */
     private FileName getFileName(SocketChannel channel) throws Exception {
         FileName fileName = new FileName();
         String client = channel.getRemoteAddress().toString();
@@ -296,14 +229,14 @@ public class DataNodeNIOServer extends Thread{
         return fileName;
     }
 
-    /**  
+    /**
      * @方法名: getRelativeFileName
      * @描述:   从channel中读取文件名
      * @param channel
      * @return java.lang.String
      * @作者: fansy
-     * @日期: 2020/4/2 15:13 
-    */  
+     * @日期: 2020/4/2 15:13
+     */
     private String getRelativeFileName(SocketChannel channel) throws Exception {
         String client = channel.getRemoteAddress().toString();
         Integer fileNameLength = null;
@@ -345,14 +278,14 @@ public class DataNodeNIOServer extends Thread{
         return fileName;
     }
 
-    /**  
+    /**
      * @方法名: getFileLength
      * @描述:   获取文件的长度
      * @param channel
      * @return long
      * @作者: fansy
-     * @日期: 2020/4/2 15:38 
-    */  
+     * @日期: 2020/4/2 15:38
+     */
     private Long getFileLength(SocketChannel channel) throws Exception {
         Long fileLength = null;
         String client = channel.getRemoteAddress().toString();
@@ -427,8 +360,8 @@ public class DataNodeNIOServer extends Thread{
                 System.out.println("文件读取完毕，返回响应给客户端：" + client);
 
                 //向nameNode上报接收到的文件信息
-                nameNode.informReplicaReceived(fileName.relativeFileName,fileLength);
-                System.out.println("上报接收到文件信息给nameNode...");
+//                nameNode.informReplicaReceived(fileName.relativeFileName,fileLength);
+//                System.out.println("上报接收到文件信息给nameNode...");
 
                 //不再响应该channel的读请求
                 key.interestOps(key.interestOps() & ~SelectionKey.OP_READ);
@@ -514,6 +447,5 @@ public class DataNodeNIOServer extends Thread{
 
         private long fileLength;
     }
-
 
 }
