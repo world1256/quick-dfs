@@ -88,9 +88,14 @@ public interface ConfigConstant {
     Integer DATA_NODE_UPLOAD_PORT = 9000;
 
     /**
-     * datanode 处理文件上传的线程数量
+     * datanode 处理网络连接的线程数量
      */
-    Integer DATA_NODE_UPLOAD_THREAD_COUNT = 3;
+    Integer DATA_NODE_NIO_PROCESSOR_COUNT = 10;
+
+    /**
+     * datanode 处理文件读写的线程数量
+     */
+    Integer DATA_NODE_IO_THREAD_COUNT = 10;
 
     /**
      * datanode 数据存放目录

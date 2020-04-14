@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @项目名称: quick-dfs
- * @描述:
+ * @描述: 网络请求
  * @作者: fansy
  * @日期: 2020/4/14 15:21
  **/
@@ -32,39 +32,39 @@ public class NetworkRequest {
     private SocketChannel channel;
 
     /**
+     * processor标识
+     */
+    private Integer processorId;
+
+    /**
      * 缓存没处理完的请求信息
      */
-    private Map<String, CachedRequest> cachedRequestByClient = new ConcurrentHashMap<>();
+    private CachedRequest cachedRequest = new CachedRequest();
 
     /**
      * 缓存没读取完的请求类型
      */
-    private Map<String, ByteBuffer> requestTypeByClient = new ConcurrentHashMap<>();
+    private ByteBuffer cachedRequestTypeBuffer;
 
     /**
      * 缓存没读取完的文件名长度
      */
-    private Map<String,ByteBuffer> fileNameLengthByClient = new ConcurrentHashMap<>();
+    private ByteBuffer cachedFileNameLengthBuffer;
 
     /**
      * 缓存没读取完的文件名
      */
-    private Map<String,ByteBuffer> fileNameByClient = new ConcurrentHashMap<>();
+    private ByteBuffer cachedFileNameBuffer;
 
     /**
      * 缓存没读取完的文件长度
      */
-    private Map<String,ByteBuffer> fileLengthByClient = new ConcurrentHashMap<>();
+    private ByteBuffer cachedFileLengthBuffer;
 
     /**
      * 缓存没读取完的文件内容
      */
-    private Map<String,ByteBuffer> fileByClient = new ConcurrentHashMap<>();
-
-    /**
-     * 缓存没发送完的文件内容
-     */
-    private Map<String,ByteBuffer> sendFileByClient = new ConcurrentHashMap<>();
+    private ByteBuffer cachedFileBuffer;
 
     public NetworkRequest(SelectionKey key,SocketChannel channel){
         this.key = key;
@@ -75,9 +75,8 @@ public class NetworkRequest {
     public void read(){
         try {
             Integer requestType = null;
-            String client = channel.getRemoteAddress().toString();
-            if(cachedRequestByClient.containsKey(client)){
-                requestType = cachedRequestByClient.get(client).requestType;
+            if(cachedRequest.requestType != null){
+                requestType = cachedRequest.requestType;
             }else{
                 requestType = getRequestType();
             }
@@ -87,9 +86,9 @@ public class NetworkRequest {
             }
 
             if(requestType == ClientRequestType.SEND_FILE){
-                handleSendFileRequest(channel,key);
+                handleSendFileRequest(channel);
             }else if(requestType == ClientRequestType.READ_FILE){
-                handleReadFileRequest(channel,key);
+                handleReadFileRequest(channel);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,44 +104,9 @@ public class NetworkRequest {
      * @日期: 2020/4/14 15:36 
     */  
     public Boolean hasCompletedRead() {
-        return false;
+        return cachedRequest.readCompleted;
     }
 
-    /**
-     * 方法名: handleRequest
-     * 描述:   处理客户端请求
-     * @param key
-     * @param channel
-     * @return void
-     * 作者: fansy
-     * 日期: 2020/4/6 15:35
-     */
-    private void handleRequest(SelectionKey key,SocketChannel channel) throws Exception {
-        if(!channel.isOpen()){
-            channel.close();
-            return;
-        }
-
-        String remoteAddr = channel.getRemoteAddress().toString();
-        System.out.println("接收到客户端请求："+remoteAddr);
-
-        if(cachedRequestByClient.containsKey(remoteAddr)){
-            handleSendFileRequest(channel,key);
-        }else{
-            Integer requestType = getRequestType();
-
-            if(requestType == null){
-                return;
-            }
-
-            if(requestType == ClientRequestType.SEND_FILE){
-                handleSendFileRequest(channel,key);
-            }else if(requestType == ClientRequestType.READ_FILE){
-                handleReadFileRequest(channel,key);
-            }
-        }
-
-    }
 
     /**
      * 方法名: getRequestType
@@ -151,17 +115,16 @@ public class NetworkRequest {
      * 作者: fansy
      * 日期: 2020/4/6 14:54
      */
-    private Integer getRequestType() throws IOException {
+    public Integer getRequestType() throws IOException {
         Integer requestType = null;
 
-        String client = channel.getRemoteAddress().toString();
-        if(cachedRequestByClient.get(client)!=null){
-            return cachedRequestByClient.get(client).requestType;
+        if(cachedRequest.requestType != null){
+            return cachedRequest.requestType;
         }
 
-        ByteBuffer requestTypeBuffer = null;
-        if(requestTypeByClient.containsKey(client)){
-            requestTypeBuffer = requestTypeByClient.get(client);
+        ByteBuffer requestTypeBuffer;
+        if(cachedRequestTypeBuffer != null){
+            requestTypeBuffer = cachedRequestTypeBuffer;
         }else{
             requestTypeBuffer = ByteBuffer.allocate(4);
         }
@@ -172,31 +135,11 @@ public class NetworkRequest {
         if(!requestTypeBuffer.hasRemaining()){
             requestTypeBuffer.rewind();
             requestType = requestTypeBuffer.getInt();
-
-            requestTypeByClient.remove(client);
-            CachedRequest cachedRequest = getCachedRequest(client);
             cachedRequest.requestType = requestType;
         }else{
-            requestTypeByClient.put(client,requestTypeBuffer);
+            cachedRequestTypeBuffer = requestTypeBuffer;
         }
         return requestType;
-    }
-
-    /**
-     * 方法名: getCachedRequest
-     * 描述:   获取缓存的请求
-     * @param client
-     * @return com.quick.dfs.datanode.server.DataNodeNIOServer.CachedRequest
-     * 作者: fansy
-     * 日期: 2020/4/6 16:32
-     */
-    public CachedRequest getCachedRequest(String client){
-        CachedRequest cachedRequest = cachedRequestByClient.get(client);
-        if(cachedRequest == null){
-            cachedRequest = new CachedRequest();
-            cachedRequestByClient.put(client,cachedRequest);
-        }
-        return cachedRequest;
     }
 
     /**
@@ -209,9 +152,8 @@ public class NetworkRequest {
      */
     private FileName getFileName(SocketChannel channel) throws Exception {
         FileName fileName = new FileName();
-        String client = channel.getRemoteAddress().toString();
-        if(getCachedRequest(client).fileName != null){
-            return getCachedRequest(client).fileName;
+        if(cachedRequest.fileName != null){
+            return cachedRequest.fileName;
         }
 
         String relativeFileName = getRelativeFileName(channel);
@@ -224,7 +166,7 @@ public class NetworkRequest {
         //将文件名保存到未完成请求缓存中
         fileName.relativeFileName = relativeFileName;
         fileName.absoluteFileName = absoluteFileName;
-        getCachedRequest(client).fileName = fileName;
+        cachedRequest.fileName = fileName;
 
         return fileName;
     }
@@ -238,15 +180,14 @@ public class NetworkRequest {
      * @日期: 2020/4/2 15:13
      */
     private String getRelativeFileName(SocketChannel channel) throws Exception {
-        String client = channel.getRemoteAddress().toString();
         Integer fileNameLength = null;
         String fileName = null;
-        ByteBuffer fileNameLengthBuffer = null;
 
+        ByteBuffer fileNameLengthBuffer;
         //首先读取文件名长度  如果文件名在未读取完成缓存中  那么不需要读取文件名长度
-        if(!fileNameByClient.containsKey(client)){
-            if(fileNameLengthByClient.containsKey(client)){
-                fileNameLengthBuffer = fileNameLengthByClient.get(client);
+        if(cachedRequest.fileNameLength == null){
+            if(cachedFileNameLengthBuffer != null){
+                fileNameLengthBuffer = cachedFileNameLengthBuffer;
             }else{
                 fileNameLengthBuffer = ByteBuffer.allocate(4);
             }
@@ -254,16 +195,16 @@ public class NetworkRequest {
             if(!fileNameLengthBuffer.hasRemaining()){
                 fileNameLengthBuffer.rewind();
                 fileNameLength = fileNameLengthBuffer.getInt();
-                fileNameLengthByClient.remove(client);
+                cachedRequest.fileNameLength = fileNameLength;
             }else{
-                fileNameLengthByClient.put(client,fileNameLengthBuffer);
+                cachedFileNameLengthBuffer = fileNameLengthBuffer;
                 return null;
             }
         }
 
-        ByteBuffer fileNameBuffer = null;
-        if(fileNameByClient.containsKey(client)){
-            fileNameBuffer = fileNameByClient.get(client);
+        ByteBuffer fileNameBuffer;
+        if(cachedFileNameBuffer != null){
+            fileNameBuffer = cachedFileNameBuffer;
         }else{
             fileNameBuffer = ByteBuffer.allocate(fileNameLength);
         }
@@ -271,9 +212,8 @@ public class NetworkRequest {
         if(!fileNameBuffer.hasRemaining()){
             fileNameBuffer.rewind();
             fileName = new String(fileNameBuffer.array());
-            fileNameByClient.remove(client);
         }else{
-            fileNameByClient.put(client,fileNameBuffer);
+            cachedFileNameBuffer = fileNameBuffer;
         }
         return fileName;
     }
@@ -281,22 +221,19 @@ public class NetworkRequest {
     /**
      * @方法名: getFileLength
      * @描述:   获取文件的长度
-     * @param channel
      * @return long
      * @作者: fansy
      * @日期: 2020/4/2 15:38
      */
-    private Long getFileLength(SocketChannel channel) throws Exception {
+    public Long getFileLength() throws Exception {
         Long fileLength = null;
-        String client = channel.getRemoteAddress().toString();
-        if(cachedRequestByClient.get(client)!=null){
-            return cachedRequestByClient.get(client).fileLength;
+        if(cachedRequest.fileLength != null){
+            return cachedRequest.fileLength;
         }
 
-        ByteBuffer fileLengthBuffer = null;
-
-        if(fileLengthByClient.containsKey(client)){
-            fileLengthBuffer = fileLengthByClient.get(client);
+        ByteBuffer fileLengthBuffer;
+        if(cachedFileLengthBuffer != null){
+            fileLengthBuffer = cachedFileLengthBuffer;
         }else{
             fileLengthBuffer = ByteBuffer.allocate(8);
         }
@@ -306,10 +243,9 @@ public class NetworkRequest {
         if(!fileLengthBuffer.hasRemaining()){
             fileLengthBuffer.rewind();
             fileLength = fileLengthBuffer.getLong();
-            fileLengthByClient.remove(client);
-            cachedRequestByClient.get(client).fileLength = fileLength;
+            cachedRequest.fileLength = fileLength;
         }else{
-            fileLengthByClient.put(client,fileLengthBuffer);
+            cachedFileLengthBuffer = fileLengthBuffer;
         }
         return fileLength;
     }
@@ -322,20 +258,20 @@ public class NetworkRequest {
      * 作者: fansy
      * 日期: 2020/4/6 14:47
      */
-    private void handleSendFileRequest(SocketChannel channel,SelectionKey key) throws Exception {
+    private void handleSendFileRequest(SocketChannel channel) throws Exception {
         String client = channel.getRemoteAddress().toString();
         FileName fileName = getFileName(channel);
         if(fileName == null){
             return;
         }
-        Long fileLength = getFileLength(channel);
+        Long fileLength = getFileLength();
         if(fileLength == null){
             return;
         }
 
         ByteBuffer fileBuffer = null;
-        if(fileByClient.containsKey(client)){
-            fileBuffer = fileByClient.get(client);
+        if(cachedFileBuffer != null){
+            fileBuffer = cachedFileBuffer;
         }else{
             fileBuffer = ByteBuffer.allocate(fileLength.intValue());
         }
@@ -343,34 +279,13 @@ public class NetworkRequest {
         channel.read(fileBuffer);
 
         if(!fileBuffer.hasRemaining()){
-            FileOutputStream out = null;
-            FileChannel fileChannel = null;
-            try {
-                out = new FileOutputStream(fileName.absoluteFileName);
-                fileChannel = out.getChannel();
-
-                fileBuffer.rewind();
-                fileChannel.write(fileBuffer);
-                fileByClient.remove(client);
-                System.out.println("文件上传完毕，写入磁盘...");
-
-                ByteBuffer responseBuffer = ByteBuffer.wrap("SUCCESS".getBytes());
-                channel.write(responseBuffer);
-                cachedRequestByClient.remove(client);
-                System.out.println("文件读取完毕，返回响应给客户端：" + client);
-
-                //向nameNode上报接收到的文件信息
-//                nameNode.informReplicaReceived(fileName.relativeFileName,fileLength);
-//                System.out.println("上报接收到文件信息给nameNode...");
-
-                //不再响应该channel的读请求
-                key.interestOps(key.interestOps() & ~SelectionKey.OP_READ);
-            }finally {
-                fileChannel.close();
-                out.close();
-            }
+            fileBuffer.rewind();
+            cachedRequest.fileBuffer = fileBuffer;
+            cachedRequest.readCompleted = true;
+            System.out.println("本次文件上传读取完毕..." + client);
         }else{
-            fileByClient.put(client, fileBuffer);
+            cachedFileBuffer = fileBuffer;
+            System.out.println("本次文件上传出现拆包问题，缓存起来，下次继续读取......." + client);
         }
 
     }
@@ -379,44 +294,16 @@ public class NetworkRequest {
      * 方法名: handleReadFileRequest
      * 描述:   处理客户端的下载文件请求
      * @param channel
-     * @param key
      * @return void
      * 作者: fansy
      * 日期: 2020/4/6 15:26
      */
-    private void handleReadFileRequest(SocketChannel channel,SelectionKey key) throws Exception {
-        String client = channel.getRemoteAddress().toString();
-        ByteBuffer buffer = null;
-        if(sendFileByClient.containsKey(client)){
-            buffer = sendFileByClient.get(client);
-        }else{
-            FileName fileName = getFileName(channel);
-            if(fileName == null){
-                channel.close();
-                return;
-            }
-            FileInputStream in = new FileInputStream(fileName.absoluteFileName);
-            FileChannel fileChannel = in.getChannel();
-
-            buffer = ByteBuffer.allocate( 8 + (int)fileChannel.size());
-            buffer.putLong(fileChannel.size());
-            fileChannel.read(buffer);
-            fileChannel.close();
-            in.close();
-            buffer.rewind();
+    private void handleReadFileRequest(SocketChannel channel) throws Exception {
+        FileName fileName = getFileName(channel);
+        if(fileName == null){
+            return;
         }
-
-        channel.write(buffer);
-        if(buffer.hasRemaining()){
-            sendFileByClient.put(client,buffer);
-            System.out.println("文件发送没有完成，下次继续发送...");
-            key.interestOps(key.interestOps() &~ SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-        }else{
-            sendFileByClient.remove(client);
-            cachedRequestByClient.remove(client);
-            System.out.println("文件发送给client "+client+" 完毕...");
-            key.interestOps(key.interestOps() &~ SelectionKey.OP_READ &~ SelectionKey.OP_WRITE);
-        }
+        cachedRequest.readCompleted = true;
     }
 
 
@@ -445,7 +332,45 @@ public class NetworkRequest {
 
         private FileName fileName;
 
-        private long fileLength;
+        private Long fileLength;
+
+        private Integer fileNameLength;
+
+        private ByteBuffer fileBuffer;
+
+        /**
+         * 是否处理完成
+         */
+        private boolean readCompleted = false;
     }
 
+    public String getAbsoluteFileName(){
+        return cachedRequest.fileName.absoluteFileName;
+    }
+
+    public ByteBuffer getFileBuffer(){
+        return cachedRequest.fileBuffer;
+    }
+
+    public String getRelativeName(){
+        return cachedRequest.fileName.relativeFileName;
+    }
+
+    public Integer getProcessorId() {
+        return processorId;
+    }
+
+    public void setProcessorId(Integer processorId) {
+        this.processorId = processorId;
+    }
+
+    public String getClient(){
+        String client = null;
+        try {
+            client = channel.getRemoteAddress().toString();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return client;
+    }
 }
