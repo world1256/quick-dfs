@@ -3,7 +3,7 @@ package com.quick.dfs.client;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.quick.dfs.constant.ConfigConstant;
-import com.quick.dfs.constant.StatusCode;
+import com.quick.dfs.constant.ResponseStatus;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
 import com.quick.dfs.util.StringUtil;
@@ -119,7 +119,7 @@ public class FileSystemImpl implements FileSystem{
 
         CreateFileResponse response = this.namenode.createFile(request);
 
-        if(response.getStatus() == StatusCode.STATUS_SUCCESS){
+        if(response.getStatus() == ResponseStatus.STATUS_SUCCESS){
             return true;
         }
         return false;
@@ -216,7 +216,7 @@ public class FileSystemImpl implements FileSystem{
                 .setExcludeDataNode(excludeDataNode)
                 .build();
         GetDataNodeForFileResponse response = this.namenode.getDataNodeForFile(request);
-        if(response.getStatus() == StatusCode.STATUS_SUCCESS){
+        if(response.getStatus() == ResponseStatus.STATUS_SUCCESS){
             return response.getDataNodeInfo();
         }
         return null;

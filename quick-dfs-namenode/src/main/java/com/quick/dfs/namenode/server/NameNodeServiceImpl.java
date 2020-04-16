@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.quick.dfs.constant.CommandType;
 import com.quick.dfs.constant.ConfigConstant;
 import com.quick.dfs.constant.SPLITOR;
-import com.quick.dfs.constant.StatusCode;
+import com.quick.dfs.constant.ResponseStatus;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
 import com.quick.dfs.namenode.task.RemoveTask;
@@ -84,10 +84,10 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         boolean success = this.dataNodeManager.register(request.getIp(),request.getHostname());
         if(success){
             response = RegisterResponse.newBuilder()
-                    .setStatus(StatusCode.STATUS_SUCCESS).build();
+                    .setStatus(ResponseStatus.STATUS_SUCCESS).build();
         }else{
             response = RegisterResponse.newBuilder()
-                    .setStatus(StatusCode.STATUS_FAILURE).build();
+                    .setStatus(ResponseStatus.STATUS_FAILURE).build();
         }
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -129,7 +129,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
 
             String commandsJson = JSONArray.toJSONString(commands);
             response = HeartbeatResponse.newBuilder()
-                    .setStatus(StatusCode.STATUS_SUCCESS)
+                    .setStatus(ResponseStatus.STATUS_SUCCESS)
                     .setCommands(commandsJson)
                     .build();
         }else{
@@ -141,7 +141,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
 
             String commandsJson = JSONArray.toJSONString(commands);
             response = HeartbeatResponse.newBuilder()
-                    .setStatus(StatusCode.STATUS_FAILURE)
+                    .setStatus(ResponseStatus.STATUS_FAILURE)
                     .setCommands(commandsJson)
                     .build();
         }
@@ -162,7 +162,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
     public void mkDir(MkDirRequest request, StreamObserver<MkDirResponse> responseObserver) {
         this.nameSystem.mkDir(request.getPath());
         MkDirResponse response = MkDirResponse.newBuilder()
-                .setStatus(StatusCode.STATUS_SUCCESS).build();
+                .setStatus(ResponseStatus.STATUS_SUCCESS).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
@@ -256,7 +256,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         }
         response = FetchEditLogResponse.newBuilder()
                 .setEditLogs(fetchedEditLog.toJSONString())
-                .setStatus(StatusCode.STATUS_SUCCESS)
+                .setStatus(ResponseStatus.STATUS_SUCCESS)
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -395,7 +395,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         this.nameSystem.setCheckpointTxid(txid);
 
         UpdateCheckpointTxidResponse response = UpdateCheckpointTxidResponse.newBuilder()
-                .setStatus(StatusCode.STATUS_SUCCESS).build();
+                .setStatus(ResponseStatus.STATUS_SUCCESS).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
@@ -417,14 +417,14 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
             boolean success = this.nameSystem.createFile(fileName);
             if(success){
                 response = CreateFileResponse.newBuilder()
-                        .setStatus(StatusCode.STATUS_SUCCESS).build();
+                        .setStatus(ResponseStatus.STATUS_SUCCESS).build();
             }else{
                 response = CreateFileResponse.newBuilder()
-                        .setStatus(StatusCode.STATUS_DUPLICATE).build();
+                        .setStatus(ResponseStatus.STATUS_DUPLICATE).build();
             }
         }else{
             response = CreateFileResponse.newBuilder()
-                    .setStatus(StatusCode.STATUS_SHUTDOWN).build();
+                    .setStatus(ResponseStatus.STATUS_SHUTDOWN).build();
         }
 
         responseObserver.onNext(response);
@@ -491,10 +491,10 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         InformReplicaReceivedResponse response = null;
         try{
             this.nameSystem.addReceivedReplica(ip,hostname,fileName,fileLength);
-            response = InformReplicaReceivedResponse.newBuilder().setStatus(StatusCode.STATUS_SUCCESS).build();
+            response = InformReplicaReceivedResponse.newBuilder().setStatus(ResponseStatus.STATUS_SUCCESS).build();
         }catch (Exception e){
             e.printStackTrace();
-            response = InformReplicaReceivedResponse.newBuilder().setStatus(StatusCode.STATUS_FAILURE).build();
+            response = InformReplicaReceivedResponse.newBuilder().setStatus(ResponseStatus.STATUS_FAILURE).build();
         }
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -528,7 +528,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         }
 
         ReportCompleteStorageInfoResponse response = ReportCompleteStorageInfoResponse
-                .newBuilder().setStatus(StatusCode.STATUS_SUCCESS).build();
+                .newBuilder().setStatus(ResponseStatus.STATUS_SUCCESS).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
@@ -552,11 +552,11 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         GetDataNodeForFileResponse response = null;
         if(dataNodeInfo == null){
             response = GetDataNodeForFileResponse.newBuilder()
-                    .setStatus(StatusCode.STATUS_FAILURE)
+                    .setStatus(ResponseStatus.STATUS_FAILURE)
                     .build();
         }else{
             response = GetDataNodeForFileResponse.newBuilder()
-                    .setStatus(StatusCode.STATUS_SUCCESS)
+                    .setStatus(ResponseStatus.STATUS_SUCCESS)
                     .setDataNodeInfo(JSONObject.toJSONString(dataNodeInfo))
                     .build();
         }
@@ -578,7 +578,7 @@ public class NameNodeServiceImpl implements NameNodeServiceGrpc.NameNodeService 
         this.dataNodeManager.rebalance();
 
         RebalanceResponse response = RebalanceResponse.newBuilder()
-                .setStatus(StatusCode.STATUS_SUCCESS).build();
+                .setStatus(ResponseStatus.STATUS_SUCCESS).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

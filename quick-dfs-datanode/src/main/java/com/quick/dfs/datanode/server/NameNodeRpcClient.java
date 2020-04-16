@@ -1,16 +1,13 @@
 package com.quick.dfs.datanode.server;
 
 import com.alibaba.fastjson.JSONArray;
-import com.quick.dfs.constant.StatusCode;
+import com.quick.dfs.constant.ResponseStatus;
 import com.quick.dfs.namenode.rpc.model.*;
 import com.quick.dfs.namenode.rpc.service.NameNodeServiceGrpc;
-import com.quick.dfs.thread.Daemon;
 import com.quick.dfs.constant.ConfigConstant;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.NegotiationType;
 import io.grpc.netty.NettyChannelBuilder;
-
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @项目名称: quick-dfs
@@ -47,7 +44,7 @@ public class NameNodeRpcClient {
                 .setIp(ConfigConstant.DATA_NODE_IP).setHostname(ConfigConstant.DATA_NODE_HOST_NAME).build();
         RegisterResponse registerResponse = namenode.register(registerRequest);
 
-        if(registerResponse.getStatus() == StatusCode.STATUS_SUCCESS){
+        if(registerResponse.getStatus() == ResponseStatus.STATUS_SUCCESS){
             return  true;
         }
         return false;

@@ -6,7 +6,7 @@ package com.quick.dfs.constant;
  * @作者: fansy
  * @日期: 2020/03/29 21:21
  **/
-public interface StatusCode {
+public interface ResponseStatus {
     /**
      * 成功
      */
