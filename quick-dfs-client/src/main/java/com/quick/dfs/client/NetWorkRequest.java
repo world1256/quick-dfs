@@ -20,6 +20,10 @@ public class NetWorkRequest {
 
     private ByteBuffer buffer;
 
+    private long sendTime;
+
+    private NetworkResponseCallback callback;
+
     public String getId() {
         return id;
     }
@@ -58,5 +62,21 @@ public class NetWorkRequest {
 
     public void setBuffer(ByteBuffer buffer) {
         this.buffer = buffer;
+    }
+
+    public long getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(long sendTime) {
+        this.sendTime = sendTime;
+    }
+
+    public NetworkResponseCallback getCallback() {
+        return callback;
+    }
+
+    public void setCallback(NetworkResponseCallback callback) {
+        this.callback = callback;
     }
 }

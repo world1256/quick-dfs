@@ -75,7 +75,7 @@ public class FileSystemImpl implements FileSystem{
      * 日期: 2020/3/29 19:31 
      */  
     @Override
-    public boolean upload(byte[] file, String fileName) throws Exception {
+    public boolean upload(byte[] file, String fileName,NetworkResponseCallback callback) throws Exception {
         //先在文件目录树中创建该文件
         //如果文件已存在  则返回false  不能上传
         if(!createFile(fileName)){
@@ -90,12 +90,12 @@ public class FileSystemImpl implements FileSystem{
             JSONObject dataNode = dataNodes.getJSONObject(i);
             String hostName = dataNode.getString("hostName");
 
-            if(!nioClient.sendFile(hostName,fileName,file,file.length)){
+            if(!nioClient.sendFile(hostName,fileName,file,callback)){
                 //如果文件上传失败  重新上传到另外一台数据节点
                 hostName = relocateDataNode(fileName,file.length,dataNodesJson);
                 if(hostName != null){
                     //再次上传失败  则抛出上传失败异常
-                    if(!nioClient.sendFile(hostName,fileName,file,file.length)){
+                    if(!nioClient.sendFile(hostName,fileName,file,callback)){
                         throw new Exception("file upload failed......");
                     }
                 }
@@ -182,7 +182,7 @@ public class FileSystemImpl implements FileSystem{
         String hostname = dataNode.getString("hostName");
         if(StringUtil.isNotEmpty(hostname)){
             try{
-                fileBytes = nioClient.readFile(hostname,fileName);
+                fileBytes = nioClient.readFile(hostname,fileName,true);
             }catch (Exception e){
                 e.printStackTrace();
                 dataNodeJson = getDataNodeHostNameForFile(fileName,dataNodeJson);
@@ -192,7 +192,8 @@ public class FileSystemImpl implements FileSystem{
                 dataNode = JSONObject.parseObject(dataNodeJson);
                 hostname = dataNode.getString("hostName");
                 try{
-                    fileBytes = nioClient.readFile(hostname,fileName);
+                    //这里只重试一次   如果第二次还无法下载成功  抛出异常
+                    fileBytes = nioClient.readFile(hostname,fileName,false);
                 }catch (Exception e2){
                     throw e2;
                 }

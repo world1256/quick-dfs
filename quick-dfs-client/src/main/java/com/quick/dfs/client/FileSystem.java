@@ -33,11 +33,12 @@ public interface FileSystem {
      * 描述:  上传文件
      * @param file
      * @param fileName
+     * @param callback
      * @return void
      * 作者: fansy
      * 日期: 2020/3/29 19:30
      */
-    boolean upload(byte[] file,String fileName)throws Exception;
+    boolean upload(byte[] file,String fileName,NetworkResponseCallback callback)throws Exception;
 
     /**  
      * 方法名: download

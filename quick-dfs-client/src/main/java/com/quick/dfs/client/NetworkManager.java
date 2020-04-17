@@ -24,6 +24,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  **/
 public class NetworkManager {
 
+    /**
+     * 检测网络连接请求超时间隔
+     */
+    private static final long REQUEST_TIMEOUT_CHECK_INTERVAL = 1000L;
+
+    /**
+     * 网络连接请求超时时间
+     */
+    private static final long REQUEST_TIMEOUT = 30 * 1000L;
+
     private Selector selector;
 
     /**
@@ -71,6 +81,7 @@ public class NetworkManager {
         this.completedResponses = new ConcurrentHashMap<>();
 
         new NetWorkThread().start();
+        new RequestTimeOutCheckThread().start();
     }
 
     /**
@@ -81,7 +92,7 @@ public class NetworkManager {
      * @作者: fansy
      * @日期: 2020/4/16 14:16
     */
-    public Boolean maybeConnect(String host) throws Exception {
+    public Boolean maybeConnect(String host){
         synchronized (this){
             if(!connectStatus.containsKey(host) ||
                 connectStatus.get(host).equals(ConnectionStatus.DIS_CONNECTED)){
@@ -89,7 +100,11 @@ public class NetworkManager {
                 waitingConnectHosts.offer(host);
             }
             while (connectStatus.get(host).equals(ConnectionStatus.CONNECTING)){
-                wait(100);
+                try {
+                    wait(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
             if(connectStatus.get(host).equals(ConnectionStatus.CONNECTING)){
@@ -272,9 +287,10 @@ public class NetworkManager {
         private void sendRequest(SelectionKey key,SocketChannel channel){
             String host = null;
             try{
-                ((InetSocketAddress)channel.getRemoteAddress()).getHostName();
+                host = ((InetSocketAddress)channel.getRemoteAddress()).getHostName();
 
                 NetWorkRequest request = toSendRequests.get(host);
+
 
                 ByteBuffer buffer = request.getBuffer();
 
@@ -283,6 +299,9 @@ public class NetworkManager {
                 }
 
                 System.out.println("请求发送完毕，hos:"+host);
+
+                request.setSendTime(System.currentTimeMillis());
+
                 key.interestOps(SelectionKey.OP_READ);
 
             }catch (Exception e){
@@ -293,14 +312,18 @@ public class NetworkManager {
                 if(host != null){
                     NetWorkRequest request = toSendRequests.get(host);
 
-                    if(request.isNeedResponse()){
-                        NetworkResponse response = new NetworkResponse();
-                        response.setHostname(host);
-                        response.setRequestId(request.getId());
-                        response.setStatus(ResponseStatus.STATUS_FAILURE);
+                    NetworkResponse response = new NetworkResponse();
+                    response.setHostname(host);
+                    response.setRequestId(request.getId());
+                    response.setStatus(ResponseStatus.STATUS_FAILURE);
 
+                    if(request.isNeedResponse()){
                         completedResponses.put(request.getId(),response);
                     }else{
+                        if(request.getCallback() != null){
+                            request.getCallback().process(response);
+                        }
+
                         toSendRequests.remove(host);
                     }
                 }
@@ -330,6 +353,9 @@ public class NetworkManager {
             if(request.isNeedResponse()){
                 completedResponses.put(request.getId(),response);
             }else{
+                if(request.getCallback() != null){
+                    request.getCallback().process(response);
+                }
                 toSendRequests.remove(host);
             }
 
@@ -361,4 +387,41 @@ public class NetworkManager {
         }
     }
 
+    /**
+     * 网络请求超时检测线程
+     */
+    class RequestTimeOutCheckThread extends Thread{
+        @Override
+        public void run() {
+            try{
+                while (true){
+                    long now = System.currentTimeMillis();
+                    for(NetWorkRequest request : toSendRequests.values()){
+                        if(now - request.getSendTime() > REQUEST_TIMEOUT){
+                            String host = request.getHostname();
+
+                            NetworkResponse response = new NetworkResponse();
+                            response.setStatus(ResponseStatus.STATUS_FAILURE);
+                            response.setRequestId(request.getId());
+                            response.setHostname(host);
+
+                            if(request.isNeedResponse()){
+                                completedResponses.put(request.getId(),response);
+                            }else{
+                                if(request.getCallback() != null){
+                                    request.getCallback().process(response);
+                                }
+                                toSendRequests.remove(host);
+                            }
+
+                        }
+                    }
+
+                    Thread.sleep(REQUEST_TIMEOUT_CHECK_INTERVAL);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
 }

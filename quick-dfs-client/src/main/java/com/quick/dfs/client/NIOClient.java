@@ -2,6 +2,7 @@ package com.quick.dfs.client;
 
 import com.quick.dfs.constant.ClientRequestType;
 import com.quick.dfs.constant.ConfigConstant;
+import com.quick.dfs.constant.ResponseStatus;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -10,6 +11,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.UUID;
 
 /**
  * @项目名称: quick-dfs
@@ -19,215 +21,125 @@ import java.util.Iterator;
  **/
 public class NIOClient {
 
+    private NetworkManager networkManager;
+
+    public NIOClient(){
+        this.networkManager = new NetworkManager();
+    }
+
     /**
      * @方法名: sendFile
-     * @描述:   上报文件到dataNode
+     * @描述:   上传文件
      * @param hostName
      * @param fileName
      * @param file
-     * @param fileSize  
+     * @param callback
      * @return boolean
      * @作者: fansy
-     * @日期: 2020/3/30 11:02 
-    */  
-    public boolean sendFile(String hostName,String fileName,byte[] file,long fileSize){
-        //建立一个短连接  发送完一个文件后就关闭连接
-        SocketChannel channel = null;
-        Selector selector = null;
-        ByteBuffer buffer = null;
-        try{
-            channel = SocketChannel.open();
-            channel.configureBlocking(false);
-            channel.connect(new InetSocketAddress(hostName, ConfigConstant.DATA_NODE_UPLOAD_PORT));
-            selector = Selector.open();
-            channel.register(selector, SelectionKey.OP_CONNECT);
-
-            boolean sending = true;
-
-            while (sending){
-                selector.select();
-                Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-                while(iterator.hasNext()){
-                    SelectionKey key = iterator.next();
-                    iterator.remove();
-                    if(key.isConnectable()){
-                        channel = (SocketChannel) key.channel();
-
-                        //完成连接建立
-                        if(channel.isConnectionPending()){
-                          channel.finishConnect();
-                        }
-
-                        byte[] fileNameBytes = fileName.getBytes();
-
-                        //依次存放请求类型+文件名长度+文件名+文件长度+文件内容
-                        int totalLength = 4 + 4 + fileNameBytes.length + 8 + (int)fileSize;
-
-                        buffer = ByteBuffer.allocate(totalLength);
-
-                        buffer.putInt(ClientRequestType.SEND_FILE);
-                        buffer.putInt(fileNameBytes.length);
-                        buffer.put(fileNameBytes);
-                        buffer.putLong(fileSize);
-                        buffer.put(file);
-
-                        buffer.rewind();
-
-                        channel.write(buffer);
-
-                        if(buffer.hasRemaining()){
-                            System.out.println("文件没有发送完毕,下次继续发送...");
-                            key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_WRITE);
-                        }else{
-                            System.out.println("client文件上传完毕,准备读取服务端的响应...");
-                            //不再监听连接事件   监听读取事件
-                            key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
-                        }
-                    }else if(key.isWritable()){
-                        channel = (SocketChannel) key.channel();
-                        channel.write(buffer);
-                        if(!buffer.hasRemaining()){
-                            System.out.println("client文件上传完毕,准备读取服务端的响应...");
-                            key.interestOps(key.interestOps() &~ SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-                        }
-                    } else if(key.isReadable()){
-                        channel = (SocketChannel) key.channel();
-
-                        buffer = ByteBuffer.allocate(1024);
-
-                        int length = channel.read(buffer);
-                        if(length > 0){
-                            String response = new String(buffer.array(),0,length);
-                            System.out.println("["+Thread.currentThread().getName()+"] 发送文件完成,收到响应："+response);
-                            sending = false;
-                        }
-                    }
-                }
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
+     * @日期: 2020/4/17 16:35
+    */
+    public boolean sendFile(String hostName,String fileName,byte[] file,NetworkResponseCallback callback){
+        if(!networkManager.maybeConnect(hostName)){
             return false;
-        }finally {
-            if(channel != null){
-                try {
-                    channel.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(selector != null){
-                try {
-                    selector.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
+
+        NetWorkRequest request  = createSendFileRequest(hostName,fileName,file,callback);
+        networkManager.sendRequest(request);
         return true;
     }
 
     /**
-     * 方法名: readFile
-     * 描述:   从dataNode下载文件
+     * @方法名: createSendFileRequest
+     * @描述:   创建上传文件请求
      * @param hostName
      * @param fileName
-     * @return byte[]
-     * 作者: fansy
-     * 日期: 2020/4/6 16:04
-     */
-    public  byte[] readFile(String hostName,String fileName) throws Exception{
-        byte[] fileBytes = null;
+     * @param file
+     * @param callback
+     * @return com.quick.dfs.client.NetWorkRequest
+     * @作者: fansy
+     * @日期: 2020/4/17 16:35
+    */
+    private NetWorkRequest createSendFileRequest(String hostName,String fileName,byte[] file,NetworkResponseCallback callback){
 
-        ByteBuffer fileLengthBuffer = null;
-        Long fileLength = null;
-        ByteBuffer fileBuffer = null;
+        NetWorkRequest request = new NetWorkRequest();
+        request.setId(UUID.randomUUID().toString());
+        request.setHostname(hostName);
+        request.setCallback(callback);
+        request.setRequestType(ClientRequestType.SEND_FILE);
+        request.setNeedResponse(false);
 
-        SocketChannel channel = null;
-        Selector selector = null;
-        try{
-            channel = SocketChannel.open();
-            channel.configureBlocking(false);
-            channel.connect(new InetSocketAddress(hostName,ConfigConstant.DATA_NODE_UPLOAD_PORT));
-            selector = Selector.open();
-            channel.register(selector,SelectionKey.OP_CONNECT);
+        byte[] fileNameBytes = fileName.getBytes();
 
-            boolean reading = true;
+        //依次存放请求类型+文件名长度+文件名+文件长度+文件内容
+        int totalLength = 4 + 4 + fileNameBytes.length + 8 + file.length;
+        ByteBuffer buffer = ByteBuffer.allocate(totalLength);
+        buffer.putInt(ClientRequestType.SEND_FILE);
+        buffer.putInt(fileNameBytes.length);
+        buffer.put(fileNameBytes);
+        buffer.putLong(file.length);
+        buffer.put(file);
+        buffer.rewind();
+        request.setBuffer(buffer);
 
-            while (reading){
-                selector.select();
-                Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-                while (iterator.hasNext()){
-                    SelectionKey key = iterator.next();
-                    iterator.remove();
-
-                    if(key.isConnectable()){
-                        channel = (SocketChannel) key.channel();
-                        if(channel.isConnectionPending()){
-                            channel.finishConnect();
-                        }
-
-                        //依次存放请求类型+文件名长度+文件名
-                        int totalLength = 4 + 4 + fileName.getBytes().length;
-                        ByteBuffer buffer = ByteBuffer.allocate(totalLength);
-                        buffer.putInt(ClientRequestType.READ_FILE);
-                        buffer.putInt(fileName.getBytes().length);
-                        buffer.put(fileName.getBytes());
-                        buffer.rewind();
-
-                        channel.write(buffer);
-                        System.out.println("发送文件读取请求到 "+hostName+" 完成...");
-                        key.interestOps(key.interestOps() &~ SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
-
-                    }else if(key.isReadable()){
-                        channel = (SocketChannel) key.channel();
-
-                        if(fileLength == null){
-                            if(fileBuffer == null){
-                                fileLengthBuffer = ByteBuffer.allocate(8);
-                            }
-                            channel.read(fileLengthBuffer);
-                            if(!fileBuffer.hasRemaining()){
-                                fileLengthBuffer.rewind();
-                                fileLength = fileLengthBuffer.getLong();
-                            }
-                        }else{
-                            if(fileBuffer == null){
-                                fileBuffer = ByteBuffer.allocate(fileLength.intValue());
-                            }
-                            channel.read(fileBuffer);
-                            if(!fileBuffer.hasRemaining()){
-                                fileBytes = fileBuffer.array();
-                                reading = false;
-                                System.out.println("dataNode发送过来的文件数据接收完毕...");
-                            }
-                        }
-                    }
-                }
-            }
-
-        }catch (Exception e){
-            throw e;
-        }finally {
-            if(channel != null){
-                try {
-                    channel.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(selector != null){
-                try {
-                    selector.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return  fileBytes;
+        return request;
     }
 
+    /**
+     * @方法名: readFile
+     * @描述:   下载文件
+     * @param hostName
+     * @param fileName
+     * @param retry 是否重试
+     * @return byte[]
+     * @作者: fansy
+     * @日期: 2020/4/17 16:56
+    */
+    public  byte[] readFile(String hostName,String fileName,boolean retry) throws Exception{
+        if(!networkManager.maybeConnect(hostName)){
+            if(retry){
+                throw new Exception();
+            }
+        }
 
+        NetWorkRequest request = createReadFileRequest(hostName,fileName);
+        networkManager.sendRequest(request);
 
+        NetworkResponse response = networkManager.waitResponse(request.getId());
+        if(response.getStatus() == ResponseStatus.STATUS_FAILURE){
+            if(retry){
+                throw new Exception();
+            }
+        }
+
+        return response.getBuffer().array();
+    }
+
+    /**
+     * @方法名: createReadFileRequest
+     * @描述:   创建下载文件请求
+     * @param hostName
+     * @param fileName
+     * @return com.quick.dfs.client.NetWorkRequest
+     * @作者: fansy
+     * @日期: 2020/4/17 16:56
+    */
+    public NetWorkRequest createReadFileRequest(String hostName,String fileName){
+        NetWorkRequest request = new NetWorkRequest();
+        request.setId(UUID.randomUUID().toString());
+        request.setHostname(hostName);
+        request.setRequestType(ClientRequestType.SEND_FILE);
+        request.setNeedResponse(true);
+
+        //依次存放请求类型+文件名长度+文件名
+        int totalLength = 4 + 4 + fileName.getBytes().length;
+        ByteBuffer buffer = ByteBuffer.allocate(totalLength);
+        buffer.putInt(ClientRequestType.READ_FILE);
+        buffer.putInt(fileName.getBytes().length);
+        buffer.put(fileName.getBytes());
+        buffer.rewind();
+        request.setBuffer(buffer);
+
+        return request;
+    }
 
 }
