@@ -66,6 +66,11 @@ public class NetworkManager {
      */
     private Map<String,NetworkResponse> completedResponses;
 
+    /**
+     * 未处理完成的网络请求响应
+     */
+    private Map<String,NetworkResponse> unCompletedResponses;
+
     public NetworkManager(){
         try {
             this.selector = Selector.open();
@@ -79,6 +84,7 @@ public class NetworkManager {
         this.waitingRequests = new ConcurrentHashMap<>();
         this.toSendRequests = new ConcurrentHashMap<>();
         this.completedResponses = new ConcurrentHashMap<>();
+        this.unCompletedResponses = new ConcurrentHashMap<>();
 
         new NetWorkThread().start();
         new RequestTimeOutCheckThread().start();
@@ -346,7 +352,13 @@ public class NetworkManager {
 
             NetworkResponse response =null;
             if(request.getRequestType() == ClientRequestType.SEND_FILE){
-                response = readSendFileResponse(key,channel,request.getId());
+                response = getSendFileResponse(key,channel,request.getId());
+            }else if(request.getRequestType() == ClientRequestType.READ_FILE){
+                response = getReadFileResponse(key,channel,request.getId());
+            }
+
+            if(!response.isCompleted()){
+                return;
             }
 
             key.interestOps(key.interestOps() &~ SelectionKey.OP_READ);
@@ -361,8 +373,75 @@ public class NetworkManager {
 
         }
 
+        /**  
+         * @方法名: getReadFileResponse
+         * @描述:   读取下载文件请求响应
+         * @param key
+         * @param channel
+         * @param requestId  
+         * @return com.quick.dfs.client.NetworkResponse  
+         * @作者: fansy
+         * @日期: 2020/4/20 15:13 
+        */  
+        private NetworkResponse getReadFileResponse(SelectionKey key,SocketChannel channel,String requestId) throws Exception {
+            String host = ((InetSocketAddress)channel.getRemoteAddress()).getHostName();
+
+            NetworkResponse response = null;
+            if(unCompletedResponses.containsKey(requestId)){
+                response = unCompletedResponses.get(requestId);
+            }else{
+                response = new NetworkResponse();
+                response.setHostname(host);
+                response.setRequestId(requestId);
+                response.setCompleted(false);
+            }
+
+            Long fileLength = null;
+            //请求中的文件内容没有读取过  才需要先读取文件长度
+            if(response.getBuffer() == null){
+                ByteBuffer fileLengthBuffer = null;
+                if(response.getFileLengthBuffer() != null){
+                    fileLengthBuffer = response.getFileLengthBuffer();
+                }else{
+                    fileLengthBuffer = ByteBuffer.allocate(8);
+                    response.setFileLengthBuffer(fileLengthBuffer);
+                }
+                channel.read(fileLengthBuffer);
+
+                if(!fileLengthBuffer.hasRemaining()){
+                    fileLengthBuffer.rewind();
+                    fileLength = fileLengthBuffer.getLong();
+                }else{
+                    unCompletedResponses.put(requestId,response);
+                }
+            }
+
+            //读取文件内容
+            if(fileLength != null || response.getBuffer() != null){
+                ByteBuffer fileBuffer = null;
+                if(response.getBuffer() != null){
+                    fileBuffer = response.getBuffer();
+                }else{
+                    fileBuffer = ByteBuffer.allocate(Integer.parseInt(fileLength.toString()));
+                    response.setBuffer(fileBuffer);
+                }
+                channel.read(fileBuffer);
+                //文件读取完成
+                if(!fileBuffer.hasRemaining()){
+                    fileBuffer.rewind();
+                    response.setCompleted(true);
+                    unCompletedResponses.remove(requestId);
+                }else{
+                    //文件读取未完成，缓存起来
+                    unCompletedResponses.put(requestId,response);
+                }
+            }
+            return response;
+        }
+
+
         /**
-         * @方法名: readSendFileResponse
+         * @方法名: getSendFileResponse
          * @描述: 读取发送文件请求响应
          * @param key
          * @param channel
@@ -371,7 +450,7 @@ public class NetworkManager {
          * @作者: fansy
          * @日期: 2020/4/16 16:49
         */
-        private NetworkResponse readSendFileResponse(SelectionKey key,SocketChannel channel,String requestId) throws Exception {
+        private NetworkResponse getSendFileResponse(SelectionKey key,SocketChannel channel,String requestId) throws Exception {
             String host = ((InetSocketAddress)channel.getRemoteAddress()).getHostName();
 
             ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -383,6 +462,7 @@ public class NetworkManager {
             response.setRequestId(requestId);
             response.setBuffer(buffer);
             response.setStatus(ResponseStatus.STATUS_SUCCESS);
+            response.setCompleted(true);
             return response;
         }
     }

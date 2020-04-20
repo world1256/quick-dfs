@@ -14,9 +14,22 @@ public class NetworkResponse {
 
     private String requestId;
 
+    /**
+     * 文件长度
+     */
+    private ByteBuffer fileLengthBuffer;
+
+    /**
+     * 文件内容
+     */
     private ByteBuffer buffer;
 
     private Integer status;
+
+    /**
+     * 是否完成
+     */
+    private boolean completed;
 
     public String getHostname() {
         return hostname;
@@ -48,5 +61,21 @@ public class NetworkResponse {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public ByteBuffer getFileLengthBuffer() {
+        return fileLengthBuffer;
+    }
+
+    public void setFileLengthBuffer(ByteBuffer fileLengthBuffer) {
+        this.fileLengthBuffer = fileLengthBuffer;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 }
